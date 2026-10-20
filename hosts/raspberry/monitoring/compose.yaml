@@ -2,8 +2,9 @@ name: monitoring
 
 services:
   diun:
-    image: crazymax/diun:latest
     container_name: "diun-raspberry"
+    image: crazymax/diun:latest
+    restart: unless-stopped
     volumes:
       - ${DOCKER_DATA_DIR}/diun/local:/data
       - ${DOCKER_DATA_DIR}/diun/local.yml:/diun.yml:ro
@@ -15,12 +16,12 @@ services:
     networks:
       servers:
     command: serve
-    restart: unless-stopped
     hostname: "diun-raspberry"
 
   diun-datengrab:
-    image: crazymax/diun:latest
     container_name: "diun-datengrab"
+    image: crazymax/diun:latest
+    restart: unless-stopped
     volumes:
       - ${DOCKER_DATA_DIR}/diun/datengrab:/data
       - ${DOCKER_DATA_DIR}/diun/datengrab.yml:/diun.yml:ro
@@ -31,12 +32,12 @@ services:
     networks:
       servers:
     command: serve
-    restart: unless-stopped
     hostname: "diun-datengrab"
 
   diun-framboesa:
-    image: crazymax/diun:latest
     container_name: "diun-framboesa"
+    image: crazymax/diun:latest
+    restart: unless-stopped
     volumes:
       - ${DOCKER_DATA_DIR}/diun/framboesa:/data
       - ${DOCKER_DATA_DIR}/diun/framboesa.yml:/diun.yml:ro
@@ -47,12 +48,11 @@ services:
     networks:
       servers:
     command: serve
-    restart: unless-stopped
     hostname: "diun-framboesa"
 
   uptime-kuma:
-    image: louislam/uptime-kuma:2
     container_name: uptime-kuma
+    image: louislam/uptime-kuma:2
     volumes:
       - ${DOCKER_DATA_DIR}/kuma:/app/data
       - /var/run/docker.sock:/var/run/docker.sock:ro

@@ -2,8 +2,9 @@ name: raspberry
 
 services:
   bambuddy:
-    image: ghcr.io/maziggy/bambuddy:daily
     container_name: bambuddy
+    image: ghcr.io/maziggy/bambuddy:daily
+    restart: unless-stopped
     volumes:
       - ${DOCKER_DATA_DIR}/bambuddy/data:/app/data
       - ${DOCKER_DATA_DIR}/bambuddy/logs:/app/logs
@@ -16,7 +17,6 @@ services:
       - .env
     networks:
       servers:
-    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.bambuddy.rule=Host(`bambuddy.${DOMAIN}`)"
@@ -24,8 +24,9 @@ services:
     stop_grace_period: 30s
 
   homeassistant:
-    image: ghcr.io/home-assistant/home-assistant:stable
     container_name: hass
+    image: ghcr.io/home-assistant/home-assistant:stable
+    restart: unless-stopped
     volumes:
       - ${DOCKER_DATA_DIR}/hass/config:/config
       - /run/dbus:/run/dbus:ro
@@ -41,7 +42,6 @@ services:
         ipv4_address: 192.168.5.200
         ipv6_address: '2a02:169:4bce:2::50'
         mac_address: '4C:81:BE:81:BA:BE'
-    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.hass.rule=Host(`hass.${DOMAIN}`)"
@@ -53,8 +53,9 @@ services:
       - NET_RAW
 
   homebox:
-    image: ghcr.io/sysadminsmedia/homebox:latest
     container_name: homebox
+    image: ghcr.io/sysadminsmedia/homebox:latest
+    restart: unless-stopped
     volumes:
       - ${DOCKER_DATA_DIR}/homebox:/data
     environment:
@@ -70,15 +71,15 @@ services:
       - .env
     networks:
       servers:
-    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.homebox.rule=Host(`homebox.${DOMAIN}`)"
       - "traefik.http.services.homebox.loadbalancer.server.port=7745"
 
   linkding:
-    image: sissbruecker/linkding:latest
     container_name: linkding
+    image: sissbruecker/linkding:latest
+    restart: unless-stopped
     volumes:
       - ${DOCKER_DATA_DIR}/linkding:/etc/linkding/data
     environment:
@@ -93,20 +94,20 @@ services:
       - .env
     networks:
       servers:
-    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.linkding.rule=Host(`linkding.${DOMAIN}`)"
       - "traefik.http.services.linkding.loadbalancer.server.port=9090"
 
   manyfold:
-    image: ghcr.io/manyfold3d/manyfold-solo:latest
     container_name: manyfold
+    image: ghcr.io/manyfold3d/manyfold-solo:latest
+    restart: unless-stopped
     volumes:
       - ${DOCKER_DATA_DIR}/manyfold:/config
       - manyfold_nfs:/collection
     environment:
-      SECRET_KEY_BASE: ${MANYFOLD_SECRET_KEY_BASE} 
+      SECRET_KEY_BASE: ${MANYFOLD_SECRET_KEY_BASE}
       PUID: 1001
       PGID: 1001
       MULTIUSER: enabled
@@ -123,7 +124,6 @@ services:
       - .env
     networks:
       servers:
-    restart: unless-stopped
     labels:
       - 'traefik.enable=true'
       - "traefik.http.routers.manyfold.rule=Host(`manyfold.${DOMAIN}`)"
@@ -132,18 +132,19 @@ services:
       - "traefik.http.middlewares.testheader.headers.customrequestheaders.X-Forwarded-Ssl=on"
 
   matter-server:
-    image: ghcr.io/matter-js/matterjs-server:stable
     container_name: matter-server
+    image: ghcr.io/matter-js/matterjs-server:stable
+    restart: unless-stopped
     volumes:
       - ${DOCKER_DATA_DIR}/matter-data:/data
     env_file:
       - .env
     network_mode: host
-    restart: unless-stopped
 
   miniflux:
-    image: miniflux/miniflux:latest
     container_name: miniflux
+    image: miniflux/miniflux:latest
+    restart: unless-stopped
     depends_on:
       miniflux-db:
         condition: service_healthy
@@ -161,15 +162,15 @@ services:
       - .env
     networks:
       servers:
-    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.miniflux.rule=Host(`miniflux.${DOMAIN}`)"
       - "traefik.http.services.miniflux.loadbalancer.server.port=8080"
 
   miniflux-db:
-    image: "postgres:16"
     container_name: "miniflux-db"
+    image: "postgres:16"
+    restart: unless-stopped
     volumes:
       - ${DOCKER_DATA_DIR}/miniflux-db:/var/lib/postgresql/data
     environment:
@@ -180,11 +181,18 @@ services:
       - .env
     networks:
       servers:
-    restart: unless-stopped
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "miniflux" ]
       interval: 10s
       start_period: 30s
+
+volumes:
+  manyfold_nfs:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=192.168.1.14,rw,vers=4.1
+      device: ':/volume1/3D Printing/'
 
 networks:
   servers:
@@ -203,13 +211,5 @@ networks:
         - subnet: '2a02:169:4bce:1::/64'
           gateway: '2a02:169:4bce:1::1'
   servers_macvlan:
-    name: servers_macvlan 
+    name: servers_macvlan
     external: true
-
-volumes:
-  manyfold_nfs:
-    driver: local
-    driver_opts:
-      type: nfs
-      o: addr=192.168.1.14,rw,vers=4.1
-      device: ':/volume1/3D Printing/'
