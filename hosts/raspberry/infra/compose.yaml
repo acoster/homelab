@@ -199,7 +199,7 @@ networks:
         - subnet: 172.18.0.0/16
           ip_range: 172.18.1.0/24
           gateway: 172.18.0.1
- servers_macvlan:
+  servers_macvlan:
     name: servers_macvlan 
     driver: macvlan
     enable_ipv6: true
