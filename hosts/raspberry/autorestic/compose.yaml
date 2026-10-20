@@ -1,0 +1,30 @@
+services:
+  autorestic:
+    container_name: autorestic
+    image: cupcakearmy/autorestic:latest
+    hostname: autorestic-agent-raspberry # Change per host
+    env_file:
+      - ./.env
+    environment:
+      AUTORESTIC_RSYNCNET_RESTIC_PASSWORD:
+      AUTORESTIC_DATENGRAB_RESTIC_PASSWORD:
+    volumes:
+      - ./autorestic.yml:/root/.config/autorestic/.autorestic.yml
+      - ./autorestic.lock.yml:/root/.config/autorestic/.autorestic.lock.yml
+      
+      # Docker stuff that gets backed up
+      - ${DOCKER_DATA_DIR}:/backup_source/bind_mounts:ro
+      - ${DOCKER_DATA_DIR}/restic-ssh:/root/.ssh:ro
+
+      # Stuff from the host that gets backed up
+      - /etc/apt:/backup_source/host/etc/apt:ro
+      - /etc/exim4:/backup_source/host/etc/exim4:ro
+      - /etc/group:/backup_source/host/etc/group:ro
+      - /etc/NetworkManager:/backup_source/host/etc/NetworkManager:ro
+      - /etc/passwd:/backup_source/host/etc/passwd:ro
+      - /etc/shadow:/backup_source/host/etc/shadow:ro
+      - /etc/systemd/system/:/backup_source/host/etc/systemd/system/:ro
+      - /var/spool/cron/crontabs/:/backup_source/host/var/spool/cron/crontabs/:ro
+
+    restart: unless-stopped
+

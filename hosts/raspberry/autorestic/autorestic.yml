@@ -1,0 +1,51 @@
+version: 2
+
+backends:
+  rsyncnet:
+    type: sftp
+    path: 'rsyncnet:raspberry-backup'
+
+  datengrab:
+    type: sftp
+    path: 'datengrab:pi_backups/raspberry'
+
+
+locations:
+  raspberry-backup:
+    from:
+      - /backup_source
+    to:
+      - rsyncnet
+      - datengrab
+    cron: '0 3 * * *'
+    options:
+      forget:
+        keep-daily: 7
+        keep-weekly: 4
+        keep-monthly: 6
+      backup:
+        tag:
+          - raspberry
+        exclude:
+          # Standard SQLite extensions
+          - '*.db'
+          - '*.db-wal'
+          - '*.db-shm'
+          # Django/Python specific SQLite names
+          - 'db.sqlite3'
+          - 'db.sqlite3-wal'
+          - 'db.sqlite3-shm'
+
+          # Ignore logs
+          - '/backup_source/traefik-logs/**'
+          - '*.log'
+
+          # Ignore caches
+          - '/backup_source/bind_mounts/hass/config/.cache/**'
+          - '/**/__pycache__/**'
+          - '*.pyc'
+
+          # Ignore psql
+          - '**/authentik-psql/**'
+          - '**/miniflux-db/**'
+          - '**/redis_cache/**'
