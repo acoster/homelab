@@ -1,0 +1,131 @@
+name: paperless
+
+services:
+  broker:
+    container_name: paperless-broker
+    image: docker.io/library/redis:7
+    restart: always
+    networks:
+      internal:
+    volumes:
+      - redisdata:/data
+    env_file:
+      - ./.env
+
+  db:
+    container_name: paperless-db
+    image: docker.io/library/mariadb:10
+    restart: always
+    networks:
+      internal:
+    volumes:
+      - /volume1/docker/paperless-db:/var/lib/mysql
+    env_file:
+      - ./.env
+    environment:
+      MARIADB_HOST: paperless
+      MARIADB_DATABASE: paperless
+      MARIADB_USER: paperless
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  server:
+    container_name: paperless-server
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    restart: always
+    depends_on:
+      - db
+      - broker
+    networks:
+      internal:
+      public:
+    env_file:
+      - ./.env
+    ports:
+      - "8000:8000"
+    volumes:
+      - /volume1/paperless/consume:/usr/src/paperless/consume
+      - /volume1/paperless/data:/usr/src/paperless/data
+      - /volume1/paperless/export:/usr/src/paperless/export
+      - /volume1/paperless/media:/usr/src/paperless/media
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.paperless.rule=Host(`paperless.${DOMAIN}`)"
+      - "traefik.http.routers.paperless.entrypoints=https"
+      - "traefik.http.services.paperless.loadbalancer.server.port=8000"
+    environment:
+      PAPERLESS_REDIS: redis://paperless-broker:6379
+      PAPERLESS_DBENGINE: mariadb
+      PAPERLESS_DBHOST: paperless-db
+      PAPERLESS_DBUSER: paperless
+      PAPERLESS_DBPASS: ${MARIADB_PASSWORD}
+      PAPERLESS_DBPORT: 3306
+      USERMAP_UID: 1026
+      USERMAP_GID: 100
+      PAPERLESS_SECRET_KEY: ${PAPERLESS_SECRET_KEY}
+      PAPERLESS_OCR_LANGUAGES: eng deu por
+      PAPERLESS_URL: https://paperless.${DOMAIN}
+      PAPERLESS_TIME_ZONE: ${TZ}
+      PAPERLESS_CORS_ALLOWED_HOSTS: https://paperless.${DOMAIN}
+      PAPERLESS_APPS: allauth.socialaccount.providers.openid_connect
+      PAPERLESS_SOCIALACCOUNT_PROVIDERS: '{"openid_connect": {"APPS": [{"provider_id": "authentik","name": "Corp SSO","client_id": "${PAPERLESS_OAUTH_CLIENT}","secret": "${PAPERLESS_OAUTH_SECRET}","settings": { "server_url": "${PAPERLESS_OAUTH_URL}"}}]}}'
+
+  paperless-gpt:
+    container_name: paperless-gpt
+    image: icereed/paperless-gpt:latest
+    restart: unless-stopped
+    networks:
+      public:
+    env_file:
+      - ./.env
+    environment:
+      PAPERLESS_BASE_URL: 'https://paperless.${DOMAIN}'
+      PAPERLESS_API_TOKEN: ${PAPERLESS_API_TOKEN}
+
+      LLM_PROVIDER: googleai
+      GOOGLEAI_API_KEY: ${GOOGLEAI_API_TOKEN}
+      LLM_MODEL: gemini-3.5-flash
+
+      OCR_PROVIDER: "llm"  
+      VISION_LLM_PROVIDER: googleai
+      VISION_LLM_MODEL: gemini-3.5-flash
+      OCR_PROCESSING_MODE: image
+
+      TAG_AUTOMATION: true
+      AUTO_TAG: paperless-gpt-auto
+      MANUAL_TAG: paperless-gpt
+      DONE_TAG: paperless-gpt-done
+      FAIL_TAG: paperless-gpt-failed
+
+      # --- Field Controls ---
+      UPDATE_TITLE: true
+      UPDATE_CORRESPONDENT: true
+      UPDATE_DOCUMENT_TYPE: true
+      UPDATE_TAGS: true
+      UPDATE_CREATED_DATE: true
+    volumes:
+      - /volume1/docker/paperless-gpt/prompts:/app/prompts
+      - /volume1/docker/paperless-gpt/config:/app/config
+      - /volume1/docker/paperless-gpt/db:/app/db
+    ports:
+      - 8080:8080
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.paperless-gpt.rule=Host(`paperless-gpt.${DOMAIN}`)"
+      - "traefik.http.routers.paperless-gpt.entrypoints=https"
+      - "traefik.http.services.paperless-gpt.loadbalancer.server.port=8080"
+      - "traefik.http.routers.paperless-gpt.middlewares=middlewares-authentik@file"
+
+networks:
+  internal:
+    internal: true
+  public:
+
+volumes:
+  redisdata:
