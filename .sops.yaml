@@ -1,6 +1,8 @@
 creation_rules:
-  - path_regex: .*\.(enc|secret)\.(yaml|json|env)$
+  - path_regex: .*\.enc\.(yaml|json|env)$
     age: >-
       age1705z0tfpmrejlgq4h9j0cnymxvljm6gj9g7ujrx5k2e5wv6q6cgsgz6q2d,
-      age1ezct398mcjs09hu6np7lqwnn9hz8nhqrlh8annj789qkrzhr8csqfvltrs
+      age1ezct398mcjs09hu6np7lqwnn9hz8nhqrlh8annj789qkrzhr8csqfvltrs,
+      age1t2yvqflyxyw7s23kqqqavy80zdvsu8njyu5af4pwp6yf3qej6a7qkclug0,
+      age1mv0qhert89pqgauk0z6mh5gwe3t9llms0ghzzpk3a2mj0hwawp2qpags49
 
