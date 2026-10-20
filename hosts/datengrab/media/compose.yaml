@@ -1,0 +1,207 @@
+name: media
+
+services:
+  sabnzbd:
+    container_name: sabnzbd
+    image: lscr.io/linuxserver/sabnzbd:latest
+    restart: unless-stopped
+    ports:
+      - 3128:8080
+    volumes:
+      - ${DOCKER_DATA_ROOT}/sabnzbd:/config
+      - ${MEDIA_ROOT}:/Media
+    environment:
+      PGID: ${MEDIA_PGID}
+      PUID: ${MEDIA_PUID}
+    env_file:
+      - ./.env
+    networks:
+      public:
+    labels:
+      - "traefik.enable=true"
+      - traefik.port=3128
+      - "traefik.http.routers.sabnzbd.rule=Host(`sabnzbd.${DOMAIN}`)"
+      - "traefik.http.routers.sabnzbd.entrypoints=https"
+      - "traefik.http.routers.sabnzbd.middlewares=middlewares-authentik@file"
+      - "traefik.http.services.sabnzbd.loadBalancer.server.port=3128"
+      - "traefik.http.routers.sabnzbdApi.rule=Host(`sabnzbd.${DOMAIN}`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.sabnzbdApi.entrypoints=https"
+
+  transmission:
+    container_name: transmission
+    image: lscr.io/linuxserver/transmission:latest
+    restart: unless-stopped
+    ports:
+      - 51413:51413/tcp
+      - 51413:51413/udp
+      - 9091:9091
+    volumes:
+      - ${DOCKER_DATA_ROOT}/transmission-watch:/watch
+      - ${DOCKER_DATA_ROOT}/transmission:/config
+      - ${MEDIA_ROOT}/incoming:/downloads
+      - ${MEDIA_ROOT}:/Media
+    environment:
+      PGID: ${MEDIA_PGID}
+      PUID: ${MEDIA_PUID}
+      USER: ${TRANSMISSION_USER}
+      PASS: ${TRANSMISSION_PASS}
+    env_file:
+      - ./.env
+    networks:
+      public:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.transmission.rule=Host(`transmission.${DOMAIN}`)"
+      - "traefik.http.routers.transmission.entrypoints=https"
+      - "traefik.http.services.transmission.loadbalancer.server.port=9091"
+      - "traefik.http.routers.transmission.middlewares=middlewares-authentik@file,add-auth-header"
+      - "traefik.http.middlewares.add-auth-header.headers.customrequestheaders.authorization=Basic ${TRANSMISSION_AUTH}"
+
+  prowlarr:
+    container_name: prowlarr
+    image: lscr.io/linuxserver/prowlarr:develop
+    restart: unless-stopped
+    depends_on:
+      - sabnzbd
+      - transmission
+    ports:
+      - 9696:9696
+    volumes:
+      - ${DOCKER_DATA_ROOT}/prowlarr:/config
+    environment:
+      PGID: ${MEDIA_PGID}
+      PUID: ${MEDIA_PUID}
+    env_file:
+      - ./.env
+    networks:
+      public:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.${DOMAIN}`)"
+      - "traefik.http.routers.prowlarr.entrypoints=https"
+      - "traefik.http.routers.prowlarr.middlewares=middlewares-authentik@file"
+      - "traefik.http.routers.prowlarrApi.rule=Host(`prowlarr.${DOMAIN}`) && (PathPrefix(`/api/`) || PathPrefix(`/ping`))"
+      - "traefik.http.routers.prowlarrApi.entrypoints=https"
+
+  lidarr:
+    container_name: lidarr
+    image: lscr.io/linuxserver/lidarr:latest
+    restart: unless-stopped
+    depends_on:
+      - prowlarr
+      - sabnzbd
+      - transmission
+    ports:
+      - 8686:8686
+    volumes:
+      - ${DOCKER_DATA_ROOT}/lidarr:/config
+      - ${MEDIA_ROOT}:/Media
+    environment:
+      PGID: ${MEDIA_PGID}
+      PUID: ${MEDIA_PUID}
+    env_file:
+      - ./.env
+    networks:
+      public:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.lidarr.rule=Host(`lidarr.${DOMAIN}`)"
+      - "traefik.http.routers.lidarr.entrypoints=https"
+      - "traefik.http.routers.lidarr.middlewares=middlewares-authentik@file"
+      - "traefik.http.routers.lidarrApi.rule=Host(`lidarr.${DOMAIN}`) && (PathPrefix(`/api/`) || PathPrefix(`/ping`))"
+      - "traefik.http.routers.lidarrApi.entrypoints=https"
+
+  sonarr:
+    container_name: sonarr
+    image: lscr.io/linuxserver/sonarr:latest
+    restart: unless-stopped
+    depends_on:
+      - prowlarr
+      - sabnzbd
+      - transmission
+    ports:
+      - 8989:8989
+    volumes:
+      - ${DOCKER_DATA_ROOT}/sonarr:/config
+      - ${MEDIA_ROOT}:/Media
+    environment:
+      PGID: ${MEDIA_PGID}
+      PUID: ${MEDIA_PUID}
+    env_file:
+      - ./.env
+    networks:
+      public:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sonarr.rule=Host(`sonarr.${DOMAIN}`)"
+      - "traefik.http.routers.sonarr.entrypoints=https"
+      - "traefik.http.routers.sonarr.middlewares=middlewares-authentik@file"
+      - "traefik.http.routers.sonarrApi.rule=Host(`sonarr.${DOMAIN}`) && (PathPrefix(`/api/`) || PathPrefix(`/ping`))"
+      - "traefik.http.routers.sonarrApi.entrypoints=https"
+    devices:
+      - '/dev/dri:/dev/dri'
+
+  radarr:
+    container_name: radarr
+    image: lscr.io/linuxserver/radarr:latest
+    restart: unless-stopped
+    depends_on:
+      - prowlarr
+      - sabnzbd
+      - transmission
+    ports:
+      - 7878:7878
+    volumes:
+      - ${DOCKER_DATA_ROOT}/radarr:/config
+      - ${MEDIA_ROOT}:/Media
+    environment:
+      PGID: ${MEDIA_PGID}
+      PUID: ${MEDIA_PUID}
+    env_file:
+      - ./.env
+    networks:
+      public:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.radarr.rule=Host(`radarr.${DOMAIN}`)"
+      - "traefik.http.routers.radarr.entrypoints=https"
+      - "traefik.http.routers.radarr.middlewares=middlewares-authentik@file"
+      - "traefik.http.routers.radarrApi.rule=Host(`radarr.${DOMAIN}`) && (PathPrefix(`/api/`) || PathPrefix(`/ping`))"
+      - "traefik.http.routers.radarrApi.entrypoints=https"
+    devices:
+      - '/dev/dri:/dev/dri'
+
+  plex:
+    container_name: plex
+    image: 'lscr.io/linuxserver/plex:latest'
+    restart: unless-stopped
+    volumes:
+      - '${DOCKER_DATA_ROOT}/plex:/config'
+      - '${MEDIA_ROOT}:/Media'
+    environment:
+      - PUID=297536
+      - PGID=297536
+      - VERSION=latest
+    env_file:
+      - ./.env
+    networks:
+      public:
+      media-macvlan:
+        ipv4_address: "192.168.1.245"
+    devices:
+      - '/dev/dri:/dev/dri'
+
+networks:
+  public:
+    name: public
+    external: true
+
+  media-macvlan:
+    name: media-macvlan
+    driver: macvlan
+    driver_opts:
+      parent: bond0
+    ipam:
+      config:
+        - subnet: 192.168.1.0/24
+          gateway: 192.168.1.1
