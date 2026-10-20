@@ -1,0 +1,52 @@
+name: apps
+
+services:
+  bambu-slicer-api:
+    container_name: bambu-slicer-api
+    image: ghcr.io/maziggy/bambu-studio-api:latest
+    restart: unless-stopped
+    ports:
+      - 3003:3000
+    volumes:
+      - ${DOCKER_DATA_ROOT}/bambu:/app/data
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      MAX_MODEL_UPLOAD_MB: "512"
+    env_file:
+      - ./.env
+    networks:
+      public:
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3000/health" ]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+
+  bricktracker:
+    container_name: bricktracker
+    image: gitea.baerentsen.space/frederikbaerentsen/bricktracker:latest
+    restart: always
+    ports:
+      - 3333:3333
+    volumes:
+      - ${DOCKER_DATA_ROOT}/bricktracker/data/:/app/data
+    environment:
+      BK_REBRICKABLE_API_KEY:
+      BK_DOMAIN_NAME: https://bricktracker.${DOMAIN}
+    env_file:
+      - ./.env
+    networks:
+      public:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.bricktracker.rule=Host(`bricktracker.${DOMAIN}`)"
+      - "traefik.http.routers.bricktracker.middlewares=middlewares-authentik@file"
+      - "traefik.http.services.bricktracker.loadbalancer.server.port=3333"
+
+networks:
+  public:
+    name: public
+    external: true
+
