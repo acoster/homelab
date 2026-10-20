@@ -1,0 +1,41 @@
+name: infra
+
+services:
+  docker-socket-proxy:
+    container_name: docker-socket-proxy
+    image: tecnativa/docker-socket-proxy
+    restart: unless-stopped
+    ports:
+      - 3375:2375
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - CONTAINERS=1
+      - IMAGES=1
+      - NETWORKS=1
+      - EVENTS=1
+      - PING=1
+      - VERSION=1
+      - INFO=1
+    networks:
+      public:
+
+  traefik-kop:
+    container_name: traefik-kop
+    image: ghcr.io/jittering/traefik-kop:latest
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      REDIS_ADDR: "raspberry:6379"
+      BIND_IP: "192.168.1.14"
+      REDIS_PASS: ${REDIS_PASS}
+      REDIS_TTL: 1800
+      KOP_HOSTNAME: datengrab
+    networks:
+      public:
+
+networks:
+  public:
+    name: public
+    driver: bridge
