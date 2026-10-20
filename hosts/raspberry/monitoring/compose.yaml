@@ -1,0 +1,76 @@
+name: monitoring
+
+services:
+  diun:
+    image: crazymax/diun:latest
+    container_name: "diun-raspberry"
+    volumes:
+      - ${DOCKER_DATA_DIR}/diun/local:/data
+      - ${DOCKER_DATA_DIR}/diun/local.yml:/diun.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      LOG_JSON: false
+    env_file:
+      - .env
+    networks:
+      servers:
+    command: serve
+    restart: unless-stopped
+    hostname: "diun-raspberry"
+
+  diun-datengrab:
+    image: crazymax/diun:latest
+    container_name: "diun-datengrab"
+    volumes:
+      - ${DOCKER_DATA_DIR}/diun/datengrab:/data
+      - ${DOCKER_DATA_DIR}/diun/datengrab.yml:/diun.yml:ro
+    environment:
+      LOG_JSON: false
+    env_file:
+      - .env
+    networks:
+      servers:
+    command: serve
+    restart: unless-stopped
+    hostname: "diun-datengrab"
+
+  diun-framboesa:
+    image: crazymax/diun:latest
+    container_name: "diun-framboesa"
+    volumes:
+      - ${DOCKER_DATA_DIR}/diun/framboesa:/data
+      - ${DOCKER_DATA_DIR}/diun/framboesa.yml:/diun.yml:ro
+    environment:
+      LOG_JSON: false
+    env_file:
+      - .env
+    networks:
+      servers:
+    command: serve
+    restart: unless-stopped
+    hostname: "diun-framboesa"
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:2
+    container_name: uptime-kuma
+    volumes:
+      - ${DOCKER_DATA_DIR}/kuma:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    env_file:
+      - .env
+    networks:
+      servers:
+    labels:
+      - 'traefik.enable=true'
+      - "traefik.http.routers.uptime.rule=Host(`uptime.${DOMAIN}`)"
+      - "traefik.http.routers.uptime.entrypoints=https"
+      - "traefik.http.routers.uptime.middlewares=middlewares-authentik@file"
+      - "traefik.http.services.uptime.loadbalancer.server.port=3001"
+      - "traefik.http.routers.uptime-status.rule=Host(`uptime.${DOMAIN}`) && PathRegexp(`^/(status/.*|assets/.+|api/status-page/.+|icon.svg)`)"
+      - "traefik.http.routers.uptime-status.entrypoints=https"
+      - "traefik.http.routers.uptime-status.service=uptime@docker"
+
+networks:
+  servers:
+    name: servers
+    external: true

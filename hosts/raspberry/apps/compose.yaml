@@ -1,0 +1,215 @@
+name: raspberry
+
+services:
+  bambuddy:
+    image: ghcr.io/maziggy/bambuddy:daily
+    container_name: bambuddy
+    volumes:
+      - ${DOCKER_DATA_DIR}/bambuddy/data:/app/data
+      - ${DOCKER_DATA_DIR}/bambuddy/logs:/app/logs
+      - ${DOCKER_DATA_DIR}/bambuddy/backups:/app/backups
+    environment:
+      PUID: 1001
+      PGID: 1001
+      PORT: 8000
+    env_file:
+      - .env
+    networks:
+      servers:
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.bambuddy.rule=Host(`bambuddy.${DOMAIN}`)"
+      - "traefik.http.services.bambuddy.loadbalancer.server.port=8000"
+    stop_grace_period: 30s
+
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: hass
+    volumes:
+      - ${DOCKER_DATA_DIR}/hass/config:/config
+      - /run/dbus:/run/dbus:ro
+    env_file:
+      - .env
+    networks:
+      servers:
+      main_macvlan:
+        ipv4_address: 192.168.1.246
+        ipv6_address: '2a02:169:4bce:1:4e81:beff:fe81:babe'
+        mac_address: '4C:81:BE:81:BA:BE'
+      servers_macvlan:
+        ipv4_address: 192.168.5.200
+        ipv6_address: '2a02:169:4bce:2::50'
+        mac_address: '4C:81:BE:81:BA:BE'
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.hass.rule=Host(`hass.${DOMAIN}`)"
+      - "traefik.http.routers.hass.entrypoints=https"
+      - "traefik.http.services.hass.loadbalancer.server.port=8123"
+      - "traefik.docker.network=servers"
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+
+  homebox:
+    image: ghcr.io/sysadminsmedia/homebox:latest
+    container_name: homebox
+    volumes:
+      - ${DOCKER_DATA_DIR}/homebox:/data
+    environment:
+      HBOX_OPTIONS_ALLOW_ANALYTICS: false
+      HBOX_OIDC_ENABLED: true
+      HBOX_OPTIONS_TRUST_PROXY: true
+      HBOX_OIDC_ISSUER_URL: https://auth.${DOMAIN}/application/o/homebox/
+      HBOX_OPTIONS_ALLOW_LOCAL_LOGIN: false
+      HBOX_AUTH_API_KEY_PEPPER: ${HBOX_AUTH_API_KEY_PEPPER}
+      HBOX_OIDC_CLIENT_ID: ${HBOX_OIDC_CLIENT_ID}
+      HBOX_OIDC_CLIENT_SECRET: ${HBOX_OIDC_CLIENT_SECRET}
+    env_file:
+      - .env
+    networks:
+      servers:
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.homebox.rule=Host(`homebox.${DOMAIN}`)"
+      - "traefik.http.services.homebox.loadbalancer.server.port=7745"
+
+  linkding:
+    image: sissbruecker/linkding:latest
+    container_name: linkding
+    volumes:
+      - ${DOCKER_DATA_DIR}/linkding:/etc/linkding/data
+    environment:
+      LD_ENABLE_OIDC: 'True'
+      OIDC_OP_AUTHORIZATION_ENDPOINT: https://auth.${DOMAIN}/application/o/authorize/
+      OIDC_OP_TOKEN_ENDPOINT: https://auth.${DOMAIN}/application/o/token/
+      OIDC_OP_USER_ENDPOINT: https://auth.${DOMAIN}/application/o/userinfo/
+      OIDC_OP_JWKS_ENDPOINT: https://auth.${DOMAIN}/application/o/linkding/jwks/
+      OIDC_RP_CLIENT_ID: ${LD_OIDC_RP_CLIENT_ID}
+      OIDC_RP_CLIENT_SECRET: ${LD_OIDC_RP_CLIENT_SECRET}
+    env_file:
+      - .env
+    networks:
+      servers:
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.linkding.rule=Host(`linkding.${DOMAIN}`)"
+      - "traefik.http.services.linkding.loadbalancer.server.port=9090"
+
+  manyfold:
+    image: ghcr.io/manyfold3d/manyfold-solo:latest
+    container_name: manyfold
+    volumes:
+      - ${DOCKER_DATA_DIR}/manyfold:/config
+      - manyfold_nfs:/collection
+    environment:
+      SECRET_KEY_BASE: ${MANYFOLD_SECRET_KEY_BASE} 
+      PUID: 1001
+      PGID: 1001
+      MULTIUSER: enabled
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_SERVER: smtp.eu.mailgun.org
+      SMTP_PORT: 465
+      SMTP_USERNAME: noreply@coster.ch
+      SMTP_FROM_ADDRESS: 'noreply@coster.ch'
+      PUBLIC_HOSTNAME: manyfold.${DOMAIN}
+      OIDC_ISSUER: 'https://auth.${DOMAIN}/application/o/manyfold/'
+      OIDC_NAME: 'Authentik'
+      HTTPS_ONLY: 'enabled'
+    env_file:
+      - .env
+    networks:
+      servers:
+    restart: unless-stopped
+    labels:
+      - 'traefik.enable=true'
+      - "traefik.http.routers.manyfold.rule=Host(`manyfold.${DOMAIN}`)"
+      - "traefik.http.routers.manyfold.entrypoints=https"
+      - "traefik.http.services.manyfold.loadbalancer.server.port=3214"
+      - "traefik.http.middlewares.testheader.headers.customrequestheaders.X-Forwarded-Ssl=on"
+
+  matter-server:
+    image: ghcr.io/matter-js/matterjs-server:stable
+    container_name: matter-server
+    volumes:
+      - ${DOCKER_DATA_DIR}/matter-data:/data
+    env_file:
+      - .env
+    network_mode: host
+    restart: unless-stopped
+
+  miniflux:
+    image: miniflux/miniflux:latest
+    container_name: miniflux
+    depends_on:
+      miniflux-db:
+        condition: service_healthy
+    environment:
+      OAUTH2_PROVIDER: oidc
+      OAUTH2_REDIRECT_URL: 'https://miniflux.${DOMAIN}/oauth2/oidc/callback'
+      OAUTH2_OIDC_DISCOVERY_ENDPOINT: https://auth.${DOMAIN}/application/o/miniflux/
+      OAUTH2_USER_CREATION: 1
+      OAUTH2_CLIENT_ID: ${MINIFLUX_OAUTH2_CLIENT_ID}
+      OAUTH2_CLIENT_SECRET: ${MINIFLUX_OAUTH2_CLIENT_SECRET}
+      DATABASE_URL: postgres://miniflux:${MINIFLUX_DB_PASSWORD}@miniflux-db/miniflux?sslmode=disable
+      BASE_URL: https://miniflux.${DOMAIN}
+      RUN_MIGRATIONS: 1
+    env_file:
+      - .env
+    networks:
+      servers:
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.miniflux.rule=Host(`miniflux.${DOMAIN}`)"
+      - "traefik.http.services.miniflux.loadbalancer.server.port=8080"
+
+  miniflux-db:
+    image: "postgres:16"
+    container_name: "miniflux-db"
+    volumes:
+      - ${DOCKER_DATA_DIR}/miniflux-db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ${MINIFLUX_DB_PASSWORD}
+      POSTGRES_USER: "miniflux"
+      POSTGRES_DB: "miniflux"
+    env_file:
+      - .env
+    networks:
+      servers:
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "miniflux" ]
+      interval: 10s
+      start_period: 30s
+
+networks:
+  servers:
+    name: servers
+    external: true
+  main_macvlan:
+    name: main_macvlan
+    driver: macvlan
+    enable_ipv6: true
+    driver_opts:
+      parent: eth0
+    ipam:
+      config:
+        - subnet: 192.168.1.0/24
+          gateway: 192.168.1.1
+        - subnet: '2a02:169:4bce:1::/64'
+          gateway: '2a02:169:4bce:1::1'
+  servers_macvlan:
+    name: servers_macvlan 
+    external: true
+
+volumes:
+  manyfold_nfs:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=192.168.1.14,rw,vers=4.1
+      device: ':/volume1/3D Printing/'

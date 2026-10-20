@@ -199,19 +199,7 @@ networks:
         - subnet: 172.18.0.0/16
           ip_range: 172.18.1.0/24
           gateway: 172.18.0.1
-  main_macvlan:
-    name: main_macvlan
-    driver: macvlan
-    enable_ipv6: true
-    driver_opts:
-      parent: eth0
-    ipam:
-      config:
-        - subnet: 192.168.1.0/24
-          gateway: 192.168.1.1
-        - subnet: '2a02:169:4bce:1::/64'
-          gateway: '2a02:169:4bce:1::1'
-  servers_macvlan:
+ servers_macvlan:
     name: servers_macvlan 
     driver: macvlan
     enable_ipv6: true
