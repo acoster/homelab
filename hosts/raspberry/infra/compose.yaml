@@ -1,0 +1,225 @@
+name: infra
+
+services:
+  authentik_server:
+    image: ghcr.io/goauthentik/server:2026.8.4
+    container_name: "authentik_server"
+    depends_on:
+      authentik_db:
+        condition: service_healthy
+    volumes:
+      - ${DOCKER_DATA_DIR}/authentik-media:/data
+    env_file:
+      - ./.env
+      - ./authentik.env
+    environment:
+      AUTHENTIK_EMAIL__PASSWORD: ${SMTP_PASSWORD}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_DB_PASSWORD}
+      AUTHENTIK_REDIS__PASSWORD: ${REDIS_PASSWORD}
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
+    networks:
+      servers:
+    command: server
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.authh.rule=Host(`auth.${DOMAIN}`)"
+      - "traefik.http.services.authh.loadbalancer.server.port=9000"
+      - "traefik.http.routers.authentik-outpost.rule=HostRegexp(`{subdomain:[a-z0-9-]+}.${DOMAIN}`) && PathPrefix(`/outpost.goauthentik.io/`)"
+
+  authentik_worker:
+    image: ghcr.io/goauthentik/server:2026.8.4
+    container_name: "authentik_worker"
+    depends_on:
+      authentik_db:
+        condition: service_healthy
+    env_file:
+      - ./.env
+      - ./authentik.env
+    environment:
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
+      AUTHENTIK_REDIS__PASSWORD: ${REDIS_PASSWORD}
+      AUTHENTIK_EMAIL__PASSWORD: ${SMTP_PASSWORD}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_DB_PASSWORD}
+    networks:
+      servers:
+    command: worker
+    restart: unless-stopped
+
+  cloudflare-ddns:
+    image: favonia/cloudflare-ddns:latest
+    container_name: cloudflare-ddns
+    environment:
+      CLOUDFLARE_API_TOKEN: ${CF_API_TOKEN}
+      DOMAINS: ${DOMAIN}
+      IP6_PROVIDER: none
+    env_file:
+      - ./.env
+    networks:
+      servers:
+    restart: always
+
+  crowdsec:
+    image: crowdsecurity/crowdsec:latest-debian
+    container_name: crowdsec
+    volumes:
+      - /opt/crowdsec-db:/var/lib/crowdsec/data
+      - /opt/crowdsec:/etc/crowdsec
+      - /var/log:/run/log:ro
+      - ${DOCKER_DATA_DIR}/traefik-logs:/var/log/traefik
+    environment:
+      PGID: "1000"
+      COLLECTIONS: "crowdsecurity/traefik crowdsecurity/http-cve crowdsecurity/unifi crowdsecurity/sshd"
+    env_file:
+      - ./.env
+    ports:
+      - '6060:6060'
+      - '127.0.0.1:8989:8080'
+    networks:
+      servers:
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=false"
+
+  authentik_db:
+    image: "postgres:16"
+    container_name: "authentik_db"
+    volumes:
+      - ${DOCKER_DATA_DIR}/authentik-psql:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: "authentik"
+      POSTGRES_DB: "authentik"
+      POSTGRES_PASSWORD: ${AUTHENTIK_DB_PASSWORD}
+    env_file:
+      - ./.env
+    networks:
+      servers:
+    restart: unless-stopped
+    healthcheck:
+      interval: 30s
+      retries: 5
+      start_period: 20s
+      test:
+        - CMD-SHELL
+        - pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}
+      timeout: 5s
+
+  redis:
+    image: "redis:latest"
+    container_name: "redis"
+    volumes:
+      - ${DOCKER_DATA_DIR}/redis_cache:/data
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    env_file:
+      - ./.env
+    ports:
+      - '6379:6379'
+    networks:
+      servers:
+    command: >
+      sh -cx "
+        redis-server
+        --save 60 1
+        --loglevel warning
+        --requirepass \"$$REDIS_PASSWORD\"
+        --notify-keyspace-events KEA
+      "
+    restart: unless-stopped
+
+  technitium:
+    image: technitium/dns-server:latest
+    container_name: technitium
+    volumes:
+      - ${DOCKER_DATA_DIR}/technitium:/etc/dns
+    environment:
+      DNS_SERVER_DOMAIN: ns0
+    env_file:
+      - ./.env
+    networks:
+      servers:
+        gw_priority: 1
+      servers_macvlan:
+        ipv4_address: 192.168.5.201
+        ipv6_address: '2a02:169:4bce:2::201'
+        mac_address: '8A:87:A6:C5:DA:6C'
+    extra_hosts:
+      - "auth.${DOMAIN}=172.18.0.254"
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ns0.rule=Host(`technitium.${DOMAIN}`)"
+      - "traefik.http.services.ns0.loadbalancer.server.port=5380"
+      - "traefik.docker.network=servers"
+    hostname: ns0
+
+  traefik:
+    image: traefik:latest
+    container_name: "traefik"
+    depends_on:
+      - redis
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik-rules:/rules
+      - ./traefik:/etc/traefik
+      - ${DOCKER_DATA_DIR}/traefik-logs:/logs
+      - ${DOCKER_DATA_DIR}/traefik:/var/run/acme
+    environment:
+      CF_API_EMAIL: ${CF_API_EMAIL}
+      CF_DNS_API_TOKEN: ${CF_API_TOKEN}
+    env_file:
+      - ./.env
+    ports:
+      - "80:80/tcp"
+      - "80:80/udp"
+      - "443:443/tcp"
+      - "443:443/udp"
+    networks:
+      servers:
+        ipv4_address: 172.18.0.254 # Safe from sequential DHCP
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tls.stores.default.defaultgeneratedcert.resolver=gcl"
+      - "traefik.tls.stores.default.defaultgeneratedcert.domain.main=${DOMAIN}"
+      - "traefik.tls.stores.default.defaultgeneratedcert.domain.sans=*.${DOMAIN}"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.${DOMAIN}`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.middlewares=middlewares-authentik@file"
+      - "traefik.http.middlewares.crowdsec.plugin.crowdsec-bouncer.enabled=true"
+      - "traefik.http.middlewares.crowdsec.plugin.crowdsec-bouncer.crowdsecLapiKey=${CROWDSEC_LAPI_KEY}"
+      - "traefik.http.middlewares.crowdsec.plugin.crowdsec-bouncer.crowdsecMode=stream"
+
+networks:
+  servers:
+    name: servers
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+          ip_range: 172.18.1.0/24
+          gateway: 172.18.0.1
+  main_macvlan:
+    name: main_macvlan
+    driver: macvlan
+    enable_ipv6: true
+    driver_opts:
+      parent: eth0
+    ipam:
+      config:
+        - subnet: 192.168.1.0/24
+          gateway: 192.168.1.1
+        - subnet: '2a02:169:4bce:1::/64'
+          gateway: '2a02:169:4bce:1::1'
+  servers_macvlan:
+    name: servers_macvlan 
+    driver: macvlan
+    enable_ipv6: true
+    driver_opts:
+      parent: eth0.5
+    ipam:
+      config:
+        - subnet: 192.168.5.0/24
+          gateway: 192.168.5.1
+        - subnet: '2a02:169:4bce:2::/64'
+          gateway: '2a02:169:4bce:2::1'

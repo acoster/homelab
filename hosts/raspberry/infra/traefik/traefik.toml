@@ -1,0 +1,63 @@
+[global]
+  checkNewVersion = true
+
+[api]
+  dashboard = true
+  insecure = true
+
+[log]
+  level = "INFO"
+  filePath = "/logs/traefik.log"
+
+[accessLog]
+  filePath = "/logs/access.log"
+
+[entryPoints.http]
+  address = ":80"
+  [entryPoints.http.http]
+    middlewares = ["crowdsec@docker"]
+  [entryPoints.http.http.redirections.entryPoint]
+    to = "https"
+    scheme = "https"
+
+[entryPoints.https]
+  address = ":443"
+  asDefault = true
+  [entryPoints.https.http3]
+  [entryPoints.https.http]
+    middlewares = ["crowdsec@docker"]
+
+  [entryPoints.https.http.tls]
+  certResolver = "gcl"
+  [[entryPoints.https.http.tls.domains]]
+    main = "h.coster.ch"
+    sans = "*.h.coster.ch"
+
+
+[providers.docker]
+  endpoint = "unix:///var/run/docker.sock"
+  watch = true
+  exposedByDefault = false
+
+[providers.redis]
+  endpoints = "redis:6379"
+
+[providers.file]
+  directory = "/rules"
+  watch = true
+
+[certificatesResolvers.gcl.acme]
+  email = "alex@coster.ch"
+  storage = "/var/run/acme/acme.json"
+  [certificatesResolvers.gcl.acme.dnsChallenge]
+    provider = "cloudflare"
+    resolvers = ["1.1.1.1:53", "1.0.0.1:53"]
+
+[serversTransport]
+  insecureSkipVerify = true
+
+[experimental.plugins.crowdsec-bouncer]
+  moduleName = "github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin"
+  version = "v1.8.1"
+
+[ping]

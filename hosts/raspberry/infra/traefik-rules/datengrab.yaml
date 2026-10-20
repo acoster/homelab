@@ -1,0 +1,13 @@
+http:
+  routers:
+    router-dsm:
+      entryPoints:
+        - https
+      rule: "Host(`datengrab.h.coster.ch`)" 
+      service: service-dsm
+  services:
+    service-dsm:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: "https://192.168.1.14:5001"
