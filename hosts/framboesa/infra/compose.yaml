@@ -1,0 +1,76 @@
+name: infra
+
+services:
+  traefik-kop:
+    container_name: "traefik-kop"
+    image: "ghcr.io/jittering/traefik-kop:latest"
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      REDIS_TTL: 1800
+      KOP_HOSTNAME: framboesa
+      REDIS_ADDR: 192.168.1.212:6379
+      BIND_IP: 192.168.1.39
+      REDIS_PASS: ${REDIS_PASSWORD}
+    env_file:
+      - .env
+    networks:
+      public:
+
+  technitium:
+    container_name: technitium
+    image: technitium/dns-server:latest
+    restart: unless-stopped
+    volumes:
+      - ${DOCKER_DATA_DIR}/technitium:/etc/dns
+    environment:
+      DNS_SERVER_DOMAIN: ns1
+    env_file:
+      - .env
+    networks:
+      macvlan_5:
+        ipv4_address: 192.168.5.202
+        ipv6_address: '2a02:169:4bce:2::202'
+        mac_address: '46:d0:e8:df:59:1d'
+      public:
+    hostname: ns1
+
+  docker-socket-proxy:
+    container_name: docker-socket-proxy
+    image: tecnativa/docker-socket-proxy
+    restart: unless-stopped
+    ports:
+      - 3375:2375
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - CONTAINERS=1
+      - IMAGES=1
+      - NETWORKS=1
+      - EVENTS=1
+      - PING=1
+      - VERSION=1
+      - INFO=1
+    env_file:
+      - .env
+    networks:
+      public:
+
+networks:
+  macvlan_5:
+    name: macvlan_5
+    driver: macvlan
+    enable_ipv6: true
+    driver_opts:
+      parent: eth0.5
+    ipam:
+      config:
+        - subnet: 192.168.5.0/24
+          gateway: 192.168.5.1
+        - subnet: '2a02:169:4bce:2::/64'
+          gateway: '2a02:169:4bce:2::1'
+
+  public:
+    name: public
+    driver: bridge
