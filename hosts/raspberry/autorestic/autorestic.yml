@@ -49,3 +49,6 @@ locations:
           - '**/authentik-psql/**'
           - '**/miniflux-db/**'
           - '**/redis_cache/**'
+
+          # Ignore technitium stats
+          - '**//technitium//stats/**'
