@@ -41,6 +41,7 @@ locations:
           - '/backup_source/bind_mounts/hass/config/.cache/**'
           - '/**/__pycache__/**'
           - '*.pyc'
+          - '.git'
 
           - '**/@eaDir'
           - '**/#recycle'

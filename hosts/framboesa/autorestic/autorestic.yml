@@ -43,3 +43,4 @@ locations:
           # Ignore caches
           - '/**/__pycache/**'
           - '*.pyc'
+          - '.git'
