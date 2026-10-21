@@ -17,9 +17,9 @@ for i in sonarr radarr prowlarr lidarr; do
 done
 
 echo "Exporting paperless DB"
-cd /volume1/homes/coster/docker/paperless
-docker compose exec db mariadb-dump -u paperless -ppaperless  paperless > ${OUTPUT_ROOT}/paperless.sql
+cd /opt/homelab/hosts/datengrab/paperless
+sops exec-env secrets.enc.env 'docker compose exec db mariadb-dump -u paperless -ppaperless  paperless' > ${OUTPUT_ROOT}/paperless.sql
 
 echo "Running autorestic"
-cd /volume1/homes/coster/homelab/hosts/datengrab/autorestic
+cd /opt/homelab/hosts/datengrab/autorestic
 sops exec-env secrets.enc.env 'docker compose run --rm autorestic autorestic  --ci cron'
