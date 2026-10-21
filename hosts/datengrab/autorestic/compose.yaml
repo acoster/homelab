@@ -1,0 +1,32 @@
+services:
+  autorestic:
+    container_name: autorestic
+    image: cupcakearmy/autorestic:latest
+    volumes:
+      - ./autorestic.yml:/root/.config/autorestic/.autorestic.yml
+      - ./autorestic.lock.yml:/root/.config/autorestic/.autorestic.lock.yml
+
+      - ${DOCKER_DATA_ROOT}/restic-ssh:/root/.ssh
+
+      # Map the actual data you want to back up.
+      - /volume1/Alex:/backup_source/Alex:ro
+      - /volume1/Isabelle:/backup_source/Isabelle:ro
+      - /volume1/Photography:/backup_source/Photography:ro
+      - /volume1/paperless:/backup_source/paperless:ro
+      - '/volume1/3D Printing:/backup_source/3d_printing:ro'
+
+      # Docker binds
+      - ${DOCKER_DATA_ROOT}/backups:/backup_source/backups:ro
+      - ${DOCKER_DATA_ROOT}/bricktracker:/backup_source/bricktracker:ro
+      - ${DOCKER_DATA_ROOT}/lidarr:/backup_source/lidarr:ro
+      - ${DOCKER_DATA_ROOT}/paperless-gpt:/backup_source/paperless-gpt:ro
+      - ${DOCKER_DATA_ROOT}/prowlarr:/backup_source/prowlarr:ro
+      - ${DOCKER_DATA_ROOT}/radarr:/backup_source/radarr:ro
+      - ${DOCKER_DATA_ROOT}/sabnzbd:/backup_source/sabnzbd:ro
+      - ${DOCKER_DATA_ROOT}/sonarr:/backup_source/sonarr:ro
+      - ${DOCKER_DATA_ROOT}/transmission:/backup_source/transmission:ro
+    environment:
+      AUTORESTIC_RSYNCNET_RESTIC_PASSWORD:
+    env_file:
+      -  ./.env
+    hostname: autorestic-agent-datengrab

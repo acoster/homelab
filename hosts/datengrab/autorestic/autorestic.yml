@@ -1,0 +1,70 @@
+version: 2
+
+backends:
+  rsyncnet:
+    type: sftp
+    path: 'rsyncnet:datengrab-backup'
+
+locations:
+  datengrab-backup:
+    from:
+      - /backup_source
+    to:
+      - rsyncnet
+    cron: '0 5 * * *'
+    options:
+      forget:
+        keep-daily: 7
+        keep-weekly: 4
+        keep-monthly: 6
+      backup:
+        tag:
+          - datengrab
+        exclude:
+          # Standard SQLite extensions
+          - '*.db'
+          - '*.db-wal'
+          - '*.db-shm'
+
+          # Django/Python specific SQLite names
+          - 'db.sqlite3'
+          - 'db.sqlite3-wal'
+          - 'db.sqlite3-shm'
+
+          # Ignore logs
+          - '/backup_source/traefik-logs/**'
+          - '*.log'
+          - '**/logs'
+          - '**/Logs'
+
+          # Ignore caches
+          - '/backup_source/bind_mounts/hass/config/.cache/**'
+          - '/**/__pycache__/**'
+          - '*.pyc'
+
+          - '**/@eaDir'
+          - '**/#recycle'
+          - '**/#snapshot'
+          - '**/.SynologyWorkingDirectory'
+          - '**/Thumbs.db'
+          - '**/.DS_Store'
+
+          # SABnzbd Exclusions
+          - '**/sabnzbd/logs'
+          - '**/sabnzbd/admin'
+
+          # *aars
+          - '*.pid'
+          - '**/radarr/MediaCover'
+          - '**/sonarr/MediaCover'
+          - '**/lidarr/MediaCover'
+
+          # Plex Exclusions (Massive file counts)
+          - '**/Plex Media Server/Metadata'
+          - '**/Plex Media Server/Media'
+          - '**/Plex Media Server/Cache'
+          - '**/Plex Media Server/Crash Reports'
+          - '**/Plex Media Server/Updates'
+
+          # Databases
+          - '**/paperless-db/**'
