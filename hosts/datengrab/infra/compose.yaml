@@ -27,7 +27,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
-      REDIS_ADDR: "raspberry:6379"
+      REDIS_ADDR: "192.168.1.212:6379"
       BIND_IP: "192.168.1.14"
       REDIS_PASS: ${REDIS_PASS}
       REDIS_TTL: 1800
