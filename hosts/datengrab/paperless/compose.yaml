@@ -29,7 +29,7 @@ services:
     networks:
       internal:
     healthcheck:
-      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       start_period: 10s
       interval: 10s
       timeout: 5s
@@ -87,7 +87,7 @@ services:
       - /volume1/docker/paperless-gpt/config:/app/config
       - /volume1/docker/paperless-gpt/db:/app/db
     environment:
-      PAPERLESS_BASE_URL: 'https://paperless.${DOMAIN}'
+      PAPERLESS_BASE_URL: "https://paperless.${DOMAIN}"
       PAPERLESS_API_TOKEN: ${PAPERLESS_API_TOKEN}
 
       LLM_PROVIDER: googleai
@@ -131,4 +131,3 @@ networks:
   public:
     name: public
     external: true
-

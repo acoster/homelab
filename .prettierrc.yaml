@@ -1,0 +1,9 @@
+tabWidth: 2
+singleQuote: false
+trailingComma: "none"
+overrides:
+  - files:
+      - "**/compose.yaml"
+      - "**/docker-compose.yaml"
+    options:
+      singleQuote: false

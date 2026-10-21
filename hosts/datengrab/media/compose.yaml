@@ -139,7 +139,7 @@ services:
       - "traefik.http.routers.sonarrApi.rule=Host(`sonarr.${DOMAIN}`) && (PathPrefix(`/api/`) || PathPrefix(`/ping`))"
       - "traefik.http.routers.sonarrApi.entrypoints=https"
     devices:
-      - '/dev/dri:/dev/dri'
+      - "/dev/dri:/dev/dri"
 
   radarr:
     container_name: radarr
@@ -169,15 +169,15 @@ services:
       - "traefik.http.routers.radarrApi.rule=Host(`radarr.${DOMAIN}`) && (PathPrefix(`/api/`) || PathPrefix(`/ping`))"
       - "traefik.http.routers.radarrApi.entrypoints=https"
     devices:
-      - '/dev/dri:/dev/dri'
+      - "/dev/dri:/dev/dri"
 
   plex:
     container_name: plex
-    image: 'lscr.io/linuxserver/plex:latest'
+    image: "lscr.io/linuxserver/plex:latest"
     restart: unless-stopped
     volumes:
-      - '${DOCKER_DATA_ROOT}/plex:/config'
-      - '${MEDIA_ROOT}:/Media'
+      - "${DOCKER_DATA_ROOT}/plex:/config"
+      - "${MEDIA_ROOT}:/Media"
     environment:
       - PUID=297536
       - PGID=297536
@@ -189,7 +189,7 @@ services:
       media-macvlan:
         ipv4_address: "192.168.1.245"
     devices:
-      - '/dev/dri:/dev/dri'
+      - "/dev/dri:/dev/dri"
 
 networks:
   public:
