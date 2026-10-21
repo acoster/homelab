@@ -1,0 +1,27 @@
+services:
+  autorestic:
+    container_name: autorestic
+    image: cupcakearmy/autorestic:latest
+    restart: unless-stopped
+    volumes:
+      - ./autorestic.yml:/root/.config/autorestic/.autorestic.yml
+      - ./autorestic.lock.yml:/root/.config/autorestic/.autorestic.lock.yml
+
+      - ${DOCKER_DATA_DIR}/restic-ssh:/root/.ssh
+      - ${DOCKER_DATA_DIR}:/backup_source/bind_mounts:ro
+
+      - /home/coster/docker:/backup_source/docker:ro
+      - /home/coster/autorestic:/backup_source/autorestic:ro
+      - /etc/apt:/backup_source/host/etc/apt:ro
+      - /etc/exim4:/backup_source/host/etc/exim4:ro
+      - /etc/group:/backup_source/host/etc/group:ro
+      - /etc/NetworkManager:/backup_source/host/etc/NetworkManager:ro
+      - /etc/passwd:/backup_source/host/etc/passwd:ro
+      - /etc/shadow:/backup_source/host/etc/shadow:ro
+      - /etc/systemd/system/:/backup_source/host/etc/systemd/system/:ro
+      - /var/spool/cron/crontabs/:/backup_source/host/var/spool/cron/crontabs/:ro
+    environment:
+      AUTORESTIC_RSYNCNET_RESTIC_PASSWORD:
+      AUTORESTIC_DATENGRAB_RESTIC_PASSWORD:
+    env_file: ./.env
+    hostname: autorestic-agent-framboesa
