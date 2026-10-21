@@ -84,13 +84,13 @@ services:
       - ${DOCKER_DATA_DIR}/bytestash:/data/snippets
     environment:
       ADMIN_USERNAMES: alex
-      BASE_PATH: ''
+      BASE_PATH: ""
       TOKEN_EXPIRY: 24h
-      ALLOW_NEW_ACCOUNTS: 'true'
-      DISABLE_ACCOUNTS: 'false'
-      DISABLE_INTERNAL_ACCOUNTS: 'true'
-      OIDC_ENABLED: 'true'
-      OIDC_DISPLAY_NAME: 'Corp SSO'
+      ALLOW_NEW_ACCOUNTS: "true"
+      DISABLE_ACCOUNTS: "false"
+      DISABLE_INTERNAL_ACCOUNTS: "true"
+      OIDC_ENABLED: "true"
+      OIDC_DISPLAY_NAME: "Corp SSO"
       OIDC_ISSUER_URL: https://auth.${DOMAIN}/application/o/byte-stash/
       OIDC_CLIENT_ID: ${BYTESTASH_OIDC_CLIENT_ID}
       OIDC_CLIENT_SECRET: ${BYTESTASH_OIDC_CLIENT_SECRET}

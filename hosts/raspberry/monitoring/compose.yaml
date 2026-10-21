@@ -61,7 +61,7 @@ services:
     networks:
       servers:
     labels:
-      - 'traefik.enable=true'
+      - "traefik.enable=true"
       - "traefik.http.routers.uptime.rule=Host(`uptime.${DOMAIN}`)"
       - "traefik.http.routers.uptime.entrypoints=https"
       - "traefik.http.routers.uptime.middlewares=middlewares-authentik@file"

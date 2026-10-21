@@ -64,8 +64,8 @@ services:
     image: crowdsecurity/crowdsec:latest-debian
     restart: unless-stopped
     ports:
-      - '6060:6060'
-      - '127.0.0.1:8989:8080'
+      - "6060:6060"
+      - "127.0.0.1:8989:8080"
     volumes:
       - /opt/crowdsec-db:/var/lib/crowdsec/data
       - /opt/crowdsec:/etc/crowdsec
@@ -109,7 +109,7 @@ services:
     image: "redis:latest"
     restart: unless-stopped
     ports:
-      - '6379:6379'
+      - "6379:6379"
     volumes:
       - ${DOCKER_DATA_DIR}/redis_cache:/data
     environment:
@@ -142,8 +142,8 @@ services:
         gw_priority: 1
       servers_macvlan:
         ipv4_address: 192.168.5.201
-        ipv6_address: '2a02:169:4bce:2::201'
-        mac_address: '8A:87:A6:C5:DA:6C'
+        ipv6_address: "2a02:169:4bce:2::201"
+        mac_address: "8A:87:A6:C5:DA:6C"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.ns0.rule=Host(`technitium.${DOMAIN}`)"
@@ -209,5 +209,5 @@ networks:
       config:
         - subnet: 192.168.5.0/24
           gateway: 192.168.5.1
-        - subnet: '2a02:169:4bce:2::/64'
-          gateway: '2a02:169:4bce:2::1'
+        - subnet: "2a02:169:4bce:2::/64"
+          gateway: "2a02:169:4bce:2::1"

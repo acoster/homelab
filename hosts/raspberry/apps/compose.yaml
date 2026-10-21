@@ -36,12 +36,12 @@ services:
       servers:
       main_macvlan:
         ipv4_address: 192.168.1.246
-        ipv6_address: '2a02:169:4bce:1:4e81:beff:fe81:babe'
-        mac_address: '4C:81:BE:81:BA:BE'
+        ipv6_address: "2a02:169:4bce:1:4e81:beff:fe81:babe"
+        mac_address: "4C:81:BE:81:BA:BE"
       servers_macvlan:
         ipv4_address: 192.168.5.200
-        ipv6_address: '2a02:169:4bce:2::50'
-        mac_address: '4C:81:BE:81:BA:BE'
+        ipv6_address: "2a02:169:4bce:2::50"
+        mac_address: "4C:81:BE:81:BA:BE"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.hass.rule=Host(`hass.${DOMAIN}`)"
@@ -83,7 +83,7 @@ services:
     volumes:
       - ${DOCKER_DATA_DIR}/linkding:/etc/linkding/data
     environment:
-      LD_ENABLE_OIDC: 'True'
+      LD_ENABLE_OIDC: "True"
       OIDC_OP_AUTHORIZATION_ENDPOINT: https://auth.${DOMAIN}/application/o/authorize/
       OIDC_OP_TOKEN_ENDPOINT: https://auth.${DOMAIN}/application/o/token/
       OIDC_OP_USER_ENDPOINT: https://auth.${DOMAIN}/application/o/userinfo/
@@ -115,17 +115,17 @@ services:
       SMTP_SERVER: smtp.eu.mailgun.org
       SMTP_PORT: 465
       SMTP_USERNAME: noreply@coster.ch
-      SMTP_FROM_ADDRESS: 'noreply@coster.ch'
+      SMTP_FROM_ADDRESS: "noreply@coster.ch"
       PUBLIC_HOSTNAME: manyfold.${DOMAIN}
-      OIDC_ISSUER: 'https://auth.${DOMAIN}/application/o/manyfold/'
-      OIDC_NAME: 'Authentik'
-      HTTPS_ONLY: 'enabled'
+      OIDC_ISSUER: "https://auth.${DOMAIN}/application/o/manyfold/"
+      OIDC_NAME: "Authentik"
+      HTTPS_ONLY: "enabled"
     env_file:
       - .env
     networks:
       servers:
     labels:
-      - 'traefik.enable=true'
+      - "traefik.enable=true"
       - "traefik.http.routers.manyfold.rule=Host(`manyfold.${DOMAIN}`)"
       - "traefik.http.routers.manyfold.entrypoints=https"
       - "traefik.http.services.manyfold.loadbalancer.server.port=3214"
@@ -150,7 +150,7 @@ services:
         condition: service_healthy
     environment:
       OAUTH2_PROVIDER: oidc
-      OAUTH2_REDIRECT_URL: 'https://miniflux.${DOMAIN}/oauth2/oidc/callback'
+      OAUTH2_REDIRECT_URL: "https://miniflux.${DOMAIN}/oauth2/oidc/callback"
       OAUTH2_OIDC_DISCOVERY_ENDPOINT: https://auth.${DOMAIN}/application/o/miniflux/
       OAUTH2_USER_CREATION: 1
       OAUTH2_CLIENT_ID: ${MINIFLUX_OAUTH2_CLIENT_ID}
@@ -182,7 +182,7 @@ services:
     networks:
       servers:
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "miniflux" ]
+      test: ["CMD", "pg_isready", "-U", "miniflux"]
       interval: 10s
       start_period: 30s
 
@@ -192,7 +192,7 @@ volumes:
     driver_opts:
       type: nfs
       o: addr=192.168.1.14,rw,vers=4.1
-      device: ':/volume1/3D Printing/'
+      device: ":/volume1/3D Printing/"
 
 networks:
   servers:
@@ -208,8 +208,8 @@ networks:
       config:
         - subnet: 192.168.1.0/24
           gateway: 192.168.1.1
-        - subnet: '2a02:169:4bce:1::/64'
-          gateway: '2a02:169:4bce:1::1'
+        - subnet: "2a02:169:4bce:1::/64"
+          gateway: "2a02:169:4bce:1::1"
   servers_macvlan:
     name: servers_macvlan
     external: true

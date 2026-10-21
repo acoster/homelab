@@ -13,7 +13,7 @@ services:
       - /volume1/Isabelle:/backup_source/Isabelle:ro
       - /volume1/Photography:/backup_source/Photography:ro
       - /volume1/paperless:/backup_source/paperless:ro
-      - '/volume1/3D Printing:/backup_source/3d_printing:ro'
+      - "/volume1/3D Printing:/backup_source/3d_printing:ro"
 
       # Docker binds
       - ${DOCKER_DATA_ROOT}/backups:/backup_source/backups:ro
@@ -28,5 +28,5 @@ services:
     environment:
       AUTORESTIC_RSYNCNET_RESTIC_PASSWORD:
     env_file:
-      -  ./.env
+      - ./.env
     hostname: autorestic-agent-datengrab
