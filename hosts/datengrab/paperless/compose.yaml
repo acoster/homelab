@@ -19,7 +19,6 @@ services:
     volumes:
       - /volume1/docker/paperless-db:/var/lib/mysql
     environment:
-      MARIADB_HOST: paperless
       MARIADB_DATABASE: paperless
       MARIADB_USER: paperless
       MARIADB_PASSWORD: ${MARIADB_PASSWORD}
