@@ -9,7 +9,7 @@ services:
       - 3128:8080
     volumes:
       - ${DOCKER_DATA_DIR}/sabnzbd:/config
-      - ${MEDIA_ROOT}:/Media
+      - ${MEDIA_DIR}:/Media
     environment:
       PGID: ${MEDIA_PGID}
       PUID: ${MEDIA_PUID}
