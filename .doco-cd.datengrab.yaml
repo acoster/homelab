@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://doco.cd/latest/schemas/deploy.schema.json
+name: infra
+working_dir: hosts/datengrab/infra
+compose_files:
+  - compose.yaml
+env_files:
+  - .env
+  - secrets.enc.env
+---
+name: apps
+working_dir: hosts/datengrab/apps
+compose_files:
+  - compose.yaml
+env_files:
+  - .env
+  - secrets.enc.env
+---
+name: media
+working_dir: hosts/datengrab/media
+compose_files:
+  - compose.yaml
+env_files:
+  - .env
+  - secrets.enc.env
+---
+name: paperless
+working_dir: hosts/datengrab/paperless
+compose_files:
+  - compose.yaml
+env_files:
+  - .env
+  - secrets.enc.env
