@@ -1,85 +1,9 @@
 name: framboesa
 
 services:
-  spoolman:
-    container_name: spoolman
-    image: ghcr.io/donkie/spoolman:latest
-    restart: unless-stopped
-    ports:
-      - "8000:8000/tcp"
-    volumes:
-      - ${DOCKER_DATA_DIR}/spoolman:/home/app/.local/share/spoolman:rw
-    env_file:
-      - .env
-    networks:
-      public:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.spoolman.rule=Host(`spoolman.${DOMAIN}`)"
-      - "traefik.http.routers.spoolman.entrypoints=https"
-      - "traefik.http.routers.spoolman.middlewares=middlewares-authentik@file"
-      - "traefik.http.services.spoolman.loadbalancer.server.port=8000"
-      - "traefik.http.routers.spoolman-api.rule=Host(`spoolman.${DOMAIN}`) && PathPrefix(`/api/`) && ClientIP(`192.168.0.0/16`)"
-      - "traefik.http.routers.spoolman-api.entrypoints=https"
-      - "traefik.http.routers.spoolman-api.middlewares=lan-only@file"
-
-  homebridge:
-    container_name: homebridge
-    image: homebridge/homebridge:latest
-    restart: unless-stopped
-    volumes:
-      - ${DOCKER_DATA_DIR}/homebridge/:/homebridge/
-    env_file:
-      - .env
-    networks:
-      public:
-      macvlan_1:
-        ipv4_address: "192.168.1.241"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.homebridge.rule=Host(`homebridge.${DOMAIN}`)"
-      - "traefik.http.routers.homebridge.entrypoints=https"
-      - "traefik.http.routers.homebridge.middlewares=middlewares-authentik@file"
-      - "traefik.http.services.homebridge.loadbalancer.server.port=8581"
-      - "kop.homebridge.bind.ip=192.168.1.241"
-
-  retroassembly:
-    container_name: retroassembly
-    image: arianrhodsandlot/retroassembly
-    restart: unless-stopped
-    ports:
-      - 3128:8000
-    volumes:
-      - ${DOCKER_DATA_DIR}/retroassembly:/app/data
-    env_file:
-      - .env
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.retroassembly.rule=Host(`retroassembly.${DOMAIN}`)"
-      - "traefik.http.routers.retroassembly.entrypoints=https"
-      - "traefik.http.services.retroassembly.loadbalancer.server.port=3128"
-
-  octoeverywhere-bambu-connect:
-    container_name: octoeverywhere
-    image: octoeverywhere/octoeverywhere:latest
-    restart: unless-stopped
-    volumes:
-      - ${DOCKER_DATA_DIR}/bambu-connect:/data
-    environment:
-      - ACCESS_CODE=${WONDERTAINMENT_ACCESS_CODE}
-      - SERIAL_NUMBER=${WONDERTAINMENT_SERIAL_NUMBER}
-      - PRINTER_IP=192.168.6.52
-    env_file:
-      - .env
-    networks:
-      public:
-
   bytestash:
-    container_name: bytestash
     image: ghcr.io/jordan-dalby/bytestash:latest
-    restart: unless-stopped
-    ports:
-      - 5000:5000
+    container_name: bytestash
     volumes:
       - ${DOCKER_DATA_DIR}/bytestash:/data/snippets
     environment:
@@ -96,13 +20,89 @@ services:
       OIDC_CLIENT_SECRET: ${BYTESTASH_OIDC_CLIENT_SECRET}
     env_file:
       - .env
+    ports:
+      - '5000:5000'
     networks:
       public:
+    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.bytestash.rule=Host(`bytestash.${DOMAIN}`)"
       - "traefik.http.routers.bytestash.entrypoints=https"
       - "traefik.http.services.bytestash.loadbalancer.server.port=5000"
+
+  homebridge:
+    image: homebridge/homebridge:latest
+    container_name: homebridge
+    volumes:
+      - ${DOCKER_DATA_DIR}/homebridge/:/homebridge/
+    env_file:
+      - .env
+    networks:
+      public:
+      macvlan_1:
+        ipv4_address: "192.168.1.241"
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.homebridge.rule=Host(`homebridge.${DOMAIN}`)"
+      - "traefik.http.routers.homebridge.entrypoints=https"
+      - "traefik.http.routers.homebridge.middlewares=middlewares-authentik@file"
+      - "traefik.http.services.homebridge.loadbalancer.server.port=8581"
+      - "kop.homebridge.bind.ip=192.168.1.241"
+
+  octoeverywhere-bambu-connect:
+    image: octoeverywhere/octoeverywhere:latest
+    container_name: octoeverywhere
+    volumes:
+      - ${DOCKER_DATA_DIR}/bambu-connect:/data
+    environment:
+      - ACCESS_CODE=${WONDERTAINMENT_ACCESS_CODE}
+      - SERIAL_NUMBER=${WONDERTAINMENT_SERIAL_NUMBER}
+      - PRINTER_IP=192.168.6.52
+    env_file:
+      - .env
+    networks:
+      public:
+
+    restart: unless-stopped
+
+  retroassembly:
+    image: arianrhodsandlot/retroassembly
+    container_name: retroassembly
+    volumes:
+      - ${DOCKER_DATA_DIR}/retroassembly:/app/data
+    env_file:
+      - .env
+    ports:
+      - '3128:8000'
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.retroassembly.rule=Host(`retroassembly.${DOMAIN}`)"
+      - "traefik.http.routers.retroassembly.entrypoints=https"
+      - "traefik.http.services.retroassembly.loadbalancer.server.port=3128"
+  spoolman:
+    image: ghcr.io/donkie/spoolman:latest
+    container_name: spoolman
+    volumes:
+      - ${DOCKER_DATA_DIR}/spoolman:/home/app/.local/share/spoolman:rw
+    env_file:
+      - .env
+    ports:
+      - '8000:8000/tcp'
+    networks:
+      public:
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.spoolman.rule=Host(`spoolman.${DOMAIN}`)"
+      - "traefik.http.routers.spoolman.entrypoints=https"
+      - "traefik.http.routers.spoolman.middlewares=middlewares-authentik@file"
+      - "traefik.http.services.spoolman.loadbalancer.server.port=8000"
+      - "traefik.http.routers.spoolman-api.rule=Host(`spoolman.${DOMAIN}`) && PathPrefix(`/api/`) && ClientIP(`192.168.0.0/16`)"
+      - "traefik.http.routers.spoolman-api.entrypoints=https"
+      - "traefik.http.routers.spoolman-api.middlewares=lan-only@file"
 
 networks:
   macvlan_1:
