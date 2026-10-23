@@ -133,7 +133,7 @@ services:
 
   matter-server:
     container_name: matter-server
-    image: ghcr.io/matter-js/matterjs-server:stable
+    image: ghcr.io/matter-js/matterjs-server:1.5.4
     restart: unless-stopped
     volumes:
       - ${DOCKER_DATA_DIR}/matter-data:/data
@@ -143,7 +143,7 @@ services:
 
   miniflux:
     container_name: miniflux
-    image: miniflux/miniflux:latest
+    image: miniflux/miniflux:2.3.4
     restart: unless-stopped
     depends_on:
       miniflux-db:
