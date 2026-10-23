@@ -8,9 +8,11 @@ services:
     environment:
       TZ: ${TZ}
       LOG_LEVEL: info
-      SOPS_AGE_KEY_FILE: /run/secrets/age_key
+      SOPS_AGE_KEY: ${SOPS_AGE_KEY}
       SELF_UPDATE_ENABLED: 'true'
-      GIT_AUTH_TOKEN_FILE: /run/secrets/git_token
+      MAX_CONCURRENT_DEPLOYMENTS: 1
+      GIT_AUTH_TOKEN: ${GIT_AUTH_TOKEN}
+      WEBHOOK_SECRET: ${WEBHOOK_TOKEN}
       POLL_CONFIG: |
           - url: https://github.com/acoster/homelab.git
             reference: main
@@ -19,12 +21,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${DOCKER_DATA_DIR}/doco-cd:/data
-    secrets:
-      - age_key
-      - git_token
-
-secrets:
-  age_key:
-    file: ${DOCKER_DATA_DIR}/age_key
-  git_token:
-    file: ${DOCKER_DATA_DIR}/git_token 
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wh-framboesa.rule=Host(`${WEBHOOK_HOST}.${DOMAIN}`)"
+      - "traefik.http.routers.wh-framboesa.entrypoints=https"
+      - "traefik.http.services.wh-framboesa.loadbalancer.server.port=9000"
