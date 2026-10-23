@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=https://doco.cd/latest/schemas/deploy.schema.json
+name: infra
+working_dir: hosts/raspberry/infra
+compose_files:
+  - compose.yaml
+env_files:
+  - .env
+  - secrets.enc.env
+---
+name: apps
+working_dir: hosts/raspberry/apps
+compose_files:
+  - compose.yaml
+env_files:
+  - .env
+  - secrets.enc.env
+---
+name: monitoring
+working_dir: hosts/raspberry/monitoring
+compose_files:
+  - compose.yaml
+env_files:
+  - .env
