@@ -83,10 +83,10 @@ services:
 
   authentik_db:
     container_name: "authentik_db"
-    image: "postgres:16"
+    image: "postgres:18"
     restart: unless-stopped
     volumes:
-      - ${DOCKER_DATA_DIR}/authentik-psql:/var/lib/postgresql/data
+      - ${DOCKER_DATA_DIR}/authentik-psql:/var/lib/postgresql
     environment:
       POSTGRES_USER: "authentik"
       POSTGRES_DB: "authentik"
