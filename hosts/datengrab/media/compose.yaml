@@ -8,7 +8,7 @@ services:
     ports:
       - 3128:8080
     volumes:
-      - ${DOCKER_DATA_ROOT}/sabnzbd:/config
+      - ${DOCKER_DATA_DIR}/sabnzbd:/config
       - ${MEDIA_ROOT}:/Media
     environment:
       PGID: ${MEDIA_PGID}
@@ -36,10 +36,10 @@ services:
       - 51413:51413/udp
       - 9091:9091
     volumes:
-      - ${DOCKER_DATA_ROOT}/transmission-watch:/watch
-      - ${DOCKER_DATA_ROOT}/transmission:/config
-      - ${MEDIA_ROOT}/incoming:/downloads
-      - ${MEDIA_ROOT}:/Media
+      - ${DOCKER_DATA_DIR}/transmission-watch:/watch
+      - ${DOCKER_DATA_DIR}/transmission:/config
+      - ${MEDIA_DIR}/incoming:/downloads
+      - ${MEDIA_DIR}:/Media
     environment:
       PGID: ${MEDIA_PGID}
       PUID: ${MEDIA_PUID}
@@ -67,7 +67,7 @@ services:
     ports:
       - 9696:9696
     volumes:
-      - ${DOCKER_DATA_ROOT}/prowlarr:/config
+      - ${DOCKER_DATA_DIR}/prowlarr:/config
     environment:
       PGID: ${MEDIA_PGID}
       PUID: ${MEDIA_PUID}
@@ -94,8 +94,8 @@ services:
     ports:
       - 8686:8686
     volumes:
-      - ${DOCKER_DATA_ROOT}/lidarr:/config
-      - ${MEDIA_ROOT}:/Media
+      - ${DOCKER_DATA_DIR}/lidarr:/config
+      - ${MEDIA_DIR}:/Media
     environment:
       PGID: ${MEDIA_PGID}
       PUID: ${MEDIA_PUID}
@@ -122,8 +122,8 @@ services:
     ports:
       - 8989:8989
     volumes:
-      - ${DOCKER_DATA_ROOT}/sonarr:/config
-      - ${MEDIA_ROOT}:/Media
+      - ${DOCKER_DATA_DIR}/sonarr:/config
+      - ${MEDIA_DIR}:/Media
     environment:
       PGID: ${MEDIA_PGID}
       PUID: ${MEDIA_PUID}
@@ -152,8 +152,8 @@ services:
     ports:
       - 7878:7878
     volumes:
-      - ${DOCKER_DATA_ROOT}/radarr:/config
-      - ${MEDIA_ROOT}:/Media
+      - ${DOCKER_DATA_DIR}/radarr:/config
+      - ${MEDIA_DIR}:/Media
     environment:
       PGID: ${MEDIA_PGID}
       PUID: ${MEDIA_PUID}
@@ -176,8 +176,8 @@ services:
     image: "lscr.io/linuxserver/plex:latest"
     restart: unless-stopped
     volumes:
-      - "${DOCKER_DATA_ROOT}/plex:/config"
-      - "${MEDIA_ROOT}:/Media"
+      - "${DOCKER_DATA_DIR}/plex:/config"
+      - "${MEDIA_DIR}:/Media"
     environment:
       - PUID=297536
       - PGID=297536
