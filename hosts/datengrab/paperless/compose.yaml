@@ -14,7 +14,7 @@ services:
 
   db:
     container_name: paperless-db
-    image: docker.io/library/mariadb:10
+    image: docker.io/library/mariadb:13
     restart: always
     volumes:
       - /volume1/docker/paperless-db:/var/lib/mysql
