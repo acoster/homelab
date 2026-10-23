@@ -1,0 +1,30 @@
+name: doco-cd
+
+services:
+  doco-cd:
+    container_name: doco-cd
+    image: ghcr.io/kimdre/doco-cd:latest
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ}
+      LOG_LEVEL: info
+      SOPS_AGE_KEY_FILE: /run/secrets/age_key
+      SELF_UPDATE_ENABLED: 'true'
+      GIT_AUTH_TOKEN_FILE: /run/secrets/git_token
+      POLL_CONFIG: |
+          - url: https://github.com/acoster/homelab.git
+            reference: main
+            interval: 180
+            target: framboesa
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${DOCKER_DATA_DIR}/doco-cd:/data
+    secrets:
+      - age_key
+      - git_token
+
+secrets:
+  age_key:
+    file: ${DOCKER_DATA_DIR}/age_key
+  git_token:
+    file: ${DOCKER_DATA_DIR}/git_token 
