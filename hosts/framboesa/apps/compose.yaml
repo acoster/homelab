@@ -19,7 +19,7 @@ services:
       - "traefik.http.routers.spoolman.entrypoints=https"
       - "traefik.http.routers.spoolman.middlewares=middlewares-authentik@file"
       - "traefik.http.services.spoolman.loadbalancer.server.port=8000"
-      - "traefik.http.routers.spoolman-api.rule=Host(`spoolman.${DOMAIN}`) && PathPrefix(`/api/`)"
+      - "traefik.http.routers.spoolman-api.rule=Host(`spoolman.${DOMAIN}`) && PathPrefix(`/api/`) && ClientIP(`192.168.0.0/16`)"
       - "traefik.http.routers.spoolman-api.entrypoints=https"
       - "traefik.http.routers.spoolman-api.middlewares=lan-only@file"
 
