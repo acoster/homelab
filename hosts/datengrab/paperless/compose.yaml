@@ -27,12 +27,6 @@ services:
       - ./.env
     networks:
       internal:
-    healthcheck:
-      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
-      start_period: 10s
-      interval: 10s
-      timeout: 5s
-      retries: 3
 
   server:
     container_name: paperless-server
