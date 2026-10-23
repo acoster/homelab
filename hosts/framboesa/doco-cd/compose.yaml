@@ -14,7 +14,7 @@ services:
       POLL_CONFIG: |
           - url: https://github.com/acoster/homelab.git
             reference: main
-            interval: 180
+            interval: 1800
             target: framboesa
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
