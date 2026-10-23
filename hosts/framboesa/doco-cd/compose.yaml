@@ -6,20 +6,20 @@ services:
     image: ghcr.io/kimdre/doco-cd:latest
     restart: unless-stopped
     ports:
-      - '9000:80'
+      - "9000:80"
     environment:
       TZ: ${TZ}
       LOG_LEVEL: info
       SOPS_AGE_KEY: ${SOPS_AGE_KEY}
-      SELF_UPDATE_ENABLED: 'true'
+      SELF_UPDATE_ENABLED: "true"
       MAX_CONCURRENT_DEPLOYMENTS: 1
       GIT_AUTH_TOKEN: ${GIT_AUTH_TOKEN}
       WEBHOOK_SECRET: ${WEBHOOK_TOKEN}
       POLL_CONFIG: |
-          - url: https://github.com/acoster/homelab.git
-            reference: main
-            interval: 1800
-            target: framboesa
+        - url: https://github.com/acoster/homelab.git
+          reference: main
+          interval: 1800
+          target: framboesa
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${DOCKER_DATA_DIR}/doco-cd:/data
