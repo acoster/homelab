@@ -3,7 +3,7 @@ name: media
 services:
 
   lidarr:
-    image: lscr.io/linuxserver/lidarr:3.1.0
+    image: lscr.io/linuxserver/lidarr:version-3.1.0.4875
     container_name: lidarr
     depends_on:
       - prowlarr
