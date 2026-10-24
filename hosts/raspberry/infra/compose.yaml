@@ -48,7 +48,7 @@ services:
 
   cloudflare-ddns:
     container_name: cloudflare-ddns
-    image: favonia/cloudflare-ddns:latest
+    image: favonia/cloudflare-ddns:1.18.0
     restart: always
     environment:
       CLOUDFLARE_API_TOKEN: ${CF_API_TOKEN}
@@ -61,7 +61,7 @@ services:
 
   crowdsec:
     container_name: crowdsec
-    image: crowdsecurity/crowdsec:latest-debian
+    image: crowdsecurity/crowdsec:v1.8.1-debian
     restart: unless-stopped
     ports:
       - "6060:6060"
@@ -106,7 +106,7 @@ services:
 
   redis:
     container_name: "redis"
-    image: "redis:latest"
+    image: "redis:8.10.2"
     restart: unless-stopped
     ports:
       - "6379:6379"
@@ -129,7 +129,7 @@ services:
 
   technitium:
     container_name: technitium
-    image: technitium/dns-server:latest
+    image: technitium/dns-server:15.6.2
     restart: unless-stopped
     volumes:
       - ${DOCKER_DATA_DIR}/technitium:/etc/dns
@@ -155,7 +155,7 @@ services:
 
   traefik:
     container_name: "traefik"
-    image: traefik:latest
+    image: traefik:3.7.16
     restart: unless-stopped
     depends_on:
       - redis

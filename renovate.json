@@ -2,5 +2,32 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
+  ],
+  "timezone": "Europe/Zurich",
+  "schedule": ["before 8am on saturday"],
+  "packageRules": [
+    {
+      "description": "Group minor and patch Docker updates together into a single weekly PR",
+      "matchDatasources": ["docker"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "Homelab minor/patch updates"
+    },
+    {
+      "description": "Separate major versions for manual inspection and changelog review",
+      "matchDatasources": ["docker"],
+      "matchUpdateTypes": ["major"],
+      "labels": ["major-upgrade"]
+    },
+    {
+      "description": "Disable digest pinning churn",
+      "matchDatasources": ["docker"],
+      "pinDigests": false
+    },
+    {
+      "description": "Track CrowdSec Debian releases while preserving the v-prefix and -debian suffix",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["crowdsecurity/crowdsec", "*crowdsec*"],
+      "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(?<compatibility>-debian)$"
+    }
   ]
 }

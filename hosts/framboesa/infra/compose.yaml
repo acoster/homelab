@@ -1,7 +1,6 @@
 name: infra
 
 services:
-
   docker-socket-proxy:
     image: tecnativa/docker-socket-proxy
     container_name: docker-socket-proxy
@@ -21,10 +20,10 @@ services:
       - '3375:2375'
     networks:
       public:
-
     restart: unless-stopped
+
   technitium:
-    image: technitium/dns-server:latest
+    image: technitium/dns-server:15.6.2
     container_name: technitium
     volumes:
       - ${DOCKER_DATA_DIR}/technitium:/etc/dns
