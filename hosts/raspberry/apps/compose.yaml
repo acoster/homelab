@@ -3,7 +3,7 @@ name: raspberry
 services:
   bambuddy:
     container_name: bambuddy
-    image: ghcr.io/maziggy/bambuddy:1.2.57
+    image: ghcr.io/maziggy/bambuddy:1.2.5.7
     restart: unless-stopped
     volumes:
       - ${DOCKER_DATA_DIR}/bambuddy/data:/app/data
