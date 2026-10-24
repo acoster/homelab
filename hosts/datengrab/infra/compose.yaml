@@ -2,11 +2,8 @@ name: infra
 
 services:
   docker-socket-proxy:
-    container_name: docker-socket-proxy
     image: tecnativa/docker-socket-proxy:v0.5.0
-    restart: unless-stopped
-    ports:
-      - 3375:2375
+    container_name: docker-socket-proxy
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
@@ -17,13 +14,15 @@ services:
       - PING=1
       - VERSION=1
       - INFO=1
+    ports:
+      - '3375:2375'
     networks:
       public:
 
+    restart: unless-stopped
   traefik-kop:
-    container_name: traefik-kop
     image: ghcr.io/jittering/traefik-kop:0.21.0
-    restart: always
+    container_name: traefik-kop
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
@@ -35,6 +34,7 @@ services:
     networks:
       public:
 
+    restart: always
 networks:
   public:
     name: public

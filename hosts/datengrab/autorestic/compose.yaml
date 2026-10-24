@@ -1,7 +1,7 @@
 services:
   autorestic:
-    container_name: autorestic
     image: cupcakearmy/autorestic:latest
+    container_name: autorestic
     volumes:
       - ./autorestic.yml:/root/.config/autorestic/.autorestic.yml
       - ./autorestic.lock.yml:/root/.config/autorestic/.autorestic.lock.yml
@@ -13,7 +13,7 @@ services:
       - /volume1/Isabelle:/backup_source/Isabelle:ro
       - /volume1/Photography:/backup_source/Photography:ro
       - /volume1/paperless:/backup_source/paperless:ro
-      - "/volume1/3D Printing:/backup_source/3d_printing:ro"
+      - /volume1/3D Printing:/backup_source/3d_printing:ro
 
       # Docker binds
       - ${DOCKER_DATA_DIR}/backups:/backup_source/backups:ro
