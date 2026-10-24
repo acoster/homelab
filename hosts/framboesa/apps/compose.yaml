@@ -105,20 +105,6 @@ services:
       - "traefik.http.routers.spoolman-api.entrypoints=https"
       - "traefik.http.routers.spoolman-api.middlewares=lan-only@file"
 
-  spdf:
-    image: frooodle/s-pdf:3.2.2
-    container_name: spdf
-    ports:
-      - '3129:8080'
-    networks:
-      public:
-    restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.spdf.rule=Host(`spdf.${DOMAIN}`)"
-      - "traefik.http.routers.spdf.entrypoints=https"
-      - "traefik.http.routers.spdf.middlewares=middlewares-authentik@file"
-
 networks:
   macvlan_1:
     name: macvlan_1
