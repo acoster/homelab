@@ -30,7 +30,7 @@ services:
 
   server:
     container_name: paperless-server
-    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    image: ghcr.io/paperless-ngx/paperless-ngx:3.3.4
     restart: always
     depends_on:
       - db
@@ -71,7 +71,7 @@ services:
 
   paperless-gpt:
     container_name: paperless-gpt
-    image: icereed/paperless-gpt:latest
+    image: icereed/paperless-gpt:v0.31.0
     restart: unless-stopped
     ports:
       - 8080:8080

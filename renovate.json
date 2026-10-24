@@ -32,6 +32,11 @@
     {
       "matchPackageNames": ["ghcr.io/maziggy/bambuddy", "maziggy/bambuddy"],
       "versioning": "loose"
+    },
+    {
+      "matchPackageNames": ["*bambu-studio-api*"],
+      "versioning": "loose",
+      "extractVersion": "^bambuddy-(?<version>\\d+\\.\\d+\\.\\d+\\.\\d+)$"
     }
   ]
 }
