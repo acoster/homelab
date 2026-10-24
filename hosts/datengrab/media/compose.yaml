@@ -3,7 +3,7 @@ name: media
 services:
   sabnzbd:
     container_name: sabnzbd
-    image: lscr.io/linuxserver/sabnzbd:latest
+    image: lscr.io/linuxserver/sabnzbd:5.1.3
     restart: unless-stopped
     ports:
       - 3128:8080
@@ -29,7 +29,7 @@ services:
 
   transmission:
     container_name: transmission
-    image: lscr.io/linuxserver/transmission:latest
+    image: lscr.io/linuxserver/transmission:4.1.3
     restart: unless-stopped
     ports:
       - 51413:51413/tcp
@@ -59,7 +59,7 @@ services:
 
   prowlarr:
     container_name: prowlarr
-    image: lscr.io/linuxserver/prowlarr:develop
+    image: lscr.io/linuxserver/prowlarr:2.6.5
     restart: unless-stopped
     depends_on:
       - sabnzbd
@@ -85,7 +85,7 @@ services:
 
   lidarr:
     container_name: lidarr
-    image: lscr.io/linuxserver/lidarr:latest
+    image: lscr.io/linuxserver/lidarr:3.1.0
     restart: unless-stopped
     depends_on:
       - prowlarr
@@ -113,7 +113,7 @@ services:
 
   sonarr:
     container_name: sonarr
-    image: lscr.io/linuxserver/sonarr:latest
+    image: lscr.io/linuxserver/sonarr:4.0.20
     restart: unless-stopped
     depends_on:
       - prowlarr
@@ -143,7 +143,7 @@ services:
 
   radarr:
     container_name: radarr
-    image: lscr.io/linuxserver/radarr:latest
+    image: lscr.io/linuxserver/radarr:6.4.4
     restart: unless-stopped
     depends_on:
       - prowlarr
@@ -168,12 +168,10 @@ services:
       - "traefik.http.routers.radarr.middlewares=middlewares-authentik@file"
       - "traefik.http.routers.radarrApi.rule=Host(`radarr.${DOMAIN}`) && (PathPrefix(`/api/`) || PathPrefix(`/ping`))"
       - "traefik.http.routers.radarrApi.entrypoints=https"
-    devices:
-      - "/dev/dri:/dev/dri"
 
   plex:
     container_name: plex
-    image: "lscr.io/linuxserver/plex:latest"
+    image: "lscr.io/linuxserver/plex:1.43.5"
     restart: unless-stopped
     volumes:
       - "${DOCKER_DATA_DIR}/plex:/config"
