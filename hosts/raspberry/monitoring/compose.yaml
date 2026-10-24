@@ -2,8 +2,8 @@ name: monitoring
 
 services:
   uptime-kuma:
-    container_name: uptime-kuma
     image: louislam/uptime-kuma:2.5.7
+    container_name: uptime-kuma
     volumes:
       - ${DOCKER_DATA_DIR}/kuma:/app/data
       - /var/run/docker.sock:/var/run/docker.sock:ro

@@ -2,7 +2,7 @@ name: doco-cd
 
 services:
   doco-cd:
-    image: ghcr.io/kimdre/doco-cd:latest
+    image: ghcr.io/kimdre/doco-cd:0.129.1
     container_name: doco-cd
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -20,9 +20,9 @@ services:
           reference: main
           interval: 1800
           target: raspberry
-    restart: unless-stopped
     networks:
       servers:
+    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.hook-raspberry.rule=Host(`${WEBHOOK_HOST}.${DOMAIN}`)"

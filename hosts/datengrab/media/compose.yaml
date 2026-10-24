@@ -1,12 +1,111 @@
 name: media
 
 services:
-  sabnzbd:
-    container_name: sabnzbd
-    image: lscr.io/linuxserver/sabnzbd:5.1.3
-    restart: unless-stopped
+
+  lidarr:
+    image: lscr.io/linuxserver/lidarr:3.1.0
+    container_name: lidarr
+    depends_on:
+      - prowlarr
+      - sabnzbd
+      - transmission
+    volumes:
+      - ${DOCKER_DATA_DIR}/lidarr:/config
+      - ${MEDIA_DIR}:/Media
+    environment:
+      PGID: ${MEDIA_PGID}
+      PUID: ${MEDIA_PUID}
+    env_file:
+      - ./.env
     ports:
-      - 3128:8080
+      - '8686:8686'
+    networks:
+      public:
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.lidarr.rule=Host(`lidarr.${DOMAIN}`)"
+      - "traefik.http.routers.lidarr.entrypoints=https"
+      - "traefik.http.routers.lidarr.middlewares=middlewares-authentik@file"
+      - "traefik.http.routers.lidarrApi.rule=Host(`lidarr.${DOMAIN}`) && (PathPrefix(`/api/`) || PathPrefix(`/ping`))"
+      - "traefik.http.routers.lidarrApi.entrypoints=https"
+
+  plex:
+    image: lscr.io/linuxserver/plex:1.43.5
+    container_name: plex
+    volumes:
+      - ${DOCKER_DATA_DIR}/plex:/config
+      - ${MEDIA_DIR}:/Media
+    environment:
+      - PUID=297536
+      - PGID=297536
+      - VERSION=latest
+    env_file:
+      - ./.env
+    networks:
+      public:
+      media-macvlan:
+        ipv4_address: "192.168.1.245"
+    restart: unless-stopped
+    devices:
+      - "/dev/dri:/dev/dri"
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:2.6.5
+    container_name: prowlarr
+    depends_on:
+      - sabnzbd
+      - transmission
+    volumes:
+      - ${DOCKER_DATA_DIR}/prowlarr:/config
+    environment:
+      PGID: ${MEDIA_PGID}
+      PUID: ${MEDIA_PUID}
+    env_file:
+      - ./.env
+    ports:
+      - '9696:9696'
+    networks:
+      public:
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.${DOMAIN}`)"
+      - "traefik.http.routers.prowlarr.entrypoints=https"
+      - "traefik.http.routers.prowlarr.middlewares=middlewares-authentik@file"
+      - "traefik.http.routers.prowlarrApi.rule=Host(`prowlarr.${DOMAIN}`) && (PathPrefix(`/api/`) || PathPrefix(`/ping`))"
+      - "traefik.http.routers.prowlarrApi.entrypoints=https"
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:6.4.4
+    container_name: radarr
+    depends_on:
+      - prowlarr
+      - sabnzbd
+      - transmission
+    volumes:
+      - ${DOCKER_DATA_DIR}/radarr:/config
+      - ${MEDIA_DIR}:/Media
+    environment:
+      PGID: ${MEDIA_PGID}
+      PUID: ${MEDIA_PUID}
+    env_file:
+      - ./.env
+    ports:
+      - '7878:7878'
+    networks:
+      public:
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.radarr.rule=Host(`radarr.${DOMAIN}`)"
+      - "traefik.http.routers.radarr.entrypoints=https"
+      - "traefik.http.routers.radarr.middlewares=middlewares-authentik@file"
+      - "traefik.http.routers.radarrApi.rule=Host(`radarr.${DOMAIN}`) && (PathPrefix(`/api/`) || PathPrefix(`/ping`))"
+      - "traefik.http.routers.radarrApi.entrypoints=https"
+  sabnzbd:
+    image: lscr.io/linuxserver/sabnzbd:5.1.3
+    container_name: sabnzbd
     volumes:
       - ${DOCKER_DATA_DIR}/sabnzbd:/config
       - ${MEDIA_DIR}:/Media
@@ -15,8 +114,11 @@ services:
       PUID: ${MEDIA_PUID}
     env_file:
       - ./.env
+    ports:
+      - '3128:8080'
     networks:
       public:
+    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - traefik.port=3128
@@ -27,14 +129,39 @@ services:
       - "traefik.http.routers.sabnzbdApi.rule=Host(`sabnzbd.${DOMAIN}`) && PathPrefix(`/api`)"
       - "traefik.http.routers.sabnzbdApi.entrypoints=https"
 
-  transmission:
-    container_name: transmission
-    image: lscr.io/linuxserver/transmission:4.1.3
-    restart: unless-stopped
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:4.0.20
+    container_name: sonarr
+    depends_on:
+      - prowlarr
+      - sabnzbd
+      - transmission
+    volumes:
+      - ${DOCKER_DATA_DIR}/sonarr:/config
+      - ${MEDIA_DIR}:/Media
+    environment:
+      PGID: ${MEDIA_PGID}
+      PUID: ${MEDIA_PUID}
+    env_file:
+      - ./.env
     ports:
-      - 51413:51413/tcp
-      - 51413:51413/udp
-      - 9091:9091
+      - '8989:8989'
+    networks:
+      public:
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sonarr.rule=Host(`sonarr.${DOMAIN}`)"
+      - "traefik.http.routers.sonarr.entrypoints=https"
+      - "traefik.http.routers.sonarr.middlewares=middlewares-authentik@file"
+      - "traefik.http.routers.sonarrApi.rule=Host(`sonarr.${DOMAIN}`) && (PathPrefix(`/api/`) || PathPrefix(`/ping`))"
+      - "traefik.http.routers.sonarrApi.entrypoints=https"
+    devices:
+      - "/dev/dri:/dev/dri"
+
+  transmission:
+    image: lscr.io/linuxserver/transmission:4.1.3
+    container_name: transmission
     volumes:
       - ${DOCKER_DATA_DIR}/transmission-watch:/watch
       - ${DOCKER_DATA_DIR}/transmission:/config
@@ -47,8 +174,13 @@ services:
       PASS: ${TRANSMISSION_PASS}
     env_file:
       - ./.env
+    ports:
+      - '9091:9091'
+      - '51413:51413/tcp'
+      - '51413:51413/udp'
     networks:
       public:
+    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.transmission.rule=Host(`transmission.${DOMAIN}`)"
@@ -56,138 +188,6 @@ services:
       - "traefik.http.services.transmission.loadbalancer.server.port=9091"
       - "traefik.http.routers.transmission.middlewares=middlewares-authentik@file,add-auth-header"
       - "traefik.http.middlewares.add-auth-header.headers.customrequestheaders.authorization=Basic ${TRANSMISSION_AUTH}"
-
-  prowlarr:
-    container_name: prowlarr
-    image: lscr.io/linuxserver/prowlarr:2.6.5
-    restart: unless-stopped
-    depends_on:
-      - sabnzbd
-      - transmission
-    ports:
-      - 9696:9696
-    volumes:
-      - ${DOCKER_DATA_DIR}/prowlarr:/config
-    environment:
-      PGID: ${MEDIA_PGID}
-      PUID: ${MEDIA_PUID}
-    env_file:
-      - ./.env
-    networks:
-      public:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.${DOMAIN}`)"
-      - "traefik.http.routers.prowlarr.entrypoints=https"
-      - "traefik.http.routers.prowlarr.middlewares=middlewares-authentik@file"
-      - "traefik.http.routers.prowlarrApi.rule=Host(`prowlarr.${DOMAIN}`) && (PathPrefix(`/api/`) || PathPrefix(`/ping`))"
-      - "traefik.http.routers.prowlarrApi.entrypoints=https"
-
-  lidarr:
-    container_name: lidarr
-    image: lscr.io/linuxserver/lidarr:3.1.0
-    restart: unless-stopped
-    depends_on:
-      - prowlarr
-      - sabnzbd
-      - transmission
-    ports:
-      - 8686:8686
-    volumes:
-      - ${DOCKER_DATA_DIR}/lidarr:/config
-      - ${MEDIA_DIR}:/Media
-    environment:
-      PGID: ${MEDIA_PGID}
-      PUID: ${MEDIA_PUID}
-    env_file:
-      - ./.env
-    networks:
-      public:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.lidarr.rule=Host(`lidarr.${DOMAIN}`)"
-      - "traefik.http.routers.lidarr.entrypoints=https"
-      - "traefik.http.routers.lidarr.middlewares=middlewares-authentik@file"
-      - "traefik.http.routers.lidarrApi.rule=Host(`lidarr.${DOMAIN}`) && (PathPrefix(`/api/`) || PathPrefix(`/ping`))"
-      - "traefik.http.routers.lidarrApi.entrypoints=https"
-
-  sonarr:
-    container_name: sonarr
-    image: lscr.io/linuxserver/sonarr:4.0.20
-    restart: unless-stopped
-    depends_on:
-      - prowlarr
-      - sabnzbd
-      - transmission
-    ports:
-      - 8989:8989
-    volumes:
-      - ${DOCKER_DATA_DIR}/sonarr:/config
-      - ${MEDIA_DIR}:/Media
-    environment:
-      PGID: ${MEDIA_PGID}
-      PUID: ${MEDIA_PUID}
-    env_file:
-      - ./.env
-    networks:
-      public:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.sonarr.rule=Host(`sonarr.${DOMAIN}`)"
-      - "traefik.http.routers.sonarr.entrypoints=https"
-      - "traefik.http.routers.sonarr.middlewares=middlewares-authentik@file"
-      - "traefik.http.routers.sonarrApi.rule=Host(`sonarr.${DOMAIN}`) && (PathPrefix(`/api/`) || PathPrefix(`/ping`))"
-      - "traefik.http.routers.sonarrApi.entrypoints=https"
-    devices:
-      - "/dev/dri:/dev/dri"
-
-  radarr:
-    container_name: radarr
-    image: lscr.io/linuxserver/radarr:6.4.4
-    restart: unless-stopped
-    depends_on:
-      - prowlarr
-      - sabnzbd
-      - transmission
-    ports:
-      - 7878:7878
-    volumes:
-      - ${DOCKER_DATA_DIR}/radarr:/config
-      - ${MEDIA_DIR}:/Media
-    environment:
-      PGID: ${MEDIA_PGID}
-      PUID: ${MEDIA_PUID}
-    env_file:
-      - ./.env
-    networks:
-      public:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.radarr.rule=Host(`radarr.${DOMAIN}`)"
-      - "traefik.http.routers.radarr.entrypoints=https"
-      - "traefik.http.routers.radarr.middlewares=middlewares-authentik@file"
-      - "traefik.http.routers.radarrApi.rule=Host(`radarr.${DOMAIN}`) && (PathPrefix(`/api/`) || PathPrefix(`/ping`))"
-      - "traefik.http.routers.radarrApi.entrypoints=https"
-
-  plex:
-    container_name: plex
-    image: "lscr.io/linuxserver/plex:1.43.5"
-    restart: unless-stopped
-    volumes:
-      - "${DOCKER_DATA_DIR}/plex:/config"
-      - "${MEDIA_DIR}:/Media"
-    environment:
-      - PUID=297536
-      - PGID=297536
-      - VERSION=latest
-    env_file:
-      - ./.env
-    networks:
-      public:
-      media-macvlan:
-        ipv4_address: "192.168.1.245"
-    devices:
-      - "/dev/dri:/dev/dri"
 
 networks:
   public:

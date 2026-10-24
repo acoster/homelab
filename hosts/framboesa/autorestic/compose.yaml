@@ -1,8 +1,7 @@
 services:
   autorestic:
-    container_name: autorestic
     image: cupcakearmy/autorestic:latest
-    restart: unless-stopped
+    container_name: autorestic
     volumes:
       - ./autorestic.yml:/root/.config/autorestic/.autorestic.yml
       - ./autorestic.lock.yml:/root/.config/autorestic/.autorestic.lock.yml
@@ -24,4 +23,5 @@ services:
       AUTORESTIC_RSYNCNET_RESTIC_PASSWORD:
       AUTORESTIC_DATENGRAB_RESTIC_PASSWORD:
     env_file: ./.env
+    restart: unless-stopped
     hostname: autorestic-agent-framboesa
