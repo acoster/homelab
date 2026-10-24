@@ -28,6 +28,10 @@
       "matchDatasources": ["docker"],
       "matchPackageNames": ["crowdsecurity/crowdsec", "*crowdsec*"],
       "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(?<compatibility>-debian)$"
+    },
+    {
+      "matchPackageNames": ["ghcr.io/maziggy/bambuddy", "maziggy/bambuddy"],
+      "versioning": "loose"
     }
   ]
 }
