@@ -37,6 +37,11 @@
       "matchPackageNames": ["*bambu-studio-api*"],
       "versioning": "loose",
       "extractVersion": "^bambuddy-(?<version>\\d+\\.\\d+\\.\\d+\\.\\d+)$"
+    },
+    {
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["lscr.io/linuxserver/lidarr"],
+      "versioning": "regex:^version-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)(?:-ls(?<revision>\\d+))?$"
     }
   ]
 }
