@@ -2,7 +2,7 @@ name: framboesa
 
 services:
   bytestash:
-    image: ghcr.io/jordan-dalby/bytestash:latest
+    image: ghcr.io/jordan-dalby/bytestash:1.6.0
     container_name: bytestash
     volumes:
       - ${DOCKER_DATA_DIR}/bytestash:/data/snippets
@@ -32,7 +32,7 @@ services:
       - "traefik.http.services.bytestash.loadbalancer.server.port=5000"
 
   homebridge:
-    image: homebridge/homebridge:latest
+    image: homebridge/homebridge:2026-10-23
     container_name: homebridge
     volumes:
       - ${DOCKER_DATA_DIR}/homebridge/:/homebridge/
@@ -52,7 +52,7 @@ services:
       - "kop.homebridge.bind.ip=192.168.1.241"
 
   octoeverywhere-bambu-connect:
-    image: octoeverywhere/octoeverywhere:latest
+    image: octoeverywhere/octoeverywhere:5.4.1
     container_name: octoeverywhere
     volumes:
       - ${DOCKER_DATA_DIR}/bambu-connect:/data
@@ -68,7 +68,7 @@ services:
     restart: unless-stopped
 
   retroassembly:
-    image: arianrhodsandlot/retroassembly
+    image: arianrhodsandlot/retroassembly:v7.261011.1345
     container_name: retroassembly
     volumes:
       - ${DOCKER_DATA_DIR}/retroassembly:/app/data
@@ -82,8 +82,9 @@ services:
       - "traefik.http.routers.retroassembly.rule=Host(`retroassembly.${DOMAIN}`)"
       - "traefik.http.routers.retroassembly.entrypoints=https"
       - "traefik.http.services.retroassembly.loadbalancer.server.port=3128"
+
   spoolman:
-    image: ghcr.io/donkie/spoolman:latest
+    image: ghcr.io/donkie/spoolman:0.27.0
     container_name: spoolman
     volumes:
       - ${DOCKER_DATA_DIR}/spoolman:/home/app/.local/share/spoolman:rw
