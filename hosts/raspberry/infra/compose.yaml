@@ -24,6 +24,19 @@ services:
         - pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}
       timeout: 5s
 
+  authentik_ldap:
+    container_name: "authentik_ldap"
+    image: ghcr.io/goauthentik/ldap:2026.8.5
+    ports:
+      - 389:3389
+      - 636:6636
+    environment:
+      AUTHENTIK_HOST: https://auth.h.coster.ch
+      AUTHENTIK_INSECURE: "false"
+      AUTHENTIK_TOKEN: ${AUTHENTIK_LDAP_TOKEN}
+    networks:
+      servers:
+
   authentik_server:
     container_name: "authentik_server"
     image: ghcr.io/goauthentik/server:2026.8.5
@@ -31,8 +44,6 @@ services:
     depends_on:
       authentik_db:
         condition: service_healthy
-    ports:
-      - '389:389'
     volumes:
       - ${DOCKER_DATA_DIR}/authentik-media:/data
     environment:
