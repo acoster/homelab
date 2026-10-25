@@ -24,7 +24,7 @@ services:
     stop_grace_period: 30s
 
   homeassistant:
-    image: ghcr.io/home-assistant/home-assistant:2026.10.3
+    image: ghcr.io/home-assistant/home-assistant:2026.10.4
     container_name: hass
     volumes:
       - ${DOCKER_DATA_DIR}/hass/config:/config
@@ -132,7 +132,7 @@ services:
       - "traefik.http.middlewares.testheader.headers.customrequestheaders.X-Forwarded-Ssl=on"
 
   matter-server:
-    image: ghcr.io/matter-js/matterjs-server:1.5.4
+    image: ghcr.io/matter-js/matterjs-server:1.5.5
     container_name: matter-server
     volumes:
       - ${DOCKER_DATA_DIR}/matter-data:/data
