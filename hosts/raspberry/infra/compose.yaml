@@ -1,10 +1,10 @@
 name: infra
 
 services:
-
   authentik_db:
-    image: postgres:18.6
     container_name: "authentik_db"
+    image: postgres:18.6
+    restart: unless-stopped
     volumes:
       - ${DOCKER_DATA_DIR}/authentik-psql:/var/lib/postgresql
     environment:
@@ -15,7 +15,6 @@ services:
       - ./.env
     networks:
       servers:
-    restart: unless-stopped
     healthcheck:
       interval: 30s
       retries: 5
@@ -24,12 +23,16 @@ services:
         - CMD-SHELL
         - pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}
       timeout: 5s
+
   authentik_server:
-    image: ghcr.io/goauthentik/server:2026.8.5
     container_name: "authentik_server"
+    image: ghcr.io/goauthentik/server:2026.8.5
+    restart: unless-stopped
     depends_on:
       authentik_db:
         condition: service_healthy
+    ports:
+      - '389:389'
     volumes:
       - ${DOCKER_DATA_DIR}/authentik-media:/data
     environment:
@@ -42,17 +45,17 @@ services:
       - ./authentik.env
     networks:
       servers:
-    command: server
-    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.authh.rule=Host(`auth.${DOMAIN}`)"
       - "traefik.http.services.authh.loadbalancer.server.port=9000"
       - "traefik.http.routers.authentik-outpost.rule=HostRegexp(`{subdomain:[a-z0-9-]+}.${DOMAIN}`) && PathPrefix(`/outpost.goauthentik.io/`)"
+    command: server
 
   authentik_worker:
-    image: ghcr.io/goauthentik/server:2026.8.5
     container_name: "authentik_worker"
+    image: ghcr.io/goauthentik/server:2026.8.5
+    restart: unless-stopped
     depends_on:
       authentik_db:
         condition: service_healthy
@@ -67,11 +70,11 @@ services:
     networks:
       servers:
     command: worker
-    restart: unless-stopped
 
   cloudflare-ddns:
-    image: favonia/cloudflare-ddns:1.18.0
     container_name: cloudflare-ddns
+    image: favonia/cloudflare-ddns:1.18.0
+    restart: always
     environment:
       CLOUDFLARE_API_TOKEN: ${CF_API_TOKEN}
       DOMAINS: ${DOMAIN}
@@ -81,10 +84,13 @@ services:
     networks:
       servers:
 
-    restart: always
   crowdsec:
-    image: crowdsecurity/crowdsec:v1.8.1-debian
     container_name: crowdsec
+    image: crowdsecurity/crowdsec:v1.8.1-debian
+    restart: unless-stopped
+    ports:
+      - '6060:6060'
+      - '127.0.0.1:8989:8080'
     volumes:
       - /opt/crowdsec-db:/var/lib/crowdsec/data
       - /opt/crowdsec:/etc/crowdsec
@@ -95,26 +101,23 @@ services:
       COLLECTIONS: "crowdsecurity/traefik crowdsecurity/http-cve crowdsecurity/unifi crowdsecurity/sshd"
     env_file:
       - ./.env
-    ports:
-      - '6060:6060'
-      - '127.0.0.1:8989:8080'
     networks:
       servers:
-    restart: unless-stopped
     labels:
       - "traefik.enable=false"
 
   redis:
-    image: redis:8.10.2
     container_name: "redis"
+    image: redis:8.10.2
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
     volumes:
       - ${DOCKER_DATA_DIR}/redis_cache:/data
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
     env_file:
       - ./.env
-    ports:
-      - '6379:6379'
     networks:
       servers:
     command: >
@@ -125,11 +128,11 @@ services:
         --requirepass \"$$REDIS_PASSWORD\"
         --notify-keyspace-events KEA
       "
-    restart: unless-stopped
 
   technitium:
-    image: technitium/dns-server:15.6.2
     container_name: technitium
+    image: technitium/dns-server:15.6.2
+    restart: unless-stopped
     volumes:
       - ${DOCKER_DATA_DIR}/technitium:/etc/dns
     environment:
@@ -143,21 +146,26 @@ services:
         ipv4_address: 192.168.5.201
         ipv6_address: "2a02:169:4bce:2::201"
         mac_address: "8A:87:A6:C5:DA:6C"
-    extra_hosts:
-      - "auth.${DOMAIN}=172.18.0.254"
-    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.ns0.rule=Host(`technitium.${DOMAIN}`)"
       - "traefik.http.services.ns0.loadbalancer.server.port=5380"
       - "traefik.docker.network=servers"
+    extra_hosts:
+      - "auth.${DOMAIN}=172.18.0.254"
     hostname: ns0
 
   traefik:
-    image: traefik:3.7.16
     container_name: "traefik"
+    image: traefik:3.7.16
+    restart: unless-stopped
     depends_on:
       - redis
+    ports:
+      - '80:80/tcp'
+      - '80:80/udp'
+      - '443:443/tcp'
+      - '443:443/udp'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik-rules:/rules
@@ -169,15 +177,9 @@ services:
       CF_DNS_API_TOKEN: ${CF_API_TOKEN}
     env_file:
       - ./.env
-    ports:
-      - '80:80/tcp'
-      - '80:80/udp'
-      - '443:443/tcp'
-      - '443:443/udp'
     networks:
       servers:
         ipv4_address: 172.18.0.254 # Safe from sequential DHCP
-    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.tls.stores.default.defaultgeneratedcert.resolver=gcl"
