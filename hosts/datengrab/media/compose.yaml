@@ -43,6 +43,12 @@ services:
       public:
       media-macvlan:
         ipv4_address: "192.168.1.231"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.${DOMAIN}`)"
+      - "traefik.http.routers.jellyfin.entrypoints=https"
+      - "traefik.http.services.homebridge.loadbalancer.server.port=8096"
+      - "kop.homebridge.bind.ip=192.168.1.231"
     devices:
       - "/dev/dri:/dev/dri"
     user: "297536:297536"
