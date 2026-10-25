@@ -47,7 +47,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.${DOMAIN}`)"
       - "traefik.http.routers.jellyfin.entrypoints=https"
-      - "traefik.http.services.homebridge.loadbalancer.server.port=8096"
+      - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
       - "kop.homebridge.bind.ip=192.168.1.231"
     devices:
       - "/dev/dri:/dev/dri"
