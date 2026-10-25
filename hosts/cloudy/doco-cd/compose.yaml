@@ -1,0 +1,35 @@
+name: doco-cd
+
+services:
+  doco-cd:
+    image: ghcr.io/kimdre/doco-cd:0.129.1
+    container_name: doco-cd
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${DOCKER_DATA_DIR}/doco-cd:/data
+    environment:
+      TZ: ${TZ}
+      LOG_LEVEL: info
+      SOPS_AGE_KEY: ${SOPS_AGE_KEY}
+      SELF_UPDATE_ENABLED: "true"
+      MAX_CONCURRENT_DEPLOYMENTS: 1
+      GIT_AUTH_TOKEN: ${GIT_AUTH_TOKEN}
+      WEBHOOK_SECRET: ${WEBHOOK_TOKEN}
+      POLL_CONFIG: |
+        - url: https://github.com/acoster/homelab.git
+          reference: main
+          interval: 1800
+          target: cloudy 
+    networks:
+      servers:
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.hook-cloudy.rule=Host(`${WEBHOOK_HOST}`)"
+      - "traefik.http.routers.hook-cloudy.entrypoints=https"
+      - "traefik.http.services.hook-cloudy.loadbalancer.server.port=80"
+
+networks:
+  servers:
+    name: servers
+    driver: bridge
