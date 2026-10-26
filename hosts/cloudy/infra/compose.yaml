@@ -23,6 +23,10 @@ services:
       - "--entrypoints.web.http.redirections.entrypoint.to=https"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
       - "--entrypoints.https.address=:443"
+      
+      - "--entrypoints.websecure.http.tls.certresolver=cloudflare"
+      - "--entrypoints.websecure.http.tls.domains[0].main=${DOMAIN}"
+      - "--entrypoints.websecure.http.tls.domains[0].sans=*.${DOMAIN}"
 
       # Cloudflare DNS-01 ACME Resolver
       - "--certificatesresolvers.cloudflare.acme.email=${CF_API_EMAIL}"
@@ -45,10 +49,6 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.wildcard-certs.rule=HostRegexp(`{host:.+}`)"
       - "traefik.http.routers.wildcard-certs.entrypoints=https"
-      - "traefik.http.routers.wildcard-certs.tls=true"
-      - "traefik.http.routers.wildcard-certs.tls.certresolver=cloudflare"
-      - "traefik.http.routers.wildcard-certs.tls.domains[0].main=${DOMAIN}"
-      - "traefik.http.routers.wildcard-certs.tls.domains[0].sans=*.${DOMAIN}"
       - "traefik.http.routers.wildcard-certs.service=noop@internal"
 
 networks:
