@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=https://doco.cd/latest/schemas/deploy.schema.json
+name: infra
+working_dir: hosts/cloudy/infra
+compose_files:
+  - compose.yaml
+env_files:
+  - .env
+  - secrets.enc.env

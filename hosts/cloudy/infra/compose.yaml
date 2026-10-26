@@ -1,0 +1,57 @@
+name: infra
+
+services:
+  traefik:
+    container_name: "traefik"
+    image: traefik:3.7.16
+    restart: unless-stopped
+    ports:
+      - '80:80/tcp'
+      - '80:80/udp'
+      - '443:443/tcp'
+      - '443:443/udp'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${DOCKER_DATA_DIR}/acme.json:/letsencrypt/acme.json
+    command:
+      # Global configuration
+      - "--global.checknewversion=false"
+      - "--global.sendanonymoususage=false"
+
+      # Entrypoints & automatic HTTP -> HTTPS redirect
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.websecure.address=:443"
+
+      # Cloudflare DNS-01 ACME Resolver
+      - "--certificatesresolvers.cloudflare.acme.email=${CF_API_EMAIL}"
+      - "--certificatesresolvers.cloudflare.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.cloudflare.acme.dnschallenge=true"
+      - "--certificatesresolvers.cloudflare.acme.dnschallenge.provider=cloudflare"
+      - "--certificatesresolvers.cloudflare.acme.dnschallenge.resolvers=1.1.1.1:53,1.0.0.1:53"
+      - "--certificatesresolvers.cloudflare.acme.dnschallenge.delaybeforecheck=10"
+
+      # Docker Provider
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+    environment:
+      CF_DNS_API_TOKEN: ${CF_API_TOKEN}
+    env_file:
+      - ./.env
+    networks:
+      servers:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wildcard-certs.rule=HostRegexp(`{host:.+}`)"
+      - "traefik.http.routers.wildcard-certs.entrypoints=websecure"
+      - "traefik.http.routers.wildcard-certs.tls=true"
+      - "traefik.http.routers.wildcard-certs.tls.certresolver=cloudflare"
+      - "traefik.http.routers.wildcard-certs.tls.domains[0].main=${DOMAIN}"
+      - "traefik.http.routers.wildcard-certs.tls.domains[0].sans=*.${DOMAIN}"
+      - "traefik.http.routers.wildcard-certs.service=noop@internal"
+
+networks:
+  servers:
+    name: servers
+    external: true
