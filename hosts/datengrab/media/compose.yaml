@@ -102,7 +102,7 @@ services:
       PUID: ${MEDIA_PUID}
     env_file:
       - ./.env
-   networks:
+    networks:
       public:
     labels:
       - "traefik.enable=true"
