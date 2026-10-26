@@ -2,7 +2,7 @@ name: doco-cd
 
 services:
   doco-cd:
-    image: ghcr.io/kimdre/doco-cd:0.129.1
+    image: ghcr.io/kimdre/doco-cd:0.130.0
     container_name: doco-cd
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
