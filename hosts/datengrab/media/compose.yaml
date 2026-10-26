@@ -44,11 +44,22 @@ services:
       media-macvlan:
         ipv4_address: "192.168.1.231"
     labels:
+      - "kop.jellyfin.bind.ip=192.168.1.231"
       - "traefik.enable=true"
       - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.${DOMAIN}`)"
       - "traefik.http.routers.jellyfin.entrypoints=https"
-      - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
-      - "kop.jellyfin.bind.ip=192.168.1.231"
+      - "traefik.http.routers.jellyfin.service=jellyfin-svc"
+      - "traefik.http.routers.jellyfin.middlewares=jellyfin-headers"
+
+      # Service
+      - "traefik.http.services.jellyfin-svc.loadbalancer.server.port=8096"
+      - "traefik.http.services.jellyfin-svc.loadbalancer.passhostheader=true"
+      - "traefik.http.services.jellyfin-svc.loadbalancer.responseforwarding.flushinterval=100ms"
+      - "traefik.http.services.jellyfin-svc.loadbalancer.serverstransport=jellyfin-transport@file"
+
+      # Headers
+      - "traefik.http.middlewares.jellyfin-headers.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.middlewares.jellyfin-headers.headers.customresponseheaders.X-Robots-Tag=noindex, nofollow, nosnippet, noarchive"
     devices:
       - "/dev/dri:/dev/dri"
     user: "297536:297536"

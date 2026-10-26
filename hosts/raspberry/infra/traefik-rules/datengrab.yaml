@@ -11,3 +11,9 @@ http:
         passHostHeader: true
         servers:
           - url: "https://192.168.1.14:5001"
+  serversTransports:
+    jellyfin-transport:
+      forwardingTimeouts:
+        dialTimeout: "30s"
+        responseHeaderTimeout: "0s"
+        idleConnTimeout: "90s"
