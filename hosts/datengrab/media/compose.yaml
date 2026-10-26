@@ -44,7 +44,7 @@ services:
       media-macvlan:
         ipv4_address: "192.168.1.231"
     labels:
-      - "kop.jellyfin.bind.ip=192.168.1.231"
+      - "kop.jellyfin-svc.bind.ip=192.168.1.231"
       - "traefik.enable=true"
       - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.${DOMAIN}`)"
       - "traefik.http.routers.jellyfin.entrypoints=https"
