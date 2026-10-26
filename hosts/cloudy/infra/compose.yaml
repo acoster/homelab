@@ -52,20 +52,6 @@ services:
       - "traefik.http.routers.wildcard-certs.entrypoints=https"
       - "traefik.http.routers.wildcard-certs.service=noop@internal"
 
-  tinyproxy:
-    container_name: tinyproxy
-    image: kalaksi/tinyproxy:1.7
-    restart: unless-stopped
-    ports:
-      - "192.168.2.8:8888:8888"
-    environment:
-      ALLOWED_NETWORKS: "192.168.0.0/16"
-      DISABLE_VIA_HEADER: "yes"
-      LOG_LEVEL: Notice
-      TIMEOUT: 600
-    networks:
-      servers:
-
 networks:
   servers:
     name: servers
