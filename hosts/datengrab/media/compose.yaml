@@ -63,6 +63,8 @@ services:
     devices:
       - "/dev/dri:/dev/dri"
     user: "297536:297536"
+    group_add:
+      - "937"
 
   plex:
     container_name: plex
@@ -100,9 +102,7 @@ services:
       PUID: ${MEDIA_PUID}
     env_file:
       - ./.env
-    group_add:
-      - "937"
-    networks:
+   networks:
       public:
     labels:
       - "traefik.enable=true"
