@@ -36,7 +36,7 @@ services:
     volumes:
       - ${DOCKER_DATA_DIR}/jellyfin/cache:/cache
       - ${DOCKER_DATA_DIR}/jellyfin/config:/config
-      - ${MEDIA_DIR}:/media:ro
+      - ${MEDIA_DIR}:/media
     env_file:
       - ./.env
     networks:
@@ -66,25 +66,25 @@ services:
     group_add:
       - "937"
 
-  plex:
-    container_name: plex
-    image: lscr.io/linuxserver/plex:1.43.5
-    restart: unless-stopped
-    volumes:
-      - ${DOCKER_DATA_DIR}/plex:/config
-      - ${MEDIA_DIR}:/Media
-    environment:
-      - PUID=297536
-      - PGID=297536
-      - VERSION=latest
-    env_file:
-      - ./.env
-    networks:
-      public:
-      media-macvlan:
-        ipv4_address: "192.168.1.245"
-    devices:
-      - "/dev/dri:/dev/dri"
+#  plex:
+#    container_name: plex
+#    image: lscr.io/linuxserver/plex:1.43.5
+#    restart: unless-stopped
+#    volumes:
+#      - ${DOCKER_DATA_DIR}/plex:/config
+#      - ${MEDIA_DIR}:/Media
+#    environment:
+#      - PUID=297536
+#      - PGID=297536
+#      - VERSION=latest
+#    env_file:
+#      - ./.env
+#    networks:
+#      public:
+#      media-macvlan:
+#        ipv4_address: "192.168.1.245"
+#    devices:
+#      - "/dev/dri:/dev/dri"
 
   prowlarr:
     container_name: prowlarr
