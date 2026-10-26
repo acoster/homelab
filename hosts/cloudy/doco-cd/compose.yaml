@@ -28,6 +28,7 @@ services:
       - "traefik.http.routers.hook-cloudy.rule=Host(`${WEBHOOK_HOST}`)"
       - "traefik.http.routers.hook-cloudy.entrypoints=https"
       - "traefik.http.services.hook-cloudy.loadbalancer.server.port=80"
+      - "traefik.http.routers.hook-cloudy.tls=true"
 
 networks:
   servers:
