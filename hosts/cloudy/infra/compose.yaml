@@ -17,6 +17,8 @@ services:
       # Global configuration
       - "--global.checknewversion=false"
       - "--global.sendanonymoususage=false"
+      - "--log.level=DEBUG"
+      - "--log.format=common"
 
       # Entrypoints & automatic HTTP -> HTTPS redirect
       - "--entrypoints.web.address=:80"
