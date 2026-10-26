@@ -100,6 +100,8 @@ services:
       PUID: ${MEDIA_PUID}
     env_file:
       - ./.env
+    group_add:
+      - "937"
     networks:
       public:
     labels:
@@ -228,7 +230,8 @@ networks:
   public:
     name: public
     external: true
-
+  media-internal:
+    internal: true
   media-macvlan:
     name: media-macvlan
     driver: macvlan
