@@ -1,0 +1,7 @@
+http:
+  serversTransports:
+    jellyfin-transport:
+      forwardingTimeouts:
+        dialTimeout: "30s"
+        responseHeaderTimeout: "0s"
+        idleConnTimeout: "90s"
