@@ -207,7 +207,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.ryot.rule=Host(`ryot.${DOMAIN}`)"
-      - "traefik.http.services.ryot.loadbalancer.server.port=3000"
+      - "traefik.http.services.ryot.loadbalancer.server.port=5000"
 
   ryot-db:
     container_name: ryot-db
