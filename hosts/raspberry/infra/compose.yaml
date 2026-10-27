@@ -2,7 +2,7 @@ name: infra
 
 services:
   authentik_db:
-    container_name: "authentik_db"
+    container_name: authentik_db
     image: postgres:18.6
     restart: unless-stopped
     volumes:
@@ -25,7 +25,7 @@ services:
       timeout: 5s
 
   authentik_ldap:
-    container_name: "authentik_ldap"
+    container_name: authentik_ldap
     image: ghcr.io/goauthentik/ldap:2026.8.5
     ports:
       - 389:3389
@@ -38,7 +38,7 @@ services:
       servers:
 
   authentik_server:
-    container_name: "authentik_server"
+    container_name: authentik_server
     image: ghcr.io/goauthentik/server:2026.8.5
     restart: unless-stopped
     depends_on:
@@ -64,7 +64,7 @@ services:
     command: server
 
   authentik_worker:
-    container_name: "authentik_worker"
+    container_name: authentik_worker"
     image: ghcr.io/goauthentik/server:2026.8.5
     restart: unless-stopped
     depends_on:
@@ -100,8 +100,8 @@ services:
     image: crowdsecurity/crowdsec:v1.8.1-debian
     restart: unless-stopped
     ports:
-      - '6060:6060'
-      - '127.0.0.1:8989:8080'
+      - "6060:6060"
+      - "127.0.0.1:8989:8080"
     volumes:
       - /opt/crowdsec-db:/var/lib/crowdsec/data
       - /opt/crowdsec:/etc/crowdsec
@@ -118,11 +118,11 @@ services:
       - "traefik.enable=false"
 
   redis:
-    container_name: "redis"
+    container_name: redis
     image: redis:8.10.3
     restart: unless-stopped
     ports:
-      - '6379:6379'
+      - "6379:6379"
     volumes:
       - ${DOCKER_DATA_DIR}/redis_cache:/data
     environment:
@@ -167,16 +167,16 @@ services:
     hostname: ns0
 
   traefik:
-    container_name: "traefik"
+    container_name: traefik
     image: traefik:3.7.16
     restart: unless-stopped
     depends_on:
       - redis
     ports:
-      - '80:80/tcp'
-      - '80:80/udp'
-      - '443:443/tcp'
-      - '443:443/udp'
+      - "80:80/tcp"
+      - "80:80/udp"
+      - "443:443/tcp"
+      - "443:443/udp"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik-rules:/rules

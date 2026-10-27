@@ -3,11 +3,11 @@ version: 2
 backends:
   rsyncnet:
     type: sftp
-    path: 'rsyncnet:framboesa-backup'
+    path: "rsyncnet:framboesa-backup"
 
-  datengrab: 
+  datengrab:
     type: sftp
-    path: 'datengrab:pi_backups/framboesa'
+    path: "datengrab:pi_backups/framboesa"
 
 locations:
   framboesa-data:
@@ -16,7 +16,7 @@ locations:
     to:
       - rsyncnet
       - datengrab
-    cron: '0 1 * * *'
+    cron: "0 1 * * *"
     options:
       forget:
         keep-daily: 7
@@ -24,23 +24,23 @@ locations:
         keep-monthly: 6
       backup:
         tag:
-          - framboesa 
+          - framboesa
         exclude:
           # Standard SQLite extensions
-          - '*.db'
-          - '*.db-wal'
-          - '*.db-shm'
+          - "*.db"
+          - "*.db-wal"
+          - "*.db-shm"
           # Django/Python specific SQLite names
-          - 'db.sqlite3'
-          - 'db.sqlite3-wal'
-          - 'db.sqlite3-shm'
+          - "db.sqlite3"
+          - "db.sqlite3-wal"
+          - "db.sqlite3-shm"
 
           # Ignore logs
-          - '*.log'
-          - '/**/technitium/stats/**'
-          - 'spoolman.log.*'
+          - "*.log"
+          - "/**/technitium/stats/**"
+          - "spoolman.log.*"
 
           # Ignore caches
-          - '/**/__pycache/**'
-          - '*.pyc'
-          - '.git'
+          - "/**/__pycache/**"
+          - "*.pyc"
+          - ".git"

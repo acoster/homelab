@@ -6,3 +6,11 @@ compose_files:
 env_files:
   - .env
   - secrets.enc.env
+---
+name: doco-cd
+working_dir: hosts/cloudy/doco-cd
+compose_files:
+  - compose.yaml
+env_files:
+  - .env
+  - secrets.enc.env

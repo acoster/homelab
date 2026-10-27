@@ -182,7 +182,7 @@ services:
     networks:
       servers:
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "miniflux" ]
+      test: ["CMD", "pg_isready", "-U", "miniflux"]
       interval: 10s
       start_period: 30s
 
@@ -226,7 +226,7 @@ services:
     networks:
       servers:
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "ryot" ]
+      test: ["CMD", "pg_isready", "-U", "ryot"]
       interval: 10s
       start_period: 30s
 

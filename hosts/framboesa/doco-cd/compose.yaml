@@ -2,8 +2,11 @@ name: doco-cd
 
 services:
   doco-cd:
-    image: ghcr.io/kimdre/doco-cd:0.131.0
     container_name: doco-cd
+    image: ghcr.io/kimdre/doco-cd:0.131.0
+    restart: unless-stopped
+    ports:
+      - "9000:80"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${DOCKER_DATA_DIR}/doco-cd:/data
@@ -20,9 +23,6 @@ services:
           reference: main
           interval: 1800
           target: framboesa
-    ports:
-      - '9000:80'
-    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.wh-framboesa.rule=Host(`${WEBHOOK_HOST}.${DOMAIN}`)"

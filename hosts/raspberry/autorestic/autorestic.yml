@@ -3,12 +3,11 @@ version: 2
 backends:
   rsyncnet:
     type: sftp
-    path: 'rsyncnet:raspberry-backup'
+    path: "rsyncnet:raspberry-backup"
 
   datengrab:
     type: sftp
-    path: 'datengrab:pi_backups/raspberry'
-
+    path: "datengrab:pi_backups/raspberry"
 
 locations:
   raspberry-backup:
@@ -17,7 +16,7 @@ locations:
     to:
       - rsyncnet
       - datengrab
-    cron: '0 3 * * *'
+    cron: "0 3 * * *"
     options:
       forget:
         keep-daily: 7
@@ -28,28 +27,28 @@ locations:
           - raspberry
         exclude:
           # Standard SQLite extensions
-          - '*.db'
-          - '*.db-wal'
-          - '*.db-shm'
+          - "*.db"
+          - "*.db-wal"
+          - "*.db-shm"
           # Django/Python specific SQLite names
-          - 'db.sqlite3'
-          - 'db.sqlite3-wal'
-          - 'db.sqlite3-shm'
+          - "db.sqlite3"
+          - "db.sqlite3-wal"
+          - "db.sqlite3-shm"
 
           # Ignore logs
-          - '/backup_source/traefik-logs/**'
-          - '*.log'
+          - "/backup_source/traefik-logs/**"
+          - "*.log"
 
           # Ignore caches
-          - '/backup_source/bind_mounts/hass/config/.cache/**'
-          - '/**/__pycache__/**'
-          - '*.pyc'
-          - '.git'
+          - "/backup_source/bind_mounts/hass/config/.cache/**"
+          - "/**/__pycache__/**"
+          - "*.pyc"
+          - ".git"
 
           # Ignore psql
-          - '**/authentik-psql/**'
-          - '**/miniflux-db/**'
-          - '**/redis_cache/**'
+          - "**/authentik-psql/**"
+          - "**/miniflux-db/**"
+          - "**/redis_cache/**"
 
           # Ignore technitium stats
-          - '**//technitium//stats/**'
+          - "**//technitium//stats/**"
