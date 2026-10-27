@@ -46,6 +46,7 @@ services:
     labels:
       - "kop.jellyfin-svc.bind.ip=192.168.1.231"
       - "traefik.enable=true"
+      - "traefik.docker.network=media-macvlan"
       - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.${DOMAIN}`)"
       - "traefik.http.routers.jellyfin.entrypoints=https"
       - "traefik.http.routers.jellyfin.service=jellyfin-svc"
