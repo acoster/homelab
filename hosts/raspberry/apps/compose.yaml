@@ -188,11 +188,12 @@ services:
       start_period: 30s
 
   ryot:
+    container_name: ryot
     image: ignisda/ryot:v10.5.5
     restart: unless-stopped
     environment:
       FRONTEND_URL: https://ryot.${DOMAIN}
-      DATABASE_URL: postgres://ryot:${RYOT_DB_PASSWORD@ryot-db:5432/ryot
+      DATABASE_URL: postgres://ryot:${RYOT_DB_PASSWORD}@ryot-db:5432/ryot
       SERVER_ADMIN_ACCESS_TOKEN: ${RYOT_TOKEN}
       SERVER_OIDC_CLIENT_ID: ${RYOT_OIDC_CLIENT_ID}
       SERVER_OIDC_CLIENT_SECRET: ${RYOT_OIDC_CLIENT_SECRET}
@@ -207,7 +208,6 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.ryot.rule=Host(`ryot.${DOMAIN}`)"
       - "traefik.http.services.ryot.loadbalancer.server.port=8000"
-    container_nane: ryot
 
   ryot-db:
     container_name: ryot-db
