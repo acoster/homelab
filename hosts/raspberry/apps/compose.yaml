@@ -191,6 +191,7 @@ services:
     image: ignisda/ryot:v10.5.5
     restart: unless-stopped
     environment:
+      BOOKS_GOOGLE_BOOKS_API_KEY: ${BOOKS_GOOGLE_BOOKS_API_KEY}
       DATABASE_URL: postgres://ryot:${RYOT_DB_PASSWORD}@ryot-db:5432/ryot
       DISABLE_TELEMETRY: "true"
       FRONTEND_URL: https://ryot.${DOMAIN}
@@ -199,7 +200,8 @@ services:
       SERVER_OIDC_CLIENT_ID: ${RYOT_OIDC_CLIENT_ID}
       SERVER_OIDC_CLIENT_SECRET: ${RYOT_OIDC_CLIENT_SECRET}
       SERVER_OIDC_ISSUER_URL: https://auth.${DOMAIN}/application/o/ryot/
-      BOOKS_GOOGLE_BOOKS_API_KEY: ${BOOKS_GOOGLE_BOOKS_API_KEY}
+      VIDEO_GAMES_TWITCH_CLIENT_ID: ${TWITCH_CLIENT_ID}
+      VIDEO_GAMES_TWITCH_CLIENT_SECRET: ${TWITCH_SECRET}
     env_file:
       - .env
     networks:
