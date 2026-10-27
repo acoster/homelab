@@ -2,8 +2,11 @@ name: framboesa
 
 services:
   bytestash:
-    image: ghcr.io/jordan-dalby/bytestash:1.6.0
     container_name: bytestash
+    image: ghcr.io/jordan-dalby/bytestash:1.6.0
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
     volumes:
       - ${DOCKER_DATA_DIR}/bytestash:/data/snippets
     environment:
@@ -20,11 +23,8 @@ services:
       OIDC_CLIENT_SECRET: ${BYTESTASH_OIDC_CLIENT_SECRET}
     env_file:
       - .env
-    ports:
-      - '5000:5000'
     networks:
       public:
-    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.bytestash.rule=Host(`bytestash.${DOMAIN}`)"
@@ -32,8 +32,9 @@ services:
       - "traefik.http.services.bytestash.loadbalancer.server.port=5000"
 
   homebridge:
-    image: homebridge/homebridge:2026-10-23
     container_name: homebridge
+    image: homebridge/homebridge:2026-10-23
+    restart: unless-stopped
     volumes:
       - ${DOCKER_DATA_DIR}/homebridge/:/homebridge/
     env_file:
@@ -42,7 +43,6 @@ services:
       public:
       macvlan_1:
         ipv4_address: "192.168.1.241"
-    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.homebridge.rule=Host(`homebridge.${DOMAIN}`)"
@@ -52,8 +52,9 @@ services:
       - "kop.homebridge.bind.ip=192.168.1.241"
 
   octoeverywhere-bambu-connect:
-    image: octoeverywhere/octoeverywhere:5.4.1
     container_name: octoeverywhere
+    image: octoeverywhere/octoeverywhere:5.4.1
+    restart: unless-stopped
     volumes:
       - ${DOCKER_DATA_DIR}/bambu-connect:/data
     environment:
@@ -65,18 +66,16 @@ services:
     networks:
       public:
 
-    restart: unless-stopped
-
   retroassembly:
-    image: arianrhodsandlot/retroassembly:v7.261011.1345
     container_name: retroassembly
+    image: arianrhodsandlot/retroassembly:v7.261011.1345
+    restart: unless-stopped
+    ports:
+      - "3128:8000"
     volumes:
       - ${DOCKER_DATA_DIR}/retroassembly:/app/data
     env_file:
       - .env
-    ports:
-      - '3128:8000'
-    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.retroassembly.rule=Host(`retroassembly.${DOMAIN}`)"
@@ -84,17 +83,17 @@ services:
       - "traefik.http.services.retroassembly.loadbalancer.server.port=3128"
 
   spoolman:
-    image: ghcr.io/donkie/spoolman:0.27.0
     container_name: spoolman
+    image: ghcr.io/donkie/spoolman:0.27.0
+    restart: unless-stopped
+    ports:
+      - "8000:8000/tcp"
     volumes:
       - ${DOCKER_DATA_DIR}/spoolman:/home/app/.local/share/spoolman:rw
     env_file:
       - .env
-    ports:
-      - '8000:8000/tcp'
     networks:
       public:
-    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.spoolman.rule=Host(`spoolman.${DOMAIN}`)"

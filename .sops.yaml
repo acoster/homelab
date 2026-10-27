@@ -1,27 +1,27 @@
 keys:
- - &admin_key age1ezct398mcjs09hu6np7lqwnn9hz8nhqrlh8annj789qkrzhr8csqfvltrs
- - &cloudy_key age13p5eu4plhr0qxsszxc6nyfkfah2w59syztd5jvrvmcqnqe97qe5q5twq7w
- - &datengrab_key age1t2yvqflyxyw7s23kqqqavy80zdvsu8njyu5af4pwp6yf3qej6a7qkclug0
- - &framboesa_key age1mv0qhert89pqgauk0z6mh5gwe3t9llms0ghzzpk3a2mj0hwawp2qpags49
- - &raspberry_key age1705z0tfpmrejlgq4h9j0cnymxvljm6gj9g7ujrx5k2e5wv6q6cgsgz6q2d
+  - &admin_key age1ezct398mcjs09hu6np7lqwnn9hz8nhqrlh8annj789qkrzhr8csqfvltrs
+  - &cloudy_key age13p5eu4plhr0qxsszxc6nyfkfah2w59syztd5jvrvmcqnqe97qe5q5twq7w
+  - &datengrab_key age1t2yvqflyxyw7s23kqqqavy80zdvsu8njyu5af4pwp6yf3qej6a7qkclug0
+  - &framboesa_key age1mv0qhert89pqgauk0z6mh5gwe3t9llms0ghzzpk3a2mj0hwawp2qpags49
+  - &raspberry_key age1705z0tfpmrejlgq4h9j0cnymxvljm6gj9g7ujrx5k2e5wv6q6cgsgz6q2d
 
 creation_rules:
- - path_regex: ^hosts/cloudy/.*\.(enc\.env|env\.sops)$
-   age:
-    - *admin_key
-    - *cloudy_key
-    - *raspberry_key
- - path_regex: ^hosts/datengrab/.*\.(enc\.env|env\.sops)$
-   age:
-    - *admin_key
-    - *datengrab_key
-    - *raspberry_key
- - path_regex: ^hosts/framboesa/.*\.(enc\.env|env\.sops)$
-   age:
-    - *admin_key
-    - *framboesa_key
-    - *raspberry_key
- - path_regex: ^hosts/raspberry/.*\.(enc\.env|env\.sops)$
-   age:
-    - *admin_key
-    - *raspberry_key
+  - path_regex: ^hosts/cloudy/.*\.(enc\.env|env\.sops)$
+    age:
+      - *admin_key
+      - *cloudy_key
+      - *raspberry_key
+  - path_regex: ^hosts/datengrab/.*\.(enc\.env|env\.sops)$
+    age:
+      - *admin_key
+      - *datengrab_key
+      - *raspberry_key
+  - path_regex: ^hosts/framboesa/.*\.(enc\.env|env\.sops)$
+    age:
+      - *admin_key
+      - *framboesa_key
+      - *raspberry_key
+  - path_regex: ^hosts/raspberry/.*\.(enc\.env|env\.sops)$
+    age:
+      - *admin_key
+      - *raspberry_key

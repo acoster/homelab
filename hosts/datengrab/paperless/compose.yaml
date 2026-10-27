@@ -2,8 +2,9 @@ name: paperless
 
 services:
   broker:
-    image: docker.io/library/redis:8.10.3
     container_name: paperless-broker
+    image: docker.io/library/redis:8.10.3
+    restart: always
     volumes:
       - redisdata:/data
     env_file:
@@ -11,10 +12,10 @@ services:
     networks:
       internal:
 
-    restart: always
   db:
-    image: docker.io/library/mariadb:13.0.2
     container_name: paperless-db
+    image: docker.io/library/mariadb:13.0.2
+    restart: always
     volumes:
       - /volume1/docker/paperless-db:/var/lib/mysql
     environment:
@@ -27,11 +28,12 @@ services:
     networks:
       internal:
 
-    restart: always
-
   paperless-gpt:
-    image: icereed/paperless-gpt:v0.31.0
     container_name: paperless-gpt
+    image: icereed/paperless-gpt:v0.31.0
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
     volumes:
       - /volume1/docker/paperless-gpt/prompts:/app/prompts
       - /volume1/docker/paperless-gpt/config:/app/config
@@ -63,23 +65,24 @@ services:
       UPDATE_CREATED_DATE: true
     env_file:
       - ./.env
-    ports:
-      - '8080:8080'
     networks:
       public:
-    restart: unless-stopped
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.paperless-gpt.rule=Host(`paperless-gpt.${DOMAIN}`)"
       - "traefik.http.routers.paperless-gpt.entrypoints=https"
       - "traefik.http.services.paperless-gpt.loadbalancer.server.port=8080"
       - "traefik.http.routers.paperless-gpt.middlewares=middlewares-authentik@file"
+
   server:
-    image: ghcr.io/paperless-ngx/paperless-ngx:3.3.4
     container_name: paperless-server
+    image: ghcr.io/paperless-ngx/paperless-ngx:3.3.4
+    restart: always
     depends_on:
       - broker
       - db
+    ports:
+      - "8000:8000"
     volumes:
       - /volume1/paperless/consume:/usr/src/paperless/consume
       - /volume1/paperless/data:/usr/src/paperless/data
@@ -103,24 +106,21 @@ services:
       PAPERLESS_SOCIALACCOUNT_PROVIDERS: '{"openid_connect": {"APPS": [{"provider_id": "authentik","name": "Corp SSO","client_id": "${PAPERLESS_OAUTH_CLIENT}","secret": "${PAPERLESS_OAUTH_SECRET}","settings": { "server_url": "${PAPERLESS_OAUTH_URL}"}}]}}'
     env_file:
       - ./.env
-    ports:
-      - '8000:8000'
     networks:
       internal:
       public:
-    restart: always
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.paperless.rule=Host(`paperless.${DOMAIN}`)"
       - "traefik.http.routers.paperless.entrypoints=https"
       - "traefik.http.services.paperless.loadbalancer.server.port=8000"
+
+volumes:
+  redisdata:
+
 networks:
   internal:
     internal: true
   public:
     name: public
     external: true
-
-volumes:
-  redisdata:
-
