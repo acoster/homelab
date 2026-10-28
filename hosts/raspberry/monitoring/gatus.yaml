@@ -69,7 +69,7 @@ endpoints:
     url: ${JELLYFIN_URL}
     conditions:
       - "[STATUS] == 200"
-      - "[BODY] == Jellyfin"
+      - "[BODY] == Healthy"
 
   - name: lidarr
     group: media
