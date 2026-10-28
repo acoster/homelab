@@ -1,25 +1,26 @@
 name: monitoring
 
 services:
-  uptime-kuma:
-    container_name: uptime-kuma
-    image: louislam/uptime-kuma:2.5.8
+  gatus:
+    container_name: gatus
+    image: twinproduction/gatus:v5.37.0
+    restart: unless-stopped
     volumes:
-      - ${DOCKER_DATA_DIR}/kuma:/app/data
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${DOCKER_DATA_DIR}/gatus:/data
+      - ./gatus.yaml:/gatus.yaml:ro
+    environment:
+      GATUS_CONFIG_PATH: /gatus.yaml
+      GATUS_OIDC_CLIENT_ID: ${GATUS_OIDC_CLIENT_ID}
+      GATUS_OIDC_SECRET: ${GATUS_OIDC_SECRET}
     env_file:
       - .env
     networks:
       servers:
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.uptime.rule=Host(`uptime.${DOMAIN}`)"
-      - "traefik.http.routers.uptime.entrypoints=https"
-      - "traefik.http.routers.uptime.middlewares=middlewares-authentik@file"
-      - "traefik.http.services.uptime.loadbalancer.server.port=3001"
-      - "traefik.http.routers.uptime-status.rule=Host(`uptime.${DOMAIN}`) && PathRegexp(`^/(status/.*|assets/.+|api/status-page/.+|icon.svg)`)"
-      - "traefik.http.routers.uptime-status.entrypoints=https"
-      - "traefik.http.routers.uptime-status.service=uptime@docker"
+      - "traefik.http.routers.gatus.rule=Host(`gatus.${DOMAIN}`)"
+      - "traefik.http.routers.gatus.entrypoints=https"
+      - "traefik.http.services.gatus.loadbalancer.server.port=8080"
 
 networks:
   servers:
