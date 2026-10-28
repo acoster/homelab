@@ -1,5 +1,7 @@
 #!/bin/bash
+set -euo pipefail
 
+export REPO_DIR=/opt/homelab
 export DOCKER_DATA_DIR=/var/lib/docker-data
 export OUTPUT_DIR=${DOCKER_DATA_DIR}/backups
 
@@ -8,7 +10,12 @@ dpkg --get-selections > ${OUTPUT_DIR}/installed_packages.txt
 
 sqlite3 ${DOCKER_DATA_DIR}/bytestash/snippets.db ".backup ${OUTPUT_DIR}/bytestash.bak"
 
+
+cd ${REPO_DIR}
+git fetch origin main --prune
+git reset --hard origin/main
+git clean -fd -e "*.lock" -e "*autorestic.lock"
+
 SCRIPT=$(readlink -f "${0}")
 cd $(dirname "${SCRIPT}")
-
 sops exec-env secrets.enc.env 'docker compose run --rm autorestic autorestic  -v --ci cron'

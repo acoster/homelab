@@ -1,6 +1,9 @@
 #!/bin/bash
-OUTPUT_ROOT=/volume1/docker/backups
-PATH=$PATH:/var/services/homes/coster/bin
+set -euo pipefail
+
+export REPO_DIR=/opt/homelab
+export OUTPUT_ROOT=/volume1/docker/backups
+export PATH=$PATH:/var/services/homes/coster/bin
 
 echo "Exporting synology config"
 sudo /usr/syno/bin/synoconfbkp export --filepath=${OUTPUT_ROOT}/datengrab.dss
@@ -19,6 +22,11 @@ done
 echo "Exporting paperless DB"
 cd /opt/homelab/hosts/datengrab/paperless
 sops exec-env secrets.enc.env 'docker compose exec db mariadb-dump -u paperless -ppaperless  paperless' > ${OUTPUT_ROOT}/paperless.sql
+
+cd ${REPO_DIR}
+git fetch origin main --prune
+git reset --hard origin/main
+git clean -fd -e "*.lock" -e "*autorestic.lock"
 
 echo "Running autorestic"
 cd /opt/homelab/hosts/datengrab/autorestic
