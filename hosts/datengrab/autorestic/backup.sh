@@ -6,6 +6,7 @@ export OUTPUT_ROOT=/volume1/docker/backups
 export PATH=$PATH:/var/services/homes/coster/bin
 
 echo "Exporting synology config"
+sudo rm ${OUTPUT_ROOT}/datengrab.dss
 sudo /usr/syno/bin/synoconfbkp export --filepath=${OUTPUT_ROOT}/datengrab.dss
 
 echo "Exporting bricktracker DB"
