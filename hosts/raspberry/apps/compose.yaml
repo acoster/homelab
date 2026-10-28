@@ -202,6 +202,8 @@ services:
       SERVER_OIDC_ISSUER_URL: https://auth.${DOMAIN}/application/o/ryot/
       VIDEO_GAMES_TWITCH_CLIENT_ID: ${TWITCH_CLIENT_ID}
       VIDEO_GAMES_TWITCH_CLIENT_SECRET: ${TWITCH_SECRET}
+      COMIC_BOOK_METRON_USERNAME: ${METRON_USERNAME}
+      COMIC_BOOK_METRON_PASSWORD: ${METRON_PASSWORD}
     env_file:
       - .env
     networks:
