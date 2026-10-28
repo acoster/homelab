@@ -2,7 +2,13 @@ storage:
   type: sqlite
   path: /data/data.db
 
+x-templates:
+  arr-conditions: &arr-healthy
+    - "[STATUS] == 200"
+    - "[BODY].status == OK"
+
 endpoints:
+  # Infra services
   - name: framboesa-dns
     group: infra
     url: 192.168.5.202
@@ -27,6 +33,7 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
 
+  # 3D printing services/devices
   - name: bambuddy
     group: 3d-printing
     url: ${BAMBUDDY_URL}
@@ -55,6 +62,19 @@ endpoints:
     url: icmp://wondertainment.home.coster.ch
     conditions:
       - "[CONNECTED] == true"
+
+  # Media services
+  - name: jellyfin
+    group: media
+    url: https://jellyfin.${DOMAIN}
+    conditions:
+      - "[STATUS] == 200"
+      - "[BODY] == Jellyfin"
+
+  - name: lidarr
+    group: media
+    url: https://lid${ARR_SUFFIX}
+    conditions: *arr-healthy
 
 security:
   oidc:
