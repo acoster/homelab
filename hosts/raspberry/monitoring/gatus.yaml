@@ -1,0 +1,65 @@
+storage:
+  type: sqlite
+  path: /data/data.db
+
+endpoints:
+  - name: framboesa-dns
+    group: infra
+    url: 192.168.5.202
+    dns:
+      query-name: google.com
+      query-type: A
+    conditions:
+      - "[DNS_RCODE] == NOERROR"
+  - name: authentik
+    group: infra
+    url: ${AUTHENTIK_URL}
+    conditions:
+      - "[STATUS] == 200"
+  - name: traefik
+    group: infra
+    url: ${TRAEFIK_URL}
+    conditions:
+      - "[STATUS] == 200"
+  - name: technitium
+    group: infra
+    url: ${TECHNITIUM_URL}
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: bambuddy
+    group: 3d-printing
+    url: ${BAMBUDDY_URL}
+    conditions:
+      - "[STATUS] == 200"
+      - "[BODY].status == healthy"
+  - name: manyfold
+    group: 3d-printing
+    url: ${MANYFOLD_URL}
+    conditions:
+      - "[STATUS] == 200"
+  - name: slicer-api
+    group: 3d-printing
+    url: ${SLICER_API_URL}
+    conditions:
+      - "[STATUS] == 200"
+      - "[BODY].status == healthy"
+  - name: spoolman
+    group: 3d-printing
+    url: ${SPOOLMAN_URL}
+    conditions:
+      - "[STATUS] == 200"
+      - "[BODY].status == healthy"
+  - name: wondertainment
+    group: 3d-printing
+    url: icmp://wondertainment.home.coster.ch
+    conditions:
+      - "[CONNECTED] == true"
+
+security:
+  oidc:
+    issuer-url: ${GATUS_OIDC_ISSUER_URL}
+    client-id: "${GATUS_OIDC_CLIENT_ID}"
+    client-secret: "${GATUS_OIDC_SECRET}"
+    redirect-url: ${GATUS_OIDC_CALLBACK}
+    scopes: ["openid"]
