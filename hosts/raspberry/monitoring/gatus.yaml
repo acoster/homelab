@@ -6,6 +6,11 @@ x-templates:
   arr-conditions: &arr-healthy
     - "[STATUS] == 200"
     - "[BODY].status == OK"
+  http-healthy: &http-healthy
+    - "[STATUS] == 200"
+  json-healthy: &json-healthy
+    - "[STATUS] == 200"
+    - "[BODY].status == healthy"
 
 endpoints:
   # Infra services
@@ -20,43 +25,33 @@ endpoints:
   - name: authentik
     group: infra
     url: ${AUTHENTIK_URL}
-    conditions:
-      - "[STATUS] == 200"
+    conditions: *http-healthy
   - name: traefik
     group: infra
     url: ${TRAEFIK_URL}
-    conditions:
-      - "[STATUS] == 200"
+    conditions: *http-healthy
   - name: technitium
     group: infra
     url: ${TECHNITIUM_URL}
-    conditions:
-      - "[STATUS] == 200"
+    conditions: *http-healthy
 
   # 3D printing services/devices
   - name: bambuddy
     group: 3d-printing
     url: ${BAMBUDDY_URL}
-    conditions:
-      - "[STATUS] == 200"
-      - "[BODY].status == healthy"
+    conditions: *json-healthy
   - name: manyfold
     group: 3d-printing
     url: ${MANYFOLD_URL}
-    conditions:
-      - "[STATUS] == 200"
+    conditions: *http-healthy
   - name: slicer-api
     group: 3d-printing
     url: ${SLICER_API_URL}
-    conditions:
-      - "[STATUS] == 200"
-      - "[BODY].status == healthy"
+    conditions: *json-healthy
   - name: spoolman
     group: 3d-printing
     url: ${SPOOLMAN_URL}
-    conditions:
-      - "[STATUS] == 200"
-      - "[BODY].status == healthy"
+    conditions: *json-healthy
   - name: wondertainment
     group: 3d-printing
     url: icmp://wondertainment.home.coster.ch
@@ -74,6 +69,18 @@ endpoints:
   - name: lidarr
     group: media
     url: https://lid${ARR_SUFFIX}
+    conditions: *arr-healthy
+  - name: radarr
+    group: media
+    url: https://rad${ARR_SUFFIX}
+    conditions: *arr-healthy
+  - name: sonarr
+    group: media
+    url: https://son${ARR_SUFFIX}
+    conditions: *arr-healthy
+  - name: prowlarr
+    group: media
+    url: https://pro${ARR_SUFFIX}
     conditions: *arr-healthy
 
 security:
