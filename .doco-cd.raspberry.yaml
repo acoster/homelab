@@ -21,6 +21,7 @@ compose_files:
   - compose.yaml
 env_files:
   - .env
+  - secrets.enc.env
 ---
 name: doco-cd
 working_dir: hosts/raspberry/doco-cd
