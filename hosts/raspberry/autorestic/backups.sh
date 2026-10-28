@@ -1,5 +1,7 @@
 #!/bin/bash
+set -euo pipefail
 
+export REPO_DIR=/opt/homelab
 export DOCKER_DATA_DIR=/var/lib/docker-data
 export OUTPUT_DIR=${DOCKER_DATA_DIR}/backups
 
@@ -12,6 +14,11 @@ sqlite3 ${DOCKER_DATA_DIR}/manyfold/manyfold.sqlite3 ".backup '${OUTPUT_DIR}/man
 sqlite3 ${DOCKER_DATA_DIR}/kuma/kuma.sqlite3 ".backup '${OUTPUT_DIR}/kuma.bak'"
 
 dpkg --get-selections > ${OUTPUT_DIR}/installed_packages.txt
+
+cd ${REPO_DIR}
+git fetch origin main --prune
+git reset --hard origin/main
+git clean -fd -e "*.lock" -e "*autorestic.lock"
 
 SCRIPT=$(readlink -f "${0}")
 cd $(dirname "${SCRIPT}")
