@@ -28,6 +28,7 @@ services:
       HASS_TOKEN: ${HASS_TOKEN}
       TRANSMISSION_AUTH: ${TRANSMISSION_AUTH}
       TRANSMISSION_URL: ${TRANSMISSION_URL}
+      SAB_URL: ${SAB_URL}
     env_file:
       - .env
     networks:

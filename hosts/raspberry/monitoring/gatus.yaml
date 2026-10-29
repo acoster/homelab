@@ -91,6 +91,12 @@ endpoints:
     headers:
       Authorization: "Basic ${TRANSMISSION_AUTH}"
     conditions: *http-healthy
+  - name: sabnzbd
+    group: media
+    url: ${SAB_URL}
+    conditions:
+      - "[STATUS] == 200"
+      - "has([BODY].status) == true"
 
   # Home automation
   - name: home-assistant
