@@ -90,7 +90,7 @@ endpoints:
     url: ${TRANSMISSION_URL}
     headers:
       Authorization: "Basic ${TRANSMISSION_AUTH}"
-    condition: *http-healthy
+    conditions: *http-healthy
 
   # Home automation
   - name: home-assistant
