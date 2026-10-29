@@ -109,6 +109,10 @@ endpoints:
     group: home
     url: icmp://${HUE_HOST}
     conditions: *connected-healthy
+  - name: tado
+    group: home
+    url: icmp://${THERMOSTAT_HOST}
+    conditions: *connected-healthy
 
 security:
   oidc:
