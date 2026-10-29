@@ -1,0 +1,15 @@
+storage:
+  type: sqlite
+  path: /data/data.db
+  maximum-number-of-results: 4320
+  maximum-number-of-events: 50
+
+endpoints:
+  - name: raspberry-dns
+    group: infra
+    url: 192.168.5.201
+    dns:
+      query-name: google.com
+      query-type: A
+    conditions:
+      - "[DNS_RCODE] == NOERROR"

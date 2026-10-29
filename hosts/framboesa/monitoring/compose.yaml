@@ -1,0 +1,33 @@
+name: monitoring
+
+services:
+  gatus:
+    container_name: gatus
+    image: twinproduction/gatus:v5.38.0
+    restart: unless-stopped
+    volumes:
+      - ${DOCKER_DATA_DIR}/gatus:/data
+      - ./gatus.yaml:/gatus.yaml:ro
+    environment:
+      GATUS_CONFIG_PATH: /gatus.yaml
+    env_file:
+      - .env
+    ports:
+      - '8080:8080/tcp'
+    networks:
+      public:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gatus.rule=Host(`gatus.${DOMAIN}`)"
+      - "traefik.http.routers.gatus.entrypoints=https"
+      - "traefik.http.routers.gatus.middlewares=middlewares-authentik@file"
+      - "traefik.http.routers.gatus.service=gatus-svc"
+      - "traefik.http.routers.gatus-local.rule=Host(`gatus.${DOMAIN}`) && ClientIP(`192.168.0.0/16`)"
+      - "traefik.http.routers.gatus-local.entrypoints=https"
+      - "traefik.http.routers.gatus-local.service=gatus-svc"
+      - "traefik.http.services.gatus-svc.loadbalancer.server.port=8080"
+
+networks:
+  public:
+    name: public
+    external: true
