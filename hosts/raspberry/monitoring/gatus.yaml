@@ -80,7 +80,7 @@ endpoints:
     conditions: *arr-healthy
   - name: prowlarr
     group: media
-    url: https://pro${ARR_SUFFIX}
+    url: https://prowl${ARR_SUFFIX}
     conditions: *arr-healthy
 
 security:
