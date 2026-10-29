@@ -100,9 +100,9 @@ services:
       - "traefik.http.routers.prowlarr-local.rule=Host(`prowlarr.${DOMAIN}`) && ClientIP(`192.168.1.0/24`) && !ClientIP(`192.168.1.1`)"
       - "traefik.http.routers.prowlarr-local.entrypoints=https"
       - "traefik.http.routers.prowlarr-local.service=prowlarr-svc"
-      - "traefik.http.routers.prowlarrApi.rule=Host(`prowlarr.${DOMAIN}`) && (PathPrefix(`/api/`) || PathPrefix(`/ping`))"
-      - "traefik.http.routers.prowlarrApi.entrypoints=https"
-      - "traefik.http.routers.prowlarrApi.service=prowlarr-svc"
+      - "traefik.http.routers.prowlarr-api.rule=Host(`prowlarr.${DOMAIN}`) && (PathPrefix(`/api/`) || PathPrefix(`/ping`))"
+      - "traefik.http.routers.prowlarr-api.entrypoints=https"
+      - "traefik.http.routers.prowlarr-api.service=prowlarr-svc"
       - "traefik.http.services.prowlarr-svc.loadbalancer.server.port=9696"
 
   radarr:
@@ -157,13 +157,17 @@ services:
       public:
     labels:
       - "traefik.enable=true"
-      - traefik.port=3128
       - "traefik.http.routers.sabnzbd.rule=Host(`sabnzbd.${DOMAIN}`)"
       - "traefik.http.routers.sabnzbd.entrypoints=https"
       - "traefik.http.routers.sabnzbd.middlewares=middlewares-authentik@file"
-      - "traefik.http.services.sabnzbd.loadBalancer.server.port=3128"
-      - "traefik.http.routers.sabnzbdApi.rule=Host(`sabnzbd.${DOMAIN}`) && PathPrefix(`/api`)"
-      - "traefik.http.routers.sabnzbdApi.entrypoints=https"
+      - "traefik.http.routers.sabnzbd.service=sabnzbd-svc"
+      - "traefik.http.routers.sabnzbd-local.rule=Host(`sabnzbd.${DOMAIN}`) && ClientIP(`192.168.1.0/24`) && !ClientIP(`192.168.1.1`)"
+      - "traefik.http.routers.sabnzbd-local.entrypoints=https"
+      - "traefik.http.routers.sabnzbd-local.service=sabnzbd-svc"
+      - "traefik.http.routers.sabnzbd-api.rule=Host(`sabnzbd.${DOMAIN}`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.sabnzbd-api.entrypoints=https"
+      - "traefik.http.routers.sabnzbd-api.service=sabnzbd-svc"
+      - "traefik.http.services.sabnzbd-svc.loadBalancer.server.port=3128"
 
   sonarr:
     container_name: sonarr
@@ -225,9 +229,14 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.transmission.rule=Host(`transmission.${DOMAIN}`)"
       - "traefik.http.routers.transmission.entrypoints=https"
-      - "traefik.http.services.transmission.loadbalancer.server.port=9091"
-      - "traefik.http.routers.transmission.middlewares=middlewares-authentik@file,add-auth-header"
-      - "traefik.http.middlewares.add-auth-header.headers.customrequestheaders.authorization=Basic ${TRANSMISSION_AUTH}"
+      - "traefik.http.routers.transmission.service=transmission-svc"
+      - "traefik.http.routers.transmission.middlewares=middlewares-authentik@file,transmission-auth"
+      - "traefik.http.routers.transmission-local.rule=Host(`transmission.${DOMAIN}`)"
+      - "traefik.http.routers.transmission-local.entrypoints=https"
+      - "traefik.http.routers.transmission-local.service=transmission-svc"
+      - "traefik.http.routers.transmission-local.middlewares=transmission-auth"
+      - "traefik.http.middlewares.transmission-auth.headers.customrequestheaders.authorization=Basic ${TRANSMISSION_AUTH}"
+      - "traefik.http.services.transmission-svc.loadbalancer.server.port=9091"
 
 networks:
   public:
