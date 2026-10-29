@@ -91,7 +91,7 @@ services:
       - "traefik.http.routers.prowlarr.entrypoints=https"
       - "traefik.http.routers.prowlarr.service=prowlarr-svc"
       - "traefik.http.routers.prowlarr.middlewares=middlewares-authentik@file"
-      - "traefik.http.routers.prowlarr-local.rule=Host(`prowlarr.${DOMAIN}`) ClientIP(`192.168.1.0/24`) && !ClientIP(`192.168.1.1`)"
+      - "traefik.http.routers.prowlarr-local.rule=Host(`prowlarr.${DOMAIN}`) && ClientIP(`192.168.1.0/24`) && !ClientIP(`192.168.1.1`)"
       - "traefik.http.routers.prowlarr-local.entrypoints=https"
       - "traefik.http.routers.prowlarr-local.service=prowlarr-svc"
       - "traefik.http.routers.prowlarrApi.rule=Host(`prowlarr.${DOMAIN}`) && (PathPrefix(`/api/`) || PathPrefix(`/ping`))"
