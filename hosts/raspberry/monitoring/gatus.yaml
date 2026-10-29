@@ -117,3 +117,7 @@ endpoints:
     group: home
     url: icmp://apple-tv.home.coster.ch
     conditions: *connected-healthy
+
+remote:
+  instances:
+    - url: "http://framboesa:8080/api/v1/endpoints/statuses"
