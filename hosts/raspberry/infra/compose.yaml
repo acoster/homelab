@@ -64,7 +64,7 @@ services:
     command: server
 
   authentik_worker:
-    container_name: authentik_worker"
+    container_name: authentik_worker
     image: ghcr.io/goauthentik/server:2026.8.5
     restart: unless-stopped
     depends_on:
