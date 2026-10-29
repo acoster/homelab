@@ -24,6 +24,7 @@ services:
       GATUS_OIDC_ISSUER_URL: ${GATUS_OIDC_ISSUER_URL}
       GATUS_OIDC_CALLBACK: ${GATUS_OIDC_CALLBACK}
       HASS_URL: ${HASS_URL}
+      HASS_TOKEN: ${HASS_TOKEN}
     env_file:
       - .env
     networks:
