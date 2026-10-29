@@ -11,6 +11,8 @@ x-templates:
   json-healthy: &json-healthy
     - "[STATUS] == 200"
     - "[BODY].status == healthy"
+  connected-healthy: &connected-healthy
+    - "[CONNECTED] == true"
 
 endpoints:
   # Infra services
@@ -55,8 +57,7 @@ endpoints:
   - name: wondertainment
     group: 3d-printing
     url: icmp://wondertainment.home.coster.ch
-    conditions:
-      - "[CONNECTED] == true"
+    conditions: *connected-healthy
 
   # Media services
   - name: jellyfin
@@ -82,6 +83,13 @@ endpoints:
     group: media
     url: https://prowl${ARR_SUFFIX}
     conditions: *arr-healthy
+
+  # Home automation
+  - name: home-assistant
+    group: home
+    url: ${HASS_URL}
+    headers:
+      Authorization: "Bearer ${HASS_TOKEN}"
 
 security:
   oidc:
