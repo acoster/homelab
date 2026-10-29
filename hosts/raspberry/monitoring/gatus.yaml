@@ -90,6 +90,7 @@ endpoints:
     url: ${HASS_URL}
     headers:
       Authorization: "Bearer ${HASS_TOKEN}"
+    conditions: *http-healthy
 
 security:
   oidc:
