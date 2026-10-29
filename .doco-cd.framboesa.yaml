@@ -23,11 +23,9 @@ env_files:
   - .env
   - secrets.enc.env
 ---
----
 name: monitoring
 working_dir: hosts/framboesa/monitoring
 compose_files:
   - compose.yaml
 env_files:
   - .env
-
