@@ -97,7 +97,7 @@ services:
 
   crowdsec:
     container_name: crowdsec
-    image: crowdsecurity/crowdsec:v1.8.1-debian
+    image: crowdsecurity/crowdsec:v1.8.2-debian
     restart: unless-stopped
     ports:
       - "6060:6060"
