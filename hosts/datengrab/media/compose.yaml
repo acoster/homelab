@@ -67,26 +67,6 @@ services:
       - "937"
     user: "297536:297536"
 
-  #  plex:
-  #    container_name: plex
-  #    image: lscr.io/linuxserver/plex:1.43.5
-  #    restart: unless-stopped
-  #    volumes:
-  #      - ${DOCKER_DATA_DIR}/plex:/config
-  #      - ${MEDIA_DIR}:/Media
-  #    environment:
-  #      - PUID=297536
-  #      - PGID=297536
-  #      - VERSION=latest
-  #    env_file:
-  #      - ./.env
-  #    networks:
-  #      public:
-  #      media-macvlan:
-  #        ipv4_address: "192.168.1.245"
-  #    devices:
-  #      - "/dev/dri:/dev/dri"
-
   prowlarr:
     container_name: prowlarr
     image: lscr.io/linuxserver/prowlarr:2.7.0
@@ -109,9 +89,15 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.${DOMAIN}`)"
       - "traefik.http.routers.prowlarr.entrypoints=https"
+      - "traefik.http.routers.prowlarr.service=prowlarr-svc"
       - "traefik.http.routers.prowlarr.middlewares=middlewares-authentik@file"
+      - "traefik.http.routers.prowlarr-local.rule=Host(`prowlarr.${DOMAIN}`) ClientIP(`192.168.1.0/24`) && !ClientIP(`192.168.1.1`)"
+      - "traefik.http.routers.prowlarr-local.entrypoints=https"
+      - "traefik.http.routers.prowlarr-local.service=prowlarr-svc"
       - "traefik.http.routers.prowlarrApi.rule=Host(`prowlarr.${DOMAIN}`) && (PathPrefix(`/api/`) || PathPrefix(`/ping`))"
       - "traefik.http.routers.prowlarrApi.entrypoints=https"
+      - "traefik.http.routers.prowlarrApi.service=prowlarr-svc"
+      - "traefik.http.services.prowlarr-svc.loadbalancer.server.port=9696"
 
   radarr:
     container_name: radarr
