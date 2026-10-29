@@ -48,7 +48,11 @@ services:
       - "traefik.http.routers.homebridge.rule=Host(`homebridge.${DOMAIN}`)"
       - "traefik.http.routers.homebridge.entrypoints=https"
       - "traefik.http.routers.homebridge.middlewares=middlewares-authentik@file"
-      - "traefik.http.services.homebridge.loadbalancer.server.port=8581"
+      - "traefik.http.routers.homebridge.service=homebridge-svc"
+      - "traefik.http.routers.homebridge-local.rule=Host(`homebridge.${DOMAIN}`) && ClientIP(`192.168.1.0/24`) && !ClientIP(`192.168.1.1`)"
+      - "traefik.http.routers.homebridge-local.entrypoints=https"
+      - "traefik.http.routers.homebridge-local.service=homebridge-svc"
+      - "traefik.http.services.homebridge-svc.loadbalancer.server.port=8581"
       - "kop.homebridge.bind.ip=192.168.1.241"
 
   octoeverywhere-bambu-connect:
@@ -98,11 +102,15 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.spoolman.rule=Host(`spoolman.${DOMAIN}`)"
       - "traefik.http.routers.spoolman.entrypoints=https"
+      - "traefik.http.routers.spoolman.service=spoolman-svc"
       - "traefik.http.routers.spoolman.middlewares=middlewares-authentik@file"
-      - "traefik.http.services.spoolman.loadbalancer.server.port=8000"
+      - "traefik.http.routers.spoolman-local.rule=Host(`spoolman.${DOMAIN}`) && ClientIP(`192.168.1.0/24`) && !ClientIP(`192.168.1.1`)"
+      - "traefik.http.routers.spoolman-local.entrypoints=https"
+      - "traefik.http.routers.spoolman-local.service=spoolman-svc"
       - "traefik.http.routers.spoolman-api.rule=Host(`spoolman.${DOMAIN}`) && PathPrefix(`/api/`) && ClientIP(`192.168.0.0/16`)"
       - "traefik.http.routers.spoolman-api.entrypoints=https"
-      - "traefik.http.routers.spoolman-api.middlewares=lan-only@file"
+      - "traefik.http.routers.spoolman-api.service=spoolman-svc"
+      - "traefik.http.services.spoolman-svc.loadbalancer.server.port=8000"
 
 networks:
   macvlan_1:

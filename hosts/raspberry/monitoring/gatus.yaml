@@ -113,6 +113,10 @@ endpoints:
     group: home
     url: icmp://${THERMOSTAT_HOST}
     conditions: *connected-healthy
+  - name: apple-tv
+    group: home
+    url: icmp://apple-tv.home.coster.ch
+    conditions: *connected-healthy
 
 security:
   oidc:
