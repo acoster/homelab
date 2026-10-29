@@ -10,13 +10,9 @@ services:
       - ./gatus.yaml:/gatus.yaml:ro
     environment:
       GATUS_CONFIG_PATH: /gatus.yaml
-      GATUS_OIDC_CLIENT_ID: ${GATUS_OIDC_CLIENT_ID}
-      GATUS_OIDC_SECRET: ${GATUS_OIDC_SECRET}
       ARR_SUFFIX: ${ARR_SUFFIX}
       AUTHENTIK_URL: ${AUTHENTIK_URL}
       BAMBUDDY_URL: ${BAMBUDDY_URL}
-      GATUS_OIDC_CALLBACK: ${GATUS_OIDC_CALLBACK}
-      GATUS_OIDC_ISSUER_URL: ${GATUS_OIDC_ISSUER_URL}
       HASS_TOKEN: ${HASS_TOKEN}
       HASS_URL: ${HASS_URL}
       HUE_HOST: ${HUE_HOST}
@@ -38,7 +34,12 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.gatus.rule=Host(`gatus.${DOMAIN}`)"
       - "traefik.http.routers.gatus.entrypoints=https"
-      - "traefik.http.services.gatus.loadbalancer.server.port=8080"
+      - "traefik.http.routers.gatus.middlewares=middlewares-authentik@file"
+      - "traefik.http.routers.gatus.service=gatus-svc"
+      - "traefik.http.routers.gatus-local.rule=Host(`gatus.${DOMAIN}`) && ClientIP(`192.168.0.0/16`)"
+      - "traefik.http.routers.gatus-local.entrypoints=https"
+      - "traefik.http.routers.gatus-local.service=gatus-svc"
+      - "traefik.http.services.gatus-svc.loadbalancer.server.port=8080"
 
   uptime-kuma:
     container_name: uptime-kuma

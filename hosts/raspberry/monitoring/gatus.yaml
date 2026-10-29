@@ -117,11 +117,3 @@ endpoints:
     group: home
     url: icmp://apple-tv.home.coster.ch
     conditions: *connected-healthy
-
-security:
-  oidc:
-    issuer-url: ${GATUS_OIDC_ISSUER_URL}
-    client-id: "${GATUS_OIDC_CLIENT_ID}"
-    client-secret: "${GATUS_OIDC_SECRET}"
-    redirect-url: ${GATUS_OIDC_CALLBACK}
-    scopes: ["openid"]
