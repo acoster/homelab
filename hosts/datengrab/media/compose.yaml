@@ -26,8 +26,14 @@ services:
       - "traefik.http.routers.lidarr.rule=Host(`lidarr.${DOMAIN}`)"
       - "traefik.http.routers.lidarr.entrypoints=https"
       - "traefik.http.routers.lidarr.middlewares=middlewares-authentik@file"
-      - "traefik.http.routers.lidarrApi.rule=Host(`lidarr.${DOMAIN}`) && (PathPrefix(`/api/`) || PathPrefix(`/ping`))"
-      - "traefik.http.routers.lidarrApi.entrypoints=https"
+      - "traefik.http.routers.lidarr.service=lidarr-svc"
+      - "traefik.http.routers.lidarr-local.rule=Host(`lidarr.${DOMAIN}`) && ClientIP(`192.168.1.0/24`) && !ClientIP(`192.168.1.1`)"
+      - "traefik.http.routers.lidarr-local.entrypoints=https"
+      - "traefik.http.routers.lidarr-local.service=lidarr-svc"
+      - "traefik.http.routers.lidarr-api.rule=Host(`lidarr.${DOMAIN}`) && (PathPrefix(`/api/`) || PathPrefix(`/ping`))"
+      - "traefik.http.routers.lidarr-api.entrypoints=https"
+      - "traefik.http.routers.lidarr-api.service=lidarr-svc"
+      - "traefik.http.services.lidarr-svc.loadbalancer.server.port=8686"
 
   jellyfin:
     container_name: jellyfin
@@ -89,8 +95,8 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.${DOMAIN}`)"
       - "traefik.http.routers.prowlarr.entrypoints=https"
-      - "traefik.http.routers.prowlarr.service=prowlarr-svc"
       - "traefik.http.routers.prowlarr.middlewares=middlewares-authentik@file"
+      - "traefik.http.routers.prowlarr.service=prowlarr-svc"
       - "traefik.http.routers.prowlarr-local.rule=Host(`prowlarr.${DOMAIN}`) && ClientIP(`192.168.1.0/24`) && !ClientIP(`192.168.1.1`)"
       - "traefik.http.routers.prowlarr-local.entrypoints=https"
       - "traefik.http.routers.prowlarr-local.service=prowlarr-svc"
@@ -124,8 +130,14 @@ services:
       - "traefik.http.routers.radarr.rule=Host(`radarr.${DOMAIN}`)"
       - "traefik.http.routers.radarr.entrypoints=https"
       - "traefik.http.routers.radarr.middlewares=middlewares-authentik@file"
-      - "traefik.http.routers.radarrApi.rule=Host(`radarr.${DOMAIN}`) && (PathPrefix(`/api/`) || PathPrefix(`/ping`))"
-      - "traefik.http.routers.radarrApi.entrypoints=https"
+      - "traefik.http.routers.radarr.service=radarr-svc"
+      - "traefik.http.routers.radarr-local.rule=Host(`radarr.${DOMAIN}`) && ClientIP(`192.168.1.0/24`) && !ClientIP(`192.168.1.1`)"
+      - "traefik.http.routers.radarr-local.entrypoints=https"
+      - "traefik.http.routers.radarr-local.service=radarr-svc"
+      - "traefik.http.routers.radarr-api.rule=Host(`radarr.${DOMAIN}`) && (PathPrefix(`/api/`) || PathPrefix(`/ping`))"
+      - "traefik.http.routers.radarr-api.entrypoints=https"
+      - "traefik.http.routers.radarr-api.service=radarr-svc"
+      - "traefik.http.services.radarr-svc.loadbalancer.server.port=7878"
 
   sabnzbd:
     container_name: sabnzbd
@@ -178,10 +190,14 @@ services:
       - "traefik.http.routers.sonarr.rule=Host(`sonarr.${DOMAIN}`)"
       - "traefik.http.routers.sonarr.entrypoints=https"
       - "traefik.http.routers.sonarr.middlewares=middlewares-authentik@file"
-      - "traefik.http.routers.sonarrApi.rule=Host(`sonarr.${DOMAIN}`) && (PathPrefix(`/api/`) || PathPrefix(`/ping`))"
-      - "traefik.http.routers.sonarrApi.entrypoints=https"
-    devices:
-      - "/dev/dri:/dev/dri"
+      - "traefik.http.routers.sonarr.service=sonarr-svc"
+      - "traefik.http.routers.sonarr-local.rule=Host(`sonarr.${DOMAIN}`) && ClientIP(`192.168.1.0/24`) && !ClientIP(`192.168.1.1`)"
+      - "traefik.http.routers.sonarr-local.entrypoints=https"
+      - "traefik.http.routers.sonarr-local.service=sonarr-svc"
+      - "traefik.http.routers.sonarr-api.rule=Host(`sonarr.${DOMAIN}`) && (PathPrefix(`/api/`) || PathPrefix(`/ping`))"
+      - "traefik.http.routers.sonarr-api.entrypoints=https"
+      - "traefik.http.routers.sonarr-api.service=sonarr-svc"
+      - "traefik.http.services.sonarr-svc.loadbalancer.server.port=8989"
 
   transmission:
     container_name: transmission
