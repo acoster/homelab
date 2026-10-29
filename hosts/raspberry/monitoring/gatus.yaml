@@ -1,6 +1,8 @@
 storage:
   type: sqlite
   path: /data/data.db
+  maximum-number-of-results: 4320
+  maximum-number-of-events: 50
 
 x-templates:
   arr-conditions: &arr-healthy
@@ -91,6 +93,10 @@ endpoints:
     headers:
       Authorization: "Bearer ${HASS_TOKEN}"
     conditions: *http-healthy
+  - name: hue
+    group: home
+    url: icmp://${HUE_HOST}
+    conditions: *connected-healthy
 
 security:
   oidc:
