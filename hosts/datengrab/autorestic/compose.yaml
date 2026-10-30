@@ -27,6 +27,7 @@ services:
       - ${DOCKER_DATA_DIR}/transmission:/backup_source/transmission:ro
     environment:
       AUTORESTIC_RSYNCNET_RESTIC_PASSWORD:
+      HC_PING_URL:
     env_file:
       - ./.env
     hostname: autorestic-agent-datengrab
