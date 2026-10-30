@@ -24,6 +24,7 @@ services:
     environment:
       AUTORESTIC_RSYNCNET_RESTIC_PASSWORD:
       AUTORESTIC_DATENGRAB_RESTIC_PASSWORD:
+      HC_PING_URL:
     env_file:
       - ./.env
     hostname: autorestic-agent-raspberry # Change per host

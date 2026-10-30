@@ -16,6 +16,13 @@ locations:
     to:
       - rsyncnet
       - datengrab
+    hooks:
+      before:
+        - sh -c 'curl -fsS -m 10 --retry 3 "${HC_PING_URL}/start"'
+      success:
+        - sh -c 'curl -fsS -m 10 --retry 3 "${HC_PING_URL}"'
+      failure:
+        - sh -c 'curl -fsS -m 10 --retry 3 "${HC_PING_URL}/fail"'
     cron: "0 3 * * *"
     options:
       forget:
