@@ -54,7 +54,7 @@ services:
       - ${DOCKER_DATA_DIR}/vm-data:/storage
       - ./scrape.yml:/etc/victoriametrics/scrape.yml:ro
     networks:
-      servers:
+      monitoring-internal:
     command:
       - "-storageDataPath=/storage"
       - "-retentionPeriod=3M"
