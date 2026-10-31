@@ -109,7 +109,7 @@ services:
       - "8080:8080"
     networks:
       servers:
-      monitoring-internals:
+      monitoring-internal:
     devices:
       - /dev/kmsg:/dev/kmsg
     privileged: true
