@@ -43,7 +43,7 @@ locations:
           - "db.sqlite3-shm"
 
           # Ignore logs
-          - "/backup_source/traefik-logs/**"
+          - "/backup_source/bind_mounts/traefik-logs/**"
           - "*.log"
 
           # Ignore caches
@@ -57,5 +57,6 @@ locations:
           - "**/miniflux-db/**"
           - "**/redis_cache/**"
 
-          # Ignore technitium stats
+          # Ignore stats
           - "**//technitium//stats/**"
+          - "/backup_source/bind_mounts/vm-data/**"
