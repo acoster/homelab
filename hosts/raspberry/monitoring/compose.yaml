@@ -54,8 +54,9 @@ services:
       - ${DOCKER_DATA_DIR}/vm-data:/storage
       - ./scrape.yml:/etc/victoriametrics/scrape.yml:ro
     networks:
-      monitoring-internal:
       public:
+        gw_priority: 0
+      monitoring-internal:
     command:
       - "-storageDataPath=/storage"
       - "-retentionPeriod=3M"
