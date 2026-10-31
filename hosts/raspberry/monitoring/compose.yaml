@@ -61,6 +61,7 @@ services:
       - "-promscrape.config=/etc/victoriametrics/scrape.yml"
 
   grafana:
+    container_name: grafana
     image: grafana/grafana:13.2.5
     restart: unless-stopped
     depends_on:
