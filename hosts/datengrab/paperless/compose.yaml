@@ -3,7 +3,7 @@ name: paperless
 services:
   broker:
     container_name: paperless-broker
-    image: redis:8.10.3
+    image: redis:8.10.3@sha256:298641b35ac51aa999f9bb85707d6681fe635ce59cda51886a0b6adc1da37b8e
     restart: always
     volumes:
       - redisdata:/data
@@ -14,7 +14,7 @@ services:
 
   db:
     container_name: paperless-db
-    image: mariadb:13.0.2
+    image: mariadb:13.0.2@sha256:f4054da26e3a9dd6c8b5cc97363e544408b15c0fb369d7359c25dc04826eb6e1
     restart: always
     volumes:
       - /volume1/docker/paperless-db:/var/lib/mysql
@@ -30,7 +30,7 @@ services:
 
   paperless-gpt:
     container_name: paperless-gpt
-    image: icereed/paperless-gpt:v0.31.0
+    image: icereed/paperless-gpt:v0.31.0@sha256:d668941a829552cc0eddbc7c22506b3480dfbf61bd0d6eae881ad9fcfe2de70c
     restart: unless-stopped
     ports:
       - "8080:8080"

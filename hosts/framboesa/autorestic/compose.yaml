@@ -1,7 +1,7 @@
 services:
   autorestic:
     container_name: autorestic
-    image: cupcakearmy/autorestic:latest
+    image: cupcakearmy/autorestic:latest@sha256:0a826ea59ca452dadae50e618c0a14800450c920d22da0e35cb23e7a8be36d1f
     restart: unless-stopped
     volumes:
       - ./autorestic.yml:/root/.config/autorestic/.autorestic.yml

@@ -3,7 +3,7 @@ name: apps
 services:
   bambu-slicer-api:
     container_name: bambu-slicer-api
-    image: ghcr.io/maziggy/bambu-studio-api:bambuddy-1.2.5.7
+    image: ghcr.io/maziggy/bambu-studio-api:bambuddy-1.2.5.7@sha256:4a104e34e81137f092c84af92814cc39cfa74cdd1fec4b6f6aa0d0464b568a91
     restart: unless-stopped
     ports:
       - "3003:3000"
@@ -26,7 +26,7 @@ services:
 
   bricktracker:
     container_name: bricktracker
-    image: gitea.baerentsen.space/frederikbaerentsen/bricktracker:1.4.2
+    image: gitea.baerentsen.space/frederikbaerentsen/bricktracker:1.4.2@sha256:296c03b0cd30c96acc7f8914bfb9d1087600bb01586251df58fe3d74dda735df
     restart: always
     ports:
       - "3333:3333"

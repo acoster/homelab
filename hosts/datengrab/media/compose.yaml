@@ -3,7 +3,7 @@ name: media
 services:
   lidarr:
     container_name: lidarr
-    image: lscr.io/linuxserver/lidarr:version-3.1.6.5079
+    image: lscr.io/linuxserver/lidarr:version-3.1.6.5079@sha256:9fddcf5c613361edfce390d4e6b7c364282e71e90a40ce7793077fed788f6e63
     restart: unless-stopped
     depends_on:
       - prowlarr
@@ -37,7 +37,7 @@ services:
 
   jellyfin:
     container_name: jellyfin
-    image: jellyfin/jellyfin:12.4
+    image: jellyfin/jellyfin:12.4@sha256:fea863d0cd9ec445985d9c75fc6ed64e38a1d2766cf0c250a33d553f4fc1b771
     restart: unless-stopped
     volumes:
       - ${DOCKER_DATA_DIR}/jellyfin/cache:/cache
@@ -75,7 +75,7 @@ services:
 
   prowlarr:
     container_name: prowlarr
-    image: lscr.io/linuxserver/prowlarr:2.7.0
+    image: lscr.io/linuxserver/prowlarr:2.7.0@sha256:04be30163fbaf48d6aeee7b5893c9f6614ffbad6d853971df0d6dcdf01c7f104
     restart: unless-stopped
     depends_on:
       - sabnzbd
@@ -107,7 +107,7 @@ services:
 
   radarr:
     container_name: radarr
-    image: lscr.io/linuxserver/radarr:6.4.4
+    image: lscr.io/linuxserver/radarr:6.4.4@sha256:084b3b2ab1d0ef930660727259546a241f2bdf67c9ed085d54bf1486a6887c9b
     restart: unless-stopped
     depends_on:
       - prowlarr
@@ -141,7 +141,7 @@ services:
 
   sabnzbd:
     container_name: sabnzbd
-    image: lscr.io/linuxserver/sabnzbd:5.1.3
+    image: lscr.io/linuxserver/sabnzbd:5.1.3@sha256:a7cfba459929f73b83c98b476a845076dc72524af80b24fcb4200684e6b1b675
     restart: unless-stopped
     ports:
       - "3128:8080"
@@ -171,7 +171,7 @@ services:
 
   sonarr:
     container_name: sonarr
-    image: lscr.io/linuxserver/sonarr:4.0.20
+    image: lscr.io/linuxserver/sonarr:4.0.20@sha256:386c962ee6e260e3a5656b25df2ed056bcc9b6410e197d075f9547fd14c23bca
     restart: unless-stopped
     depends_on:
       - prowlarr
@@ -205,7 +205,7 @@ services:
 
   transmission:
     container_name: transmission
-    image: lscr.io/linuxserver/transmission:4.1.4
+    image: lscr.io/linuxserver/transmission:4.1.4@sha256:5b3c27a96c8a37c878a525ebf377a32032c3a3acfe845ecaa7c3eb10b09c2caa
     restart: unless-stopped
     ports:
       - "9091:9091"

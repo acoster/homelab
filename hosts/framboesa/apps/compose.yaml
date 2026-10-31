@@ -3,7 +3,7 @@ name: framboesa
 services:
   bytestash:
     container_name: bytestash
-    image: ghcr.io/jordan-dalby/bytestash:1.6.0
+    image: ghcr.io/jordan-dalby/bytestash:1.6.0@sha256:4326e143e2bd4a0fe4a360d58a86c95ef47d67a7bf8ced8eb830ac257dd89844
     restart: unless-stopped
     ports:
       - "5000:5000"
@@ -33,7 +33,7 @@ services:
 
   homebridge:
     container_name: homebridge
-    image: homebridge/homebridge:2026-10-30
+    image: homebridge/homebridge:2026-10-30@sha256:0518217e47c66d62a1f618a5a134e7dce50d4ebcc9de2b754ca33d2593d324a1
     restart: unless-stopped
     volumes:
       - ${DOCKER_DATA_DIR}/homebridge/:/homebridge/
@@ -57,7 +57,7 @@ services:
 
   octoeverywhere-bambu-connect:
     container_name: octoeverywhere
-    image: octoeverywhere/octoeverywhere:5.4.1
+    image: octoeverywhere/octoeverywhere:5.4.1@sha256:a16ac83d48167eb099a64c5ff7b35da7477f87e58888daa56384fe7f4a31b468
     restart: unless-stopped
     volumes:
       - ${DOCKER_DATA_DIR}/bambu-connect:/data
@@ -72,7 +72,7 @@ services:
 
   retroassembly:
     container_name: retroassembly
-    image: arianrhodsandlot/retroassembly:v7.261011.1345
+    image: arianrhodsandlot/retroassembly:v7.261011.1345@sha256:586c6b0d4ccd9c831bca56d747d60fbfc88f8879b3dfba085edf768cfbb9b973
     restart: unless-stopped
     ports:
       - "3128:8000"
@@ -88,7 +88,7 @@ services:
 
   spoolman:
     container_name: spoolman
-    image: ghcr.io/donkie/spoolman:0.27.0
+    image: ghcr.io/donkie/spoolman:0.27.0@sha256:7aba565eff774c6dda212d4204de8fa30bf68d513127ef875cc7ef3197a4664e
     restart: unless-stopped
     ports:
       - "8000:8000/tcp"
