@@ -1,50 +1,74 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    "config:best-practices"
   ],
   "timezone": "Europe/Zurich",
-  "schedule": ["before 8am on saturday"],
+  "schedule": [
+    "before 8am on saturday"
+  ],
   "packageRules": [
     {
       "description": "Group minor and patch Docker updates together into a single weekly PR",
-      "matchDatasources": ["docker"],
-      "matchUpdateTypes": ["minor", "patch"],
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
       "groupName": "Homelab minor/patch updates"
     },
     {
       "description": "Separate major versions for manual inspection and changelog review",
-      "matchDatasources": ["docker"],
-      "matchUpdateTypes": ["major"],
-      "labels": ["major-upgrade"]
-    },
-    {
-      "description": "Disable digest pinning churn",
-      "matchDatasources": ["docker"],
-      "pinDigests": false
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "labels": [
+        "major-upgrade"
+      ]
     },
     {
       "description": "Track CrowdSec Debian releases while preserving the v-prefix and -debian suffix",
-      "matchDatasources": ["docker"],
-      "matchPackageNames": ["crowdsecurity/crowdsec", "*crowdsec*"],
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "crowdsecurity/crowdsec",
+        "*crowdsec*"
+      ],
       "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(?<compatibility>-debian)$"
     },
     {
-      "matchPackageNames": ["ghcr.io/maziggy/bambuddy", "maziggy/bambuddy"],
+      "matchPackageNames": [
+        "ghcr.io/maziggy/bambuddy",
+        "maziggy/bambuddy"
+      ],
       "versioning": "loose"
     },
     {
-      "matchPackageNames": ["*bambu-studio-api*"],
+      "matchPackageNames": [
+        "*bambu-studio-api*"
+      ],
       "versioning": "loose",
       "extractVersion": "^bambuddy-(?<version>\\d+\\.\\d+\\.\\d+\\.\\d+)$"
     },
     {
-      "matchDatasources": ["docker"],
-      "matchPackageNames": ["lscr.io/linuxserver/lidarr"],
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "lscr.io/linuxserver/lidarr"
+      ],
       "versioning": "regex:^version-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)(?:-ls(?<revision>\\d+))?$"
     },
     {
-      "matchPackageNames": ["homebridge/homebridge"],
+      "matchPackageNames": [
+        "homebridge/homebridge"
+      ],
       "versioning": "regex:^(?<major>\\d{4})-(?<minor>\\d{2})-(?<patch>\\d{2})$"
     }
   ]
