@@ -84,17 +84,37 @@ services:
       GF_AUTH_SIGNOUT_REDIRECT_URL: "${OAUTH_ROOT}/grafana/end-session/"
       GF_AUTH_OAUTH_AUTO_LOGIN: "true"
       GF_AUTH_GENERIC_OAUTH_ALLOW_ASSIGN_GRAFANA_ADMIN: "true"
-      GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH:  "contains(groups, 'Grafana Admins') && 'Admin' || contains(groups, 'Grafana Editors') && 'Editor' || 'Viewer'"
-
+      GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH: "contains(groups, 'Grafana Admins') && 'Admin' || contains(groups, 'Grafana Editors') && 'Editor' || 'Viewer'"
     networks:
       servers:
+      monitoring-internal:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.grafana.rule=Host(`grafana.${DOMAIN}`)"
       - "traefik.http.routers.grafana.service=grafana-svc"
       - "traefik.http.services.grafana-svc.loadbalancer.server.port=3000"
+      - "traefik.docker.network=servers"
+
+  cadvisor:
+    container_name: cadvisor
+    image: ghcr.io/google/cadvisor:v0.60.6@sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a
+    restart: unless-stopped
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    networks:
+      monitoring-internal:
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    privileged: true
 
 networks:
   servers:
     name: servers
     external: true
+  monitoring-internal:
+    name: monitoring-internal
+    internal: true
