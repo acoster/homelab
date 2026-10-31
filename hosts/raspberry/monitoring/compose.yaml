@@ -55,6 +55,7 @@ services:
       - ./scrape.yml:/etc/victoriametrics/scrape.yml:ro
     networks:
       monitoring-internal:
+      public:
     command:
       - "-storageDataPath=/storage"
       - "-retentionPeriod=3M"
