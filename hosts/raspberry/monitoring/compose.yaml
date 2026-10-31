@@ -101,6 +101,7 @@ services:
     restart: unless-stopped
     command:
         - "-disable_metrics=percpu,sched,tcp,udp,diskIO,process"
+        - "-docker_only=true"
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
