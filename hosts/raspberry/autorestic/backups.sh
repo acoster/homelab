@@ -10,7 +10,6 @@ docker exec authentik_db pg_dump -U authentik authentik > ${OUTPUT_DIR}/authenti
 docker exec miniflux-db pg_dump -U miniflux miniflux > ${OUTPUT_DIR}/miniflux.sql
 
 sqlite3 ${DOCKER_DATA_DIR}/homebox/homebox.db ".backup '${OUTPUT_DIR}/homebox.bak'"
-sqlite3 ${DOCKER_DATA_DIR}/manyfold/manyfold.sqlite3 ".backup '${OUTPUT_DIR}/manyfold.bak'"
 
 dpkg --get-selections > ${OUTPUT_DIR}/installed_packages.txt
 
