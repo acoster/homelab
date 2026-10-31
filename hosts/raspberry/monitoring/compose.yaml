@@ -46,6 +46,48 @@ services:
       - "traefik.http.routers.gatus-local.service=gatus-svc"
       - "traefik.http.services.gatus-svc.loadbalancer.server.port=8080"
 
+  victoriametrics:
+    container_name: victoriametrics
+    image: victoriametrics/victoria-metrics:v1.155.0@sha256:f60dc268b54ecf87f6e09d740c2b732838aa9193090cc741417c9f6386a130df
+    restart: unless-stopped
+    volumes:
+      - ${DOCKER_DATA_DIR}/vm-data:/storage
+      - ./scrape.yml:/etc/victoriametrics/scrape.yml:ro
+    networks:
+      servers:
+    command:
+      - "-storageDataPath=/storage"
+      - "-retentionPeriod=3M"
+      - "-promscrape.config=/etc/victoriametrics/scrape.yml"
+
+  grafana:
+    image: grafana/grafana:13.2.5
+    restart: unless-stopped
+    depends_on:
+      - victoriametrics
+    volumes:
+      - ${DOCKER_DATA_DIR}/grafana-data:/var/lib/grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
+      GF_SERVER_ROOT_URL: https://grafana.${DOMAIN}
+      GF_AUTH_GENERIC_OAUTH_NAME: 'Corp SSO'
+      GF_AUTH_GENERIC_OAUTH_ENABLED: 'true'
+      GF_AUTH_GENERIC_OAUTH_CLIENT_ID: ${GF_AUTH_GENERIC_OAUTH_CLIENT_ID}
+      GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET: ${GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET}
+      GF_AUTH_GENERIC_OAUTH_SCOPES: "openid profile email entitlements"
+      GF_AUTH_GENERIC_OAUTH_AUTH_URL: "${OAUTH_ROOT}/authorize/"
+      GF_AUTH_GENERIC_OAUTH_TOKEN_URL: "${OAUTH_ROOT}/token/"
+      GF_AUTH_GENERIC_OAUTH_API_URL: "${OAUTH_ROOT}/userinfo/"
+      GF_AUTH_SIGNOUT_REDIRECT_URL: "${OAUTH_ROOT}/grafana/end-session/"
+      GF_AUTH_OAUTH_AUTO_LOGIN: "true"
+      GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH: "contains(entitlements[*], 'Grafana Admins') && 'Admin' || contains(entitlements[*], 'Grafana Editors') && 'Editor' || 'Viewer'"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.${DOMAIN}`)"
+      - "traefik.http.routers.grafana.service=grafana-svc"
+      - "traefik.http.services.grafana-svc.loadbalancer.server.port=3000"
+
 networks:
   servers:
     name: servers
