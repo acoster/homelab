@@ -3,6 +3,7 @@ scrape_configs:
     static_configs:
       - targets: ["localhost:8428"]
   - job_name: "cadvisor"
+    max_scrape_size: 64MB
     static_configs:
       - targets: ["cadvisor:8080"]
         labels:
