@@ -1,25 +1,6 @@
 name: infra
 
 services:
-  docker-socket-proxy:
-    container_name: docker-socket-proxy
-    image: tecnativa/docker-socket-proxy:v0.5.0@sha256:1f5038b54f06c3e18422902cf00ba21803d1c97805aae032e5e6673d532d3459
-    restart: unless-stopped
-    ports:
-      - "3375:2375"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    environment:
-      - CONTAINERS=1
-      - IMAGES=1
-      - NETWORKS=1
-      - EVENTS=1
-      - PING=1
-      - VERSION=1
-      - INFO=1
-    networks:
-      public:
-
   traefik-kop:
     container_name: traefik-kop
     image: ghcr.io/jittering/traefik-kop:0.21.0@sha256:ba7595e054e1d1831f17a3cd4e016e802ce9923a7f9843eb8f66dc5010469740
