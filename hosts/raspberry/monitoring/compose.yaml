@@ -46,26 +46,6 @@ services:
       - "traefik.http.routers.gatus-local.service=gatus-svc"
       - "traefik.http.services.gatus-svc.loadbalancer.server.port=8080"
 
-  uptime-kuma:
-    container_name: uptime-kuma
-    image: louislam/uptime-kuma:2.5.8@sha256:20abea8c48a163cf0a7a5d5936ab418e4b742d908704e1f58f6c06e56a9c6b67
-    volumes:
-      - ${DOCKER_DATA_DIR}/kuma:/app/data
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    env_file:
-      - .env
-    networks:
-      servers:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.uptime.rule=Host(`uptime.${DOMAIN}`)"
-      - "traefik.http.routers.uptime.entrypoints=https"
-      - "traefik.http.routers.uptime.middlewares=middlewares-authentik@file"
-      - "traefik.http.services.uptime.loadbalancer.server.port=3001"
-      - "traefik.http.routers.uptime-status.rule=Host(`uptime.${DOMAIN}`) && PathRegexp(`^/(status/.*|assets/.+|api/status-page/.+|icon.svg)`)"
-      - "traefik.http.routers.uptime-status.entrypoints=https"
-      - "traefik.http.routers.uptime-status.service=uptime@docker"
-
 networks:
   servers:
     name: servers
