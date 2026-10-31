@@ -99,15 +99,14 @@ services:
     container_name: cadvisor
     image: ghcr.io/google/cadvisor:v0.60.6@sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a
     restart: unless-stopped
-    command:
-        - "-disable_metrics=percpu,sched,tcp,udp,diskIO,process"
-        - "-docker_only=true"
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
       - /dev/disk/:/dev/disk:ro
+    ports:
+      - "8080:8080"
     networks:
       monitoring-internal:
     devices:
