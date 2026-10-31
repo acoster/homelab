@@ -17,6 +17,29 @@ services:
     networks:
       public:
 
+  cadvisor:
+    container_name: cadvisor
+    image: ghcr.io/google/cadvisor:v0.60.6@sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a
+    restart: unless-stopped
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    networks:
+      public:
+    ports:
+      - '8081:8080/tcp'
+    command:
+      - "-disable_metrics=percpu,sched,tcp,udp,diskIO,process,referenced_memory"
+      - "-store_container_labels=false"
+      - "-whitelisted_container_labels=com.docker.compose.project,com.docker.compose.service"
+      - '-docker_only=true'
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    privileged: true
+
 networks:
   public:
     name: public

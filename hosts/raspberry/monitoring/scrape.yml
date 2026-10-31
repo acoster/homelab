@@ -7,4 +7,7 @@ scrape_configs:
     static_configs:
       - targets: ["cadvisor:8080"]
         labels:
-          hostname: "raspberry"
+          instance: "raspberry"
+      - targets: ["framboesa:8081"]
+        labels:
+          instance: "framboesa"
