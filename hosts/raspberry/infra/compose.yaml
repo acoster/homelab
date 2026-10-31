@@ -3,7 +3,7 @@ name: infra
 services:
   authentik_db:
     container_name: authentik_db
-    image: postgres:18.6
+    image: postgres:18.6@sha256:979bccfde35445db618c65107d27d08c6c21339d8dc3ad4c830c6633947be0e4
     restart: unless-stopped
     volumes:
       - ${DOCKER_DATA_DIR}/authentik-psql:/var/lib/postgresql
@@ -26,7 +26,7 @@ services:
 
   authentik_ldap:
     container_name: authentik_ldap
-    image: ghcr.io/goauthentik/ldap:2026.8.5
+    image: ghcr.io/goauthentik/ldap:2026.8.5@sha256:4c75bd27918418d2d6fbbfe4581bbd5a199fe38942d24559c4483edd64a1ea87
     ports:
       - 389:3389
       - 636:6636
@@ -39,7 +39,7 @@ services:
 
   authentik_server:
     container_name: authentik_server
-    image: ghcr.io/goauthentik/server:2026.8.5
+    image: ghcr.io/goauthentik/server:2026.8.5@sha256:602227a86455d6772e3d16b7d852713c4f864f40df5df894abd1285bb53979a5
     restart: unless-stopped
     depends_on:
       authentik_db:
@@ -65,7 +65,7 @@ services:
 
   authentik_worker:
     container_name: authentik_worker
-    image: ghcr.io/goauthentik/server:2026.8.5
+    image: ghcr.io/goauthentik/server:2026.8.5@sha256:602227a86455d6772e3d16b7d852713c4f864f40df5df894abd1285bb53979a5
     restart: unless-stopped
     depends_on:
       authentik_db:
@@ -84,7 +84,7 @@ services:
 
   cloudflare-ddns:
     container_name: cloudflare-ddns
-    image: favonia/cloudflare-ddns:1.18.0
+    image: favonia/cloudflare-ddns:1.18.0@sha256:345b41895a8846d74c62d30bd27e61101a754f8ab8da10c68115823883803afb
     restart: always
     environment:
       CLOUDFLARE_API_TOKEN: ${CF_API_TOKEN}
@@ -97,7 +97,7 @@ services:
 
   crowdsec:
     container_name: crowdsec
-    image: crowdsecurity/crowdsec:v1.8.2-debian
+    image: crowdsecurity/crowdsec:v1.8.2-debian@sha256:a5642c72127ee93aaac830e9f66891573fa7851b2c721987d9fef13d7d05fdfe
     restart: unless-stopped
     ports:
       - "6060:6060"
@@ -119,7 +119,7 @@ services:
 
   redis:
     container_name: redis
-    image: redis:8.10.3
+    image: redis:8.10.3@sha256:298641b35ac51aa999f9bb85707d6681fe635ce59cda51886a0b6adc1da37b8e
     restart: unless-stopped
     ports:
       - "6379:6379"
@@ -142,7 +142,7 @@ services:
 
   technitium:
     container_name: technitium
-    image: technitium/dns-server:15.6.2
+    image: technitium/dns-server:15.6.2@sha256:eb48ac5c135f4ab936b536f74f853d53e15ab39ef37fdbc9598a089b90d9f245
     restart: unless-stopped
     volumes:
       - ${DOCKER_DATA_DIR}/technitium:/etc/dns
@@ -168,7 +168,7 @@ services:
 
   traefik:
     container_name: traefik
-    image: traefik:v3.7.17
+    image: traefik:v3.7.17@sha256:30ff62491aacdb862ceb8c9edcf2627da638d7deafdd4b6dab32fe34f8aa3e90
     restart: unless-stopped
     depends_on:
       - redis
