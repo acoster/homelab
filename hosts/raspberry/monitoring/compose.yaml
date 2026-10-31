@@ -108,7 +108,8 @@ services:
     ports:
       - "8080:8080"
     networks:
-      monitoring-internal:
+      servers:
+      monitoring-internals:
     devices:
       - /dev/kmsg:/dev/kmsg
     privileged: true
