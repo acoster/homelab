@@ -44,10 +44,6 @@ endpoints:
     group: 3d-printing
     url: ${BAMBUDDY_URL}
     conditions: *json-healthy
-  - name: manyfold
-    group: 3d-printing
-    url: ${MANYFOLD_URL}
-    conditions: *http-healthy
   - name: slicer-api
     group: 3d-printing
     url: ${SLICER_API_URL}

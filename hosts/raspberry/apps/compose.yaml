@@ -99,38 +99,6 @@ services:
       - "traefik.http.routers.linkding.rule=Host(`linkding.${DOMAIN}`)"
       - "traefik.http.services.linkding.loadbalancer.server.port=9090"
 
-  manyfold:
-    container_name: manyfold
-    image: ghcr.io/manyfold3d/manyfold-solo:0.153.0@sha256:161109b917a158b5efd8478a437e9900db7bdc57235c167aa70d5ad69425fc31
-    restart: unless-stopped
-    volumes:
-      - ${DOCKER_DATA_DIR}/manyfold:/config
-      - manyfold_nfs:/collection
-    environment:
-      SECRET_KEY_BASE: ${MANYFOLD_SECRET_KEY_BASE}
-      PUID: 1001
-      PGID: 1001
-      MULTIUSER: enabled
-      SMTP_PASSWORD: ${SMTP_PASSWORD}
-      SMTP_SERVER: smtp.eu.mailgun.org
-      SMTP_PORT: 465
-      SMTP_USERNAME: noreply@coster.ch
-      SMTP_FROM_ADDRESS: "noreply@coster.ch"
-      PUBLIC_HOSTNAME: manyfold.${DOMAIN}
-      OIDC_ISSUER: "https://auth.${DOMAIN}/application/o/manyfold/"
-      OIDC_NAME: "Authentik"
-      HTTPS_ONLY: "enabled"
-    env_file:
-      - .env
-    networks:
-      servers:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.manyfold.rule=Host(`manyfold.${DOMAIN}`)"
-      - "traefik.http.routers.manyfold.entrypoints=https"
-      - "traefik.http.services.manyfold.loadbalancer.server.port=3214"
-      - "traefik.http.middlewares.testheader.headers.customrequestheaders.X-Forwarded-Ssl=on"
-
   matter-server:
     container_name: matter-server
     image: ghcr.io/matter-js/matterjs-server:1.5.5@sha256:ee149c7c67eff0e90f131e8f0d628f7b099591ec58473c8cda1209e8ae4df66e
@@ -182,7 +150,7 @@ services:
     networks:
       servers:
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "miniflux"]
+      test: [ "CMD", "pg_isready", "-U", "miniflux" ]
       interval: 10s
       start_period: 30s
 
