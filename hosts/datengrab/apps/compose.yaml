@@ -55,18 +55,13 @@ services:
       - ${DOCKER_DATA_DIR}/gyroidvault:/app/data
       - /volume1/3DPrinting:/library
     environment:
+      JWT_SECRET: ${GYROIDVAULT_SECRET}
       NODE_ENV: production
       PORT: "4000"
     env_file:
       - ./.env
     networks:
       public:
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:4000/health" ]
-      interval: 30s
-      timeout: 5s
-      start_period: 10s
-      retries: 3
 
 networks:
   public:
