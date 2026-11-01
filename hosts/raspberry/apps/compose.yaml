@@ -154,14 +154,6 @@ services:
       interval: 10s
       start_period: 30s
 
-volumes:
-  manyfold_nfs:
-    driver: local
-    driver_opts:
-      type: nfs
-      o: addr=192.168.1.14,rw,vers=4.1
-      device: ":/volume1/3D Printing/"
-
 networks:
   internal:
     internal: true
