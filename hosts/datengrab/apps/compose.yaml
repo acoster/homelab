@@ -55,13 +55,24 @@ services:
       - ${DOCKER_DATA_DIR}/gyroidvault:/app/data
       - /volume1/3DPrinting:/library
     environment:
+      LIBRARY_PATH: /library
       JWT_SECRET: ${GYROIDVAULT_SECRET}
       NODE_ENV: production
     env_file:
       - ./.env
     networks:
       public:
-
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gyroidvault.rule=Host(`gyroidvault.${DOMAIN}`)"
+      - "traefik.http.routers.gyroidvault.service=gyroidvault-svc"
+      - "traefik.http.services.gyroidvault-svc.loadbalancer.server.port=4000"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      
 networks:
   public:
     name: public
