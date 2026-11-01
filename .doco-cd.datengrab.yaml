@@ -31,6 +31,13 @@ env_files:
   - .env
   - secrets.enc.env
 ---
+name: monitoring
+working_dir: hosts/datengrab/monitoring
+compose_files:
+  - compose.yaml
+env_files:
+  - .env
+---
 name: doco-cd
 working_dir: hosts/datengrab/doco-cd
 compose_files:
