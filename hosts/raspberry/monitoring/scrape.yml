@@ -11,3 +11,6 @@ scrape_configs:
       - targets: ["framboesa:8081"]
         labels:
           instance: "framboesa"
+      - targets: ["datengrab:8787"]
+        labels:
+          instance: "datengrab"
