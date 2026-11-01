@@ -152,12 +152,12 @@ services:
       - ./.env
     networks:
       servers:
-        priority: 1000
+        gw_priority: 10
       servers_macvlan:
         ipv4_address: 192.168.5.201
         ipv6_address: "2a02:169:4bce:2::201"
         mac_address: "8A:87:A6:C5:DA:6C"
-        priority: 900
+        priority: 0
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.ns0.rule=Host(`technitium.${DOMAIN}`)"
