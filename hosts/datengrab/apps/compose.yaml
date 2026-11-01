@@ -50,14 +50,13 @@ services:
     image: ghcr.io/teecodedev/gyroidvault:2.3.1@sha256:c734258fb871c4941a9417f621dd5ce25530bbe3142f54673fdc74b39841f6a0
     restart: unless-stopped
     ports:
-      - "4000:4000"
+      - "4000:3000/tcp"
     volumes:
       - ${DOCKER_DATA_DIR}/gyroidvault:/app/data
       - /volume1/3DPrinting:/library
     environment:
       JWT_SECRET: ${GYROIDVAULT_SECRET}
       NODE_ENV: production
-      PORT: "4000"
     env_file:
       - ./.env
     networks:
