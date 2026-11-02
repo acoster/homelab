@@ -14,3 +14,12 @@ scrape_configs:
       - targets: ["datengrab:8787"]
         labels:
           instance: "datengrab"
+  - job_name: "bambuddy"
+    static_configs:
+      - targets: ["bambuddy:8000"]
+        bearer_token: "%{BAMBUDDY_TOKEN}"
+        scheme: "http"
+        metrics_path: "/api/v1/metrics"
+    metric_relabel_configs:
+      - action: labeldrop
+        regex: 'serial':
