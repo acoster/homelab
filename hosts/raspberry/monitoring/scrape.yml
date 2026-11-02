@@ -22,4 +22,4 @@ scrape_configs:
         metrics_path: "/api/v1/metrics"
     metric_relabel_configs:
       - action: labeldrop
-        regex: 'serial':
+        regex: 'serial'
