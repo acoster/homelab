@@ -20,7 +20,7 @@ echo "Exporting paperless-gpt DB"
 sqlite3 ${DOCKER_DATA_DIR}/paperless-gpt/db/modification_history.db ".backup ${OUTPUT_ROOT}/paperless-gpt.bak"
 
 echo "Exporting Jelyfin DB"
-sqlite ${DOCKER_DATA_DIR}/jellyfin/config/data/jellyfin.db ".backup ${OUTPUT_ROOT}/jellyfin.bak"
+sqlite3 ${DOCKER_DATA_DIR}/jellyfin/config/data/jellyfin.db ".backup ${OUTPUT_ROOT}/jellyfin.bak"
 
 for i in sonarr radarr prowlarr lidarr; do
   echo "Exporting ${i} DB"
