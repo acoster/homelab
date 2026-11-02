@@ -45,11 +45,10 @@ locations:
           - '**/Logs'
 
           # Ignore caches
-          - '/backup_source/bind_mounts/hass/config/.cache/**'
           - '/**/__pycache__/**'
           - '*.pyc'
           - '.git'
-
+          - '**/cache/**'
           - '**/@eaDir'
           - '**/#recycle'
           - '**/#snapshot'
@@ -66,13 +65,6 @@ locations:
           - '**/radarr/MediaCover'
           - '**/sonarr/MediaCover'
           - '**/lidarr/MediaCover'
-
-          # Plex Exclusions (Massive file counts)
-          - '**/Plex Media Server/Metadata'
-          - '**/Plex Media Server/Media'
-          - '**/Plex Media Server/Cache'
-          - '**/Plex Media Server/Crash Reports'
-          - '**/Plex Media Server/Updates'
 
           # Databases
           - '**/paperless-db/**'

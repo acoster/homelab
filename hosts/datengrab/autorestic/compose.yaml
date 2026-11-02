@@ -18,6 +18,8 @@ services:
       # Docker binds
       - ${DOCKER_DATA_DIR}/backups:/backup_source/backups:ro
       - ${DOCKER_DATA_DIR}/bricktracker:/backup_source/bricktracker:ro
+      - ${DOCKER_DATA_DIR}/gyroidvault:/backup_source/gyroidvault:ro
+      - ${DOCKER_DATA_DIR}/jellyfin:/backup_source/jellyfin:ro
       - ${DOCKER_DATA_DIR}/lidarr:/backup_source/lidarr:ro
       - ${DOCKER_DATA_DIR}/paperless-gpt:/backup_source/paperless-gpt:ro
       - ${DOCKER_DATA_DIR}/prowlarr:/backup_source/prowlarr:ro
