@@ -59,10 +59,6 @@ services:
       servers:
         gw_priority: 0
       monitoring-internal:
-    command:
-      - "-storageDataPath=/storage"
-      - "-retentionPeriod=3M"
-      - "-promscrape.config=/etc/victoriametrics/scrape.yml"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.vm.rule=Host(`vm.${DOMAIN}`)"
@@ -74,7 +70,36 @@ services:
       - "traefik.http.routers.vm-local.service=vm-svc"
       - "traefik.http.services.vm-svc.loadbalancer.server.port=8428"
       - "traefik.docker.network=servers"
+    command:
+      - "-storageDataPath=/storage"
+      - "-retentionPeriod=3M"
+      - "-promscrape.config=/etc/victoriametrics/scrape.yml"
 
+  victorialogs:
+    container_name: victorialogs
+    image: victoriametrics/victoria-logs:v1.52.1
+    restart: unless-stopped
+    volumes:
+      - ${DOCKER_DATA_DIR}/vlogs-data:/victoria-logs-data
+    networks:
+      servers:
+        gw_priority: 0
+      monitoring-internal:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vlogs.rule=Host(`vlogs.${DOMAIN}`)"
+      - "traefik.http.routers.vlogs.entrypoints=https"
+      - "traefik.http.routers.vlogs.middlewares=middlewares-authentik@file"
+      - "traefik.http.routers.vlogs.service=vlogs-svc"
+      - "traefik.http.routers.vlogs-local.rule=Host(`vlogs.${DOMAIN}`) && ClientIP(`192.168.1.0/24`) && !ClientIP(`192.168.1.1`)"
+      - "traefik.http.routers.vlogs-local.entrypoints=https"
+      - "traefik.http.routers.vlogs-local.service=vlogs-svc"
+      - "traefik.http.services.vlogs-svc.loadbalancer.server.port=9428"
+      - "traefik.docker.network=servers"
+    command:
+      - "-storageDataPath=/victoria-logs-data"
+      - "-retentionPeriod=14d"
+      - "-retention.maxDiskSpaceUsageBytes=50GiB"
 
   grafana:
     container_name: grafana
