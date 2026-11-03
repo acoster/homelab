@@ -77,7 +77,7 @@ services:
 
   victorialogs:
     container_name: victorialogs
-    image: victoriametrics/victoria-logs:v1.52.1
+    image: victoriametrics/victoria-logs:v1.51.1
     restart: unless-stopped
     volumes:
       - ${DOCKER_DATA_DIR}/vlogs-data:/victoria-logs-data
