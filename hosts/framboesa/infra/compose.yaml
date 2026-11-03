@@ -36,6 +36,20 @@ services:
     networks:
       public:
 
+  bambulab-relay:
+    container_name: "bambulab-relay"
+    image: fingerhutascode/udp-broadcast-relay:latest
+    restart: unless-stopped
+    environment:
+      RELAY_ID: 1
+      BROADCAST_PORT: 1900
+      INTERFACES: "eth0,eth0.6"
+      SPOOF_SOURCE: "1.1.1.1"
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    network_mode: host
+
 networks:
   macvlan_5:
     name: macvlan_5
