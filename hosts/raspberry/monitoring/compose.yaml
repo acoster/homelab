@@ -63,6 +63,18 @@ services:
       - "-storageDataPath=/storage"
       - "-retentionPeriod=3M"
       - "-promscrape.config=/etc/victoriametrics/scrape.yml"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vm.rule=Host(`vm.${DOMAIN}`)"
+      - "traefik.http.routers.vm.entrypoints=https"
+      - "traefik.http.routers.vm.middlewares=middlewares-authentik@file"
+      - "traefik.http.routers.vm.service=vm-svc"
+      - "traefik.http.routers.vm-local.rule=Host(`vm.${DOMAIN}`) && ClientIP(`192.168.1.0/24`) && !ClientIP(`192.168.1.1`)"
+      - "traefik.http.routers.vm-local.entrypoints=https"
+      - "traefik.http.routers.vm-local.service=vm-svc"
+      - "traefik.http.services.vm-svc.loadbalancer.server.port=8428"
+      - "traefik.docker.network=servers"
+
 
   grafana:
     container_name: grafana
