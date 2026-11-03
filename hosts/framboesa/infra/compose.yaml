@@ -42,7 +42,7 @@ services:
     restart: unless-stopped
     environment:
       RELAY_ID: 1
-      BROADCAST_PORT: 1900
+      BROADCAST_PORT: 2021
       INTERFACES: "eth0,eth0.6"
       SPOOF_SOURCE: "1.1.1.1"
     cap_add:
