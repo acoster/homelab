@@ -2,6 +2,7 @@ scrape_configs:
   - job_name: "victoriametrics"
     static_configs:
       - targets: ["localhost:8428"]
+
   - job_name: "cadvisor"
     max_scrape_size: 64MB
     static_configs:
@@ -14,6 +15,16 @@ scrape_configs:
       - targets: ["datengrab:8787"]
         labels:
           instance: "datengrab"
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: "^container_network_advance_tcp_stats_total$"
+        action: drop
+      - source_labels: [image]
+        regex: "([^@]+)(@.*)?"
+        target_label: image
+        replacement: "$1"
+        action: replace
+
   - job_name: "bambuddy"
     static_configs:
       - targets: ["bambuddy:8000"]
@@ -22,4 +33,4 @@ scrape_configs:
     metrics_path: "/api/v1/metrics"
     metric_relabel_configs:
       - action: labeldrop
-        regex: 'serial'
+        regex: "serial"
