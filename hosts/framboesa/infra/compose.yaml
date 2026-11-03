@@ -38,13 +38,16 @@ services:
 
   bambulab-relay:
     container_name: "bambulab-relay"
-    image: fingerhutascode/udp-broadcast-relay:latest
+    image: fingerhutascode/udp-broadcast-relay:latest@sha256:588ed7b74cc59681160cc2bc2d173c65521143b3bd8b4b0b943031eabf0e0210
     restart: unless-stopped
+    # h/t to https://nuxx.net/blog/2024/12/19/bambu-lab-p1s-on-iot-vlan/ for
+    # figuring out the settings.
     environment:
       RELAY_ID: 1
       BROADCAST_PORT: 2021
       INTERFACES: "eth0,eth0.6"
-      SPOOF_SOURCE: "1.1.1.1"
+      SPOOF_SOURCE: "1.1.1.2"
+      MULTICAST_GROUP: "239.255.255.250"
     cap_add:
       - NET_ADMIN
       - NET_RAW
