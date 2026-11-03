@@ -102,7 +102,7 @@ services:
       - "-storageDataPath=/victoria-logs-data"
       - "-retentionPeriod=14d"
       - "-retention.maxDiskSpaceUsageBytes=50GiB"
-      - "-syslog.listenAddr=tcp://0.0.0.0:514"
+      - "-syslog.listenAddr.tcp=:514"
 
   grafana:
     container_name: grafana
