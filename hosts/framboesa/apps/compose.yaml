@@ -53,7 +53,7 @@ services:
       - "traefik.http.routers.homebridge-local.entrypoints=https"
       - "traefik.http.routers.homebridge-local.service=homebridge-svc"
       - "traefik.http.services.homebridge-svc.loadbalancer.server.port=8581"
-      - "kop.homebridge.bind.ip=192.168.1.241"
+      - "kop.homebridge-svc.bind.ip=192.168.1.241"
 
   octoeverywhere-bambu-connect:
     container_name: octoeverywhere
