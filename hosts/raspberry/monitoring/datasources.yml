@@ -14,3 +14,9 @@ datasources:
     url: http://victoriametrics:8428
     uid: victoriametrics-plugin
     isDefault: true
+
+  - name: VictoriaLogs
+    type: victoriametrics-logs-datasource
+    access: proxy
+    url: http://victorialogs:9428
+    uid: victorialogs-plugin
