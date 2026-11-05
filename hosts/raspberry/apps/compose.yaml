@@ -1,9 +1,3 @@
-x-logging: &syslog-config
-  driver: "syslog"
-  options:
-    syslog-address: "tcp://192.168.1.212:514"
-    tag: "{{.Name}}"
-
 name: raspberry
 
 services:
@@ -27,7 +21,6 @@ services:
       traefik.enable: true
       traefik.http.routers.bambuddy.rule: "Host(`bambuddy.${DOMAIN}`)"
       traefik.http.services.bambuddy.loadbalancer.server.port: 8000
-    logging: *syslog-config
     stop_grace_period: 30s
 
   homeassistant:
