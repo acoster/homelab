@@ -36,7 +36,15 @@ loki.source.journal "host" {
   max_age       = "12h"
   relabel_rules = loki.relabel.journal.rules
   labels        = { job = "systemd-journal" }
-  forward_to    = [loki.write.victorialogs.receiver]
+  forward_to    = [loki.process.drop_empty.receiver]
+}
+
+loki.process "drop_empty" {
+  stage.drop {
+    expression          = "^\\s*$"
+    drop_counter_reason = "empty_message"
+  }
+  forward_to = [loki.write.victorialogs.receiver]
 }
 
 loki.write "victorialogs" {
