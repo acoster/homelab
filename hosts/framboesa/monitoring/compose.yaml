@@ -48,9 +48,10 @@ services:
     image: grafana/alloy:v1.21.3
     restart: unless-stopped
     volumes:
-      - /var/log/journal:/var/log/journal:ro
+      - /run/log/journal:/run/log/journal:ro
       - /etc/machine-id:/etc/machine-id:ro
       - ./config.river:/etc/alloy/config.river:ro
+      - ${DOCKER_DATA_DIR}/alloy-data:/var/lib/alloy/data
     env_file:
       - .env
     networks:
@@ -60,6 +61,7 @@ services:
     command:
       - run
       - --server.http.listen-addr=0.0.0.0:12345
+      - --storage.path=/var/lib/alloy/data
       - /etc/alloy/config.river
     user: root
     labels:
