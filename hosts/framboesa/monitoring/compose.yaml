@@ -68,7 +68,7 @@ services:
       traefik.http.routers.alloy-framboesa.entrypoints: https
       traefik.http.routers.alloy-framboesa.middlewares: "authentik@file"
       traefik.http.routers.alloy-framboesa.service: alloy-framboesa-svc
-      traefik.http.services.alloy-framboesa-svc.loabalancer.server.port: 12345
+      traefik.http.services.alloy-framboesa-svc.loadbalancer.server.port: 12345
 
 networks:
   public:
