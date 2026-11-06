@@ -5,15 +5,16 @@ services:
     container_name: cadvisor
     image: ghcr.io/google/cadvisor:v0.60.6@sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a
     restart: unless-stopped
+    ports:
+      - "8787:8080/tcp"
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
+      - /etc/machine-id:/etc/machine-id:ro
       - /sys:/sys:ro
       - /var/packages/ContainerManager/var/docker/:/var/lib/docker:ro
     networks:
       public:
-    ports:
-      - "8787:8080/tcp"
     command:
       - "-disable_metrics=percpu,sched,tcp,udp,diskIO,process,referenced_memory"
       - "-store_container_labels=false"
@@ -22,6 +23,35 @@ services:
     devices:
       - /dev/kmsg:/dev/kmsg
     privileged: true
+
+  alloy:
+    container_name: alloy
+    image: grafana/alloy:v1.21.3
+    restart: unless-stopped
+    ports:
+      - "12345:12345/tcp"
+    volumes:
+      - /run/log/journal:/run/log/journal:ro
+      - /etc/machine-id:/etc/machine-id:ro
+      - ./config.river:/etc/alloy/config.river:ro
+      - ${DOCKER_DATA_DIR}/alloy-data:/var/lib/alloy/data
+    env_file:
+      - .env
+    networks:
+      public:
+    labels:
+      traefik.enable: true
+      traefik.http.routers.alloy-datengrab.rule: "Host(`alloy-datengrab.${DOMAIN}`)"
+      traefik.http.routers.alloy-datengrab.entrypoints: https
+      traefik.http.routers.alloy-datengrab.middlewares: "middlewares-authentik@file"
+      traefik.http.routers.alloy-datengrab.service: alloy-datengrab-svc
+      traefik.http.services.alloy-datengrab-svc.loadbalancer.server.port: 12345
+    command:
+      - run
+      - --server.http.listen-addr=0.0.0.0:12345
+      - --storage.path=/var/lib/alloy/data
+      - /etc/alloy/config.river
+    user: root
 
 networks:
   public:

@@ -38,4 +38,4 @@ git clean -fd -e "*.lock" -e "*autorestic.lock"
 
 echo "Running autorestic"
 cd ${REPO_DIR}/hosts/datengrab/autorestic
-sops exec-env secrets.enc.env 'docker compose run --rm autorestic autorestic  --ci cron'
+sops exec-env secrets.enc.env 'docker compose run --rm -T --name autorestic-cron autorestic autorestic  --ci cron'
