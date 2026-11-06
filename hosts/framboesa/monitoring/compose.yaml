@@ -66,7 +66,7 @@ services:
       traefik.enable: true
       traefik.http.routers.alloy-framboesa.rule: "Host(`alloy-framboesa.${DOMAIN}`)"
       traefik.http.routers.alloy-framboesa.entrypoints: https
-      traefik.http.routers.alloy-framboesa.middlewares: "authentik@file"
+      traefik.http.routers.alloy-framboesa.middlewares: "middlewares-authentik@file"
       traefik.http.routers.alloy-framboesa.service: alloy-framboesa-svc
       traefik.http.services.alloy-framboesa-svc.loadbalancer.server.port: 12345
 
