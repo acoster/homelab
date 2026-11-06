@@ -28,6 +28,8 @@ services:
       - /var/lib/docker/:/var/lib/docker:ro
       - /etc/machine-id:/etc/machine-id:ro
       - /dev/disk/:/dev/disk:ro
+    env_file:
+      - .env
     networks:
       public:
     ports:
@@ -42,20 +44,31 @@ services:
     privileged: true
 
   alloy:
-    container_name: grafana-alloy
+    container_name: alloy
     image: grafana/alloy:v1.21.3
     restart: unless-stopped
     volumes:
       - /var/log/journal:/var/log/journal:ro
       - /etc/machine-id:/etc/machine-id:ro
       - ./config.river:/etc/alloy/config.river:ro
+    env_file:
+      - .env
     networks:
       public:
+    ports:
+      -  "12345:12345/tcp"
     command:
       - run
       - --server.http.listen-addr=0.0.0.0:12345
       - /etc/alloy/config.river
     user: root
+    labels:
+      traefik.enable: true
+      traefik.http.routers.alloy-framboesa.rule: "Host(`alloy-framboesa.${DOMAIN}`)"
+      traefik.http.routers.alloy-framboesa.entrypoints: https
+      traefik.http.routers.alloy-framboesa.middlewares: "authentik@file"
+      traefik.http.routers.alloy-framboesa.service: alloy-framboesa-svc
+      traefik.http.services.alloy-framboesa-svc.loabalancer.server.port: 12345
 
 networks:
   public:
