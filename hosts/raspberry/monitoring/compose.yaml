@@ -83,6 +83,7 @@ services:
       - ${DOCKER_DATA_DIR}/vlogs-data:/victoria-logs-data
     ports:
       - "514:514/tcp"
+      - "9428:9428/tcp"
     networks:
       servers:
         gw_priority: 0
