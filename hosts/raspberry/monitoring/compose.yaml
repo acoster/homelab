@@ -162,6 +162,33 @@ services:
       - /dev/kmsg:/dev/kmsg
     privileged: true
 
+  alloy:
+    container_name: alloy
+    image: grafana/alloy:v1.21.3@sha256:8ab871206bd2d8f89277f53abffee5f452a293980788d52f85fa183a87a505a4
+    restart: unless-stopped
+    volumes:
+      - /run/log/journal:/run/log/journal:ro
+      - /etc/machine-id:/etc/machine-id:ro
+      - ./config.river:/etc/alloy/config.river:ro
+      - ${DOCKER_DATA_DIR}/alloy-data:/var/lib/alloy/data
+    env_file:
+      - .env
+    networks:
+      servers:
+    command:
+      - run
+      - --server.http.listen-addr=0.0.0.0:12345
+      - --storage.path=/var/lib/alloy/data
+      - /etc/alloy/config.river
+    user: root
+    labels:
+      traefik.enable: true
+      traefik.http.routers.alloy-raspberry.rule: "Host(`alloy-raspberry.${DOMAIN}`)"
+      traefik.http.routers.alloy-raspberry.entrypoints: https
+      traefik.http.routers.alloy-raspberry.middlewares: "middlewares-authentik@file"
+      traefik.http.routers.alloy-raspberry.service: alloy-raspberry-svc
+      traefik.http.services.alloy-raspberry-svc.loadbalancer.server.port: 12345
+
 networks:
   servers:
     name: servers
