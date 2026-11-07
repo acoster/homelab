@@ -16,6 +16,5 @@ git fetch origin main --prune
 git reset --hard origin/main
 git clean -fd -e "*.lock" -e "*autorestic.lock"
 
-SCRIPT=$(readlink -f "${0}")
-cd $(dirname "${SCRIPT}")
+cd ${REPO_DIR}/hosts/framboesa/autorestic
 sops exec-env secrets.enc.env 'docker compose run --rm -T --name autorestic-cron autorestic autorestic  -v --ci cron'
