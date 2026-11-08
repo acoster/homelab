@@ -20,4 +20,4 @@ git clean -fd -e "*.lock" -e "*autorestic.lock"
 
 SCRIPT=$(readlink -f "${0}")
 cd $(dirname "${SCRIPT}")
-sops exec-env secrets.enc.env 'docker compose run --rm autorestic autorestic --ci cron'
+sops exec-env secrets.enc.env 'docker compose run --rm -T --name autorestic-cron autorestic autorestic --ci cron'

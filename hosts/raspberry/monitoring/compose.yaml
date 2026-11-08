@@ -55,6 +55,7 @@ services:
       - ./scrape.yml:/etc/victoriametrics/scrape.yml:ro
     environment:
       BAMBUDDY_TOKEN:
+      VM_HASS_TOKEN:
     networks:
       servers:
         gw_priority: 0
