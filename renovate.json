@@ -7,6 +7,9 @@
   "schedule": [
     "before 8am on saturday"
   ],
+  "automergeSchedule": [
+    "* 0-3 * * *"
+  ],
   "packageRules": [
     {
       "description": "Group minor and patch Docker updates together into a single weekly PR",
