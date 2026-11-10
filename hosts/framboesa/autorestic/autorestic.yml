@@ -49,6 +49,6 @@ locations:
           - "spoolman.log.*"
 
           # Ignore caches
-          - "/**/__pycache/**"
+          - "/**/__pycache__/**"
           - "*.pyc"
           - ".git"

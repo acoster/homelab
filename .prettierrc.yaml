@@ -4,6 +4,7 @@ trailingComma: "none"
 overrides:
   - files:
       - "**/compose.yaml"
+      - "**/compose.*.yaml"
       - "**/docker-compose.yaml"
     options:
       singleQuote: true

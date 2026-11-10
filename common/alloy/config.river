@@ -1,5 +1,15 @@
+// Shared by every host's alloy (common/compose.monitoring.yaml).
+// Per-host: VLOGS_URL, the VictoriaLogs base URL, set in the host's compose file.
+
 loki.relabel "journal" {
   forward_to = []
+
+  rule {
+    source_labels = ["__journal_syslog_identifier"]
+    // Synology DSM noise; these identifiers never appear on the Pis.
+    regex         = "synonetd|synologrotate"
+    action        = "drop"
+  }
 
   rule {
     source_labels = ["__journal__systemd_unit"]
@@ -49,6 +59,6 @@ loki.process "drop_empty" {
 
 loki.write "victorialogs" {
   endpoint {
-    url = "http://victorialogs:9428/insert/loki/api/v1/push?_msg_field=msg,message,event"
+    url = sys.env("VLOGS_URL") + "/insert/loki/api/v1/push?_msg_field=msg,message,event"
   }
 }
