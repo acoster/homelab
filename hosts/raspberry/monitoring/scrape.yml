@@ -46,6 +46,13 @@ scrape_configs:
         regex: "hass_(state_change_created|state_change_total|entity_available|last_updated_time_seconds|entity_info)"
         action: drop
 
+  - job_name: "jellyfin"
+    # Direct to the macvlan IP: /metrics is blocked on the public Traefik router.
+    static_configs:
+      - targets: ["192.168.1.231:8096"]
+        labels:
+          instance: "datengrab"
+
   - job_name: "healthchecks"
     scheme: https
     metrics_path: "/projects/%{HC_PROJECT}/metrics/%{HC_TOKEN}"
