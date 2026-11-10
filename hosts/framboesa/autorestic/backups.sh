@@ -17,7 +17,8 @@ if [[ "${HOMELAB_REPO_SYNCED:-0}" != "1" ]]; then
   exec "${REPO_DIR}/hosts/framboesa/autorestic/backups.sh" "$@"
 fi
 
-curl -s -X POST http://127.0.0.1:8000/api/v1/backup 2>&1 > /dev/null
+curl -fsS -m 60 -X POST http://127.0.0.1:8000/api/v1/backup > /dev/null \
+  || echo "WARNING: spoolman backup API call failed" >&2
 dpkg --get-selections > ${OUTPUT_DIR}/installed_packages.txt
 
 sqlite3 ${DOCKER_DATA_DIR}/bytestash/snippets.db ".backup ${OUTPUT_DIR}/bytestash.bak"

@@ -242,8 +242,6 @@ networks:
   public:
     name: public
     external: true
-  media-internal:
-    internal: true
   media-macvlan:
     name: media-macvlan
     driver: macvlan

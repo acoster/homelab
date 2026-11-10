@@ -1,5 +1,6 @@
 [global]
-  checkNewVersion = true
+  checkNewVersion = false
+  sendAnonymousUsage = false
 
 [api]
   dashboard = true
