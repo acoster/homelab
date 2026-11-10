@@ -2,8 +2,9 @@ name: doco-cd
 
 services:
   doco-cd:
-    image: ghcr.io/kimdre/doco-cd:0.133.2@sha256:8ca3cf6701f70ac3af4c5d726e542fe3a854a038149375f87222ec2719b3c975
     container_name: doco-cd
+    image: ghcr.io/kimdre/doco-cd:0.133.2@sha256:8ca3cf6701f70ac3af4c5d726e542fe3a854a038149375f87222ec2719b3c975
+    restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${DOCKER_DATA_DIR}/doco-cd:/data
@@ -11,7 +12,7 @@ services:
       TZ: ${TZ}
       LOG_LEVEL: info
       SOPS_AGE_KEY: ${SOPS_AGE_KEY}
-      SELF_UPDATE_ENABLED: "true"
+      SELF_UPDATE_ENABLED: 'true'
       MAX_CONCURRENT_DEPLOYMENTS: 1
       GIT_AUTH_TOKEN: ${GIT_AUTH_TOKEN}
       WEBHOOK_SECRET: ${WEBHOOK_TOKEN}
@@ -19,16 +20,15 @@ services:
         - url: https://github.com/acoster/homelab.git
           reference: main
           interval: 1800
-          target: cloudy 
+          target: cloudy
     networks:
       servers:
-    restart: unless-stopped
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.hook-cloudy.rule=Host(`${WEBHOOK_HOST}`)"
-      - "traefik.http.routers.hook-cloudy.entrypoints=https"
-      - "traefik.http.services.hook-cloudy.loadbalancer.server.port=80"
-      - "traefik.http.routers.hook-cloudy.tls=true"
+      traefik.enable: 'true'
+      traefik.http.routers.hook-cloudy.rule: Host(`${WEBHOOK_HOST}`)
+      traefik.http.routers.hook-cloudy.entrypoints: https
+      traefik.http.services.hook-cloudy.loadbalancer.server.port: '80'
+      traefik.http.routers.hook-cloudy.tls: 'true'
 
 networks:
   servers:

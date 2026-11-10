@@ -2,7 +2,7 @@ name: infra
 
 services:
   traefik:
-    container_name: "traefik"
+    container_name: 'traefik'
     image: traefik:v3.7.17@sha256:f4bb143d1135a579b630ed491e17ec50f6f7c9c6a30585ff3d385471d2a86f5a
     restart: unless-stopped
     ports:
@@ -13,33 +13,6 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${DOCKER_DATA_DIR}/acme.json:/letsencrypt/acme.json
-    command:
-      # Global configuration
-      - "--global.checknewversion=false"
-      - "--global.sendanonymoususage=false"
-      - "--log.format=common"
-
-      # Entrypoints & automatic HTTP -> HTTPS redirect
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.web.http.redirections.entrypoint.to=https"
-      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-      - "--entrypoints.https.address=:443"
-      
-      - "--entrypoints.websecure.http.tls.certresolver=cloudflare"
-      - "--entrypoints.websecure.http.tls.domains[0].main=${DOMAIN}"
-      - "--entrypoints.websecure.http.tls.domains[0].sans=*.${DOMAIN}"
-
-      # Cloudflare DNS-01 ACME Resolver
-      - "--certificatesresolvers.cloudflare.acme.email=${CF_API_EMAIL}"
-      - "--certificatesresolvers.cloudflare.acme.storage=/letsencrypt/acme.json"
-      - "--certificatesresolvers.cloudflare.acme.dnschallenge=true"
-      - "--certificatesresolvers.cloudflare.acme.dnschallenge.provider=cloudflare"
-      - "--certificatesresolvers.cloudflare.acme.dnschallenge.resolvers=1.1.1.1:53,1.0.0.1:53"
-      - "--certificatesresolvers.cloudflare.acme.dnschallenge.delaybeforecheck=10"
-
-      # Docker Provider
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
     environment:
       CF_DNS_API_TOKEN: ${CF_API_TOKEN}
     env_file:
@@ -47,10 +20,37 @@ services:
     networks:
       servers:
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.wildcard-certs.rule=HostRegexp(`{host:.+}`)"
-      - "traefik.http.routers.wildcard-certs.entrypoints=https"
-      - "traefik.http.routers.wildcard-certs.service=noop@internal"
+      traefik.enable: 'true'
+      traefik.http.routers.wildcard-certs.rule: HostRegexp(`{host:.+}`)
+      traefik.http.routers.wildcard-certs.entrypoints: https
+      traefik.http.routers.wildcard-certs.service: noop@internal
+    command:
+      # Global configuration
+      - '--global.checknewversion=false'
+      - '--global.sendanonymoususage=false'
+      - '--log.format=common'
+
+      # Entrypoints & automatic HTTP -> HTTPS redirect
+      - '--entrypoints.web.address=:80'
+      - '--entrypoints.web.http.redirections.entrypoint.to=https'
+      - '--entrypoints.web.http.redirections.entrypoint.scheme=https'
+      - '--entrypoints.https.address=:443'
+
+      - '--entrypoints.websecure.http.tls.certresolver=cloudflare'
+      - '--entrypoints.websecure.http.tls.domains[0].main=${DOMAIN}'
+      - '--entrypoints.websecure.http.tls.domains[0].sans=*.${DOMAIN}'
+
+      # Cloudflare DNS-01 ACME Resolver
+      - '--certificatesresolvers.cloudflare.acme.email=${CF_API_EMAIL}'
+      - '--certificatesresolvers.cloudflare.acme.storage=/letsencrypt/acme.json'
+      - '--certificatesresolvers.cloudflare.acme.dnschallenge=true'
+      - '--certificatesresolvers.cloudflare.acme.dnschallenge.provider=cloudflare'
+      - '--certificatesresolvers.cloudflare.acme.dnschallenge.resolvers=1.1.1.1:53,1.0.0.1:53'
+      - '--certificatesresolvers.cloudflare.acme.dnschallenge.delaybeforecheck=10'
+
+      # Docker Provider
+      - '--providers.docker=true'
+      - '--providers.docker.exposedbydefault=false'
 
 networks:
   servers:

@@ -35,15 +35,15 @@ services:
     networks:
       servers:
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.gatus.rule=Host(`gatus.${DOMAIN}`)"
-      - "traefik.http.routers.gatus.entrypoints=https"
-      - "traefik.http.routers.gatus.middlewares=middlewares-authentik@file"
-      - "traefik.http.routers.gatus.service=gatus-svc"
-      - "traefik.http.routers.gatus-local.rule=Host(`gatus.${DOMAIN}`) && ClientIP(`192.168.0.0/16`)"
-      - "traefik.http.routers.gatus-local.entrypoints=https"
-      - "traefik.http.routers.gatus-local.service=gatus-svc"
-      - "traefik.http.services.gatus-svc.loadbalancer.server.port=8080"
+      traefik.enable: 'true'
+      traefik.http.routers.gatus.rule: Host(`gatus.${DOMAIN}`)
+      traefik.http.routers.gatus.entrypoints: https
+      traefik.http.routers.gatus.middlewares: middlewares-authentik@file
+      traefik.http.routers.gatus.service: gatus-svc
+      traefik.http.routers.gatus-local.rule: Host(`gatus.${DOMAIN}`) && ClientIP(`192.168.0.0/16`)
+      traefik.http.routers.gatus-local.entrypoints: https
+      traefik.http.routers.gatus-local.service: gatus-svc
+      traefik.http.services.gatus-svc.loadbalancer.server.port: '8080'
 
   victoriametrics:
     container_name: victoriametrics
@@ -62,50 +62,50 @@ services:
         gw_priority: 0
       monitoring-internal:
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.vm.rule=Host(`vm.${DOMAIN}`)"
-      - "traefik.http.routers.vm.entrypoints=https"
-      - "traefik.http.routers.vm.middlewares=middlewares-authentik@file"
-      - "traefik.http.routers.vm.service=vm-svc"
-      - "traefik.http.routers.vm-local.rule=Host(`vm.${DOMAIN}`) && ClientIP(`192.168.1.0/24`) && !ClientIP(`192.168.1.1`)"
-      - "traefik.http.routers.vm-local.entrypoints=https"
-      - "traefik.http.routers.vm-local.service=vm-svc"
-      - "traefik.http.services.vm-svc.loadbalancer.server.port=8428"
-      - "traefik.docker.network=servers"
+      traefik.enable: 'true'
+      traefik.http.routers.vm.rule: Host(`vm.${DOMAIN}`)
+      traefik.http.routers.vm.entrypoints: https
+      traefik.http.routers.vm.middlewares: middlewares-authentik@file
+      traefik.http.routers.vm.service: vm-svc
+      traefik.http.routers.vm-local.rule: Host(`vm.${DOMAIN}`) && ClientIP(`192.168.1.0/24`) && !ClientIP(`192.168.1.1`)
+      traefik.http.routers.vm-local.entrypoints: https
+      traefik.http.routers.vm-local.service: vm-svc
+      traefik.http.services.vm-svc.loadbalancer.server.port: '8428'
+      traefik.docker.network: servers
     command:
-      - "-storageDataPath=/storage"
-      - "-retentionPeriod=3M"
-      - "-promscrape.config=/etc/victoriametrics/scrape.yml"
+      - '-storageDataPath=/storage'
+      - '-retentionPeriod=3M'
+      - '-promscrape.config=/etc/victoriametrics/scrape.yml'
 
   victorialogs:
     container_name: victorialogs
     image: victoriametrics/victoria-logs:v1.53.0@sha256:251121fa882af99b95ba0c230a4a2f412ea602d2698c64a96c58dc9842bb755d
     restart: unless-stopped
+    ports:
+      - '514:514/tcp'
+      - '9428:9428/tcp'
     volumes:
       - ${DOCKER_DATA_DIR}/vlogs-data:/victoria-logs-data
-    ports:
-      - "514:514/tcp"
-      - "9428:9428/tcp"
     networks:
       servers:
         gw_priority: 0
       monitoring-internal:
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.vlogs.rule=Host(`vlogs.${DOMAIN}`)"
-      - "traefik.http.routers.vlogs.entrypoints=https"
-      - "traefik.http.routers.vlogs.middlewares=middlewares-authentik@file"
-      - "traefik.http.routers.vlogs.service=vlogs-svc"
-      - "traefik.http.routers.vlogs-local.rule=Host(`vlogs.${DOMAIN}`) && ClientIP(`192.168.1.0/24`) && !ClientIP(`192.168.1.1`)"
-      - "traefik.http.routers.vlogs-local.entrypoints=https"
-      - "traefik.http.routers.vlogs-local.service=vlogs-svc"
-      - "traefik.http.services.vlogs-svc.loadbalancer.server.port=9428"
-      - "traefik.docker.network=servers"
+      traefik.enable: 'true'
+      traefik.http.routers.vlogs.rule: Host(`vlogs.${DOMAIN}`)
+      traefik.http.routers.vlogs.entrypoints: https
+      traefik.http.routers.vlogs.middlewares: middlewares-authentik@file
+      traefik.http.routers.vlogs.service: vlogs-svc
+      traefik.http.routers.vlogs-local.rule: Host(`vlogs.${DOMAIN}`) && ClientIP(`192.168.1.0/24`) && !ClientIP(`192.168.1.1`)
+      traefik.http.routers.vlogs-local.entrypoints: https
+      traefik.http.routers.vlogs-local.service: vlogs-svc
+      traefik.http.services.vlogs-svc.loadbalancer.server.port: '9428'
+      traefik.docker.network: servers
     command:
-      - "-storageDataPath=/victoria-logs-data"
-      - "-retentionPeriod=14d"
-      - "-retention.maxDiskSpaceUsageBytes=50GiB"
-      - "-syslog.listenAddr.tcp=:514"
+      - '-storageDataPath=/victoria-logs-data'
+      - '-retentionPeriod=14d'
+      - '-retention.maxDiskSpaceUsageBytes=50GiB'
+      - '-syslog.listenAddr.tcp=:514'
 
   grafana:
     container_name: grafana
@@ -124,24 +124,24 @@ services:
       GF_AUTH_GENERIC_OAUTH_ENABLED: 'true'
       GF_AUTH_GENERIC_OAUTH_CLIENT_ID: ${GF_AUTH_GENERIC_OAUTH_CLIENT_ID}
       GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET: ${GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET}
-      GF_AUTH_GENERIC_OAUTH_SCOPES: "openid profile email entitlements"
-      GF_AUTH_GENERIC_OAUTH_AUTH_URL: "${OAUTH_ROOT}/authorize/"
-      GF_AUTH_GENERIC_OAUTH_TOKEN_URL: "${OAUTH_ROOT}/token/"
-      GF_AUTH_GENERIC_OAUTH_API_URL: "${OAUTH_ROOT}/userinfo/"
-      GF_AUTH_SIGNOUT_REDIRECT_URL: "${OAUTH_ROOT}/grafana/end-session/"
-      GF_AUTH_OAUTH_AUTO_LOGIN: "true"
-      GF_AUTH_GENERIC_OAUTH_ALLOW_ASSIGN_GRAFANA_ADMIN: "true"
+      GF_AUTH_GENERIC_OAUTH_SCOPES: 'openid profile email entitlements'
+      GF_AUTH_GENERIC_OAUTH_AUTH_URL: '${OAUTH_ROOT}/authorize/'
+      GF_AUTH_GENERIC_OAUTH_TOKEN_URL: '${OAUTH_ROOT}/token/'
+      GF_AUTH_GENERIC_OAUTH_API_URL: '${OAUTH_ROOT}/userinfo/'
+      GF_AUTH_SIGNOUT_REDIRECT_URL: '${OAUTH_ROOT}/grafana/end-session/'
+      GF_AUTH_OAUTH_AUTO_LOGIN: 'true'
+      GF_AUTH_GENERIC_OAUTH_ALLOW_ASSIGN_GRAFANA_ADMIN: 'true'
       GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH: "contains(groups, 'Grafana Admins') && 'Admin' || contains(groups, 'Grafana Editors') && 'Editor' || 'Viewer'"
       GF_INSTALL_PLUGINS: victoriametrics-metrics-datasource,victoriametrics-logs-datasource
     networks:
       servers:
       monitoring-internal:
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.grafana.rule=Host(`grafana.${DOMAIN}`)"
-      - "traefik.http.routers.grafana.service=grafana-svc"
-      - "traefik.http.services.grafana-svc.loadbalancer.server.port=3000"
-      - "traefik.docker.network=servers"
+      traefik.enable: 'true'
+      traefik.http.routers.grafana.rule: Host(`grafana.${DOMAIN}`)
+      traefik.http.routers.grafana.service: grafana-svc
+      traefik.http.services.grafana-svc.loadbalancer.server.port: '3000'
+      traefik.docker.network: servers
 
   cadvisor:
     container_name: cadvisor
@@ -156,9 +156,9 @@ services:
     networks:
       monitoring-internal:
     command:
-      - "-disable_metrics=percpu,sched,tcp,udp,diskIO,process,referenced_memory"
-      - "-store_container_labels=false"
-      - "-whitelisted_container_labels=com.docker.compose.project,com.docker.compose.service"
+      - '-disable_metrics=percpu,sched,tcp,udp,diskIO,process,referenced_memory'
+      - '-store_container_labels=false'
+      - '-whitelisted_container_labels=com.docker.compose.project,com.docker.compose.service'
       - '-docker_only=true'
     devices:
       - /dev/kmsg:/dev/kmsg
@@ -177,19 +177,19 @@ services:
       - .env
     networks:
       servers:
+    labels:
+      traefik.enable: true
+      traefik.http.routers.alloy-raspberry.rule: 'Host(`alloy-raspberry.${DOMAIN}`)'
+      traefik.http.routers.alloy-raspberry.entrypoints: https
+      traefik.http.routers.alloy-raspberry.middlewares: 'middlewares-authentik@file'
+      traefik.http.routers.alloy-raspberry.service: alloy-raspberry-svc
+      traefik.http.services.alloy-raspberry-svc.loadbalancer.server.port: 12345
     command:
       - run
       - --server.http.listen-addr=0.0.0.0:12345
       - --storage.path=/var/lib/alloy/data
       - /etc/alloy/config.river
     user: root
-    labels:
-      traefik.enable: true
-      traefik.http.routers.alloy-raspberry.rule: "Host(`alloy-raspberry.${DOMAIN}`)"
-      traefik.http.routers.alloy-raspberry.entrypoints: https
-      traefik.http.routers.alloy-raspberry.middlewares: "middlewares-authentik@file"
-      traefik.http.routers.alloy-raspberry.service: alloy-raspberry-svc
-      traefik.http.services.alloy-raspberry-svc.loadbalancer.server.port: 12345
 
 networks:
   servers:

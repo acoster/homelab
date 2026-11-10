@@ -50,4 +50,4 @@ scrape_configs:
     scheme: https
     metrics_path: "/projects/%{HC_PROJECT}/metrics/%{HC_TOKEN}"
     static_configs:
-      - targets: ['healthchecks.io']
+      - targets: ["healthchecks.io"]

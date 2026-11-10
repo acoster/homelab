@@ -6,4 +6,4 @@ overrides:
       - "**/compose.yaml"
       - "**/docker-compose.yaml"
     options:
-      singleQuote: false
+      singleQuote: true

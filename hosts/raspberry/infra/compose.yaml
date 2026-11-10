@@ -8,8 +8,8 @@ services:
     volumes:
       - ${DOCKER_DATA_DIR}/authentik-psql:/var/lib/postgresql
     environment:
-      POSTGRES_USER: "authentik"
-      POSTGRES_DB: "authentik"
+      POSTGRES_USER: 'authentik'
+      POSTGRES_DB: 'authentik'
       POSTGRES_PASSWORD: ${AUTHENTIK_DB_PASSWORD}
     env_file:
       - ./.env
@@ -29,11 +29,11 @@ services:
     image: ghcr.io/goauthentik/ldap:2026.8.5@sha256:4c75bd27918418d2d6fbbfe4581bbd5a199fe38942d24559c4483edd64a1ea87
     restart: unless-stopped
     ports:
-      - 389:3389
-      - 636:6636
+      - '389:3389'
+      - '636:6636'
     environment:
       AUTHENTIK_HOST: https://auth.h.coster.ch
-      AUTHENTIK_INSECURE: "false"
+      AUTHENTIK_INSECURE: 'false'
       AUTHENTIK_TOKEN: ${AUTHENTIK_LDAP_TOKEN}
     networks:
       servers:
@@ -57,12 +57,12 @@ services:
     networks:
       servers:
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.authh.rule=Host(`auth.${DOMAIN}`)"
-      - "traefik.http.services.authh.loadbalancer.server.port=9000"
+      traefik.enable: 'true'
+      traefik.http.routers.authh.rule: Host(`auth.${DOMAIN}`)
+      traefik.http.services.authh.loadbalancer.server.port: '9000'
       # Traefik v3 HostRegexp takes a plain Go regex; `$$` is a literal `$` for compose.
-      - "traefik.http.routers.authentik-outpost.rule=HostRegexp(`^[a-z0-9-]+[.]${DOMAIN}$$`) && PathPrefix(`/outpost.goauthentik.io/`)"
-      - "traefik.http.routers.authentik-outpost.service=authh"
+      traefik.http.routers.authentik-outpost.rule: HostRegexp(`^[a-z0-9-]+[.]${DOMAIN}$$`) && PathPrefix(`/outpost.goauthentik.io/`)
+      traefik.http.routers.authentik-outpost.service: authh
     command: server
 
   authentik_worker:
@@ -101,29 +101,29 @@ services:
     image: crowdsecurity/crowdsec:v1.8.2-debian@sha256:a5642c72127ee93aaac830e9f66891573fa7851b2c721987d9fef13d7d05fdfe
     restart: unless-stopped
     ports:
-      - "6060:6060"
-      - "127.0.0.1:8989:8080"
+      - '6060:6060'
+      - '127.0.0.1:8989:8080'
     volumes:
       - /opt/crowdsec-db:/var/lib/crowdsec/data
       - /opt/crowdsec:/etc/crowdsec
       - /var/log:/run/log:ro
       - ${DOCKER_DATA_DIR}/traefik-logs:/var/log/traefik
     environment:
-      PGID: "1000"
-      COLLECTIONS: "crowdsecurity/traefik crowdsecurity/http-cve crowdsecurity/unifi crowdsecurity/sshd"
+      PGID: '1000'
+      COLLECTIONS: 'crowdsecurity/traefik crowdsecurity/http-cve crowdsecurity/unifi crowdsecurity/sshd'
     env_file:
       - ./.env
     networks:
       servers:
     labels:
-      - "traefik.enable=false"
+      traefik.enable: 'false'
 
   redis:
     container_name: redis
     image: redis:8.10.3@sha256:1f88291b4c57bdf249f02eb085a8669889b2d2954e91d4de5118a5da6b78dd53
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - '6379:6379'
     volumes:
       - ${DOCKER_DATA_DIR}/redis_cache:/data
     environment:
@@ -156,16 +156,16 @@ services:
         gw_priority: 10
       servers_macvlan:
         ipv4_address: 192.168.5.201
-        ipv6_address: "2a02:169:4bce:2::201"
-        mac_address: "8A:87:A6:C5:DA:6C"
+        ipv6_address: '2a02:169:4bce:2::201'
+        mac_address: '8A:87:A6:C5:DA:6C'
         priority: 0
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.ns0.rule=Host(`technitium.${DOMAIN}`)"
-      - "traefik.http.services.ns0.loadbalancer.server.port=5380"
-      - "traefik.docker.network=servers"
+      traefik.enable: 'true'
+      traefik.http.routers.ns0.rule: Host(`technitium.${DOMAIN}`)
+      traefik.http.services.ns0.loadbalancer.server.port: '5380'
+      traefik.docker.network: servers
     extra_hosts:
-      - "auth.${DOMAIN}=172.18.0.254"
+      auth.${DOMAIN}: 172.18.0.254
     hostname: ns0
 
   traefik:
@@ -206,16 +206,16 @@ services:
       servers:
         ipv4_address: 172.18.0.254 # Safe from sequential DHCP
     labels:
-      - "traefik.enable=true"
-      - "traefik.tls.stores.default.defaultgeneratedcert.resolver=gcl"
-      - "traefik.tls.stores.default.defaultgeneratedcert.domain.main=${DOMAIN}"
-      - "traefik.tls.stores.default.defaultgeneratedcert.domain.sans=*.${DOMAIN}"
-      - "traefik.http.routers.dashboard.rule=Host(`traefik.${DOMAIN}`)"
-      - "traefik.http.routers.dashboard.service=api@internal"
-      - "traefik.http.routers.dashboard.middlewares=middlewares-authentik@file"
-      - "traefik.http.middlewares.crowdsec.plugin.crowdsec-bouncer.enabled=true"
-      - "traefik.http.middlewares.crowdsec.plugin.crowdsec-bouncer.crowdsecLapiKey=${CROWDSEC_LAPI_KEY}"
-      - "traefik.http.middlewares.crowdsec.plugin.crowdsec-bouncer.crowdsecMode=stream"
+      traefik.enable: 'true'
+      traefik.tls.stores.default.defaultgeneratedcert.resolver: gcl
+      traefik.tls.stores.default.defaultgeneratedcert.domain.main: ${DOMAIN}
+      traefik.tls.stores.default.defaultgeneratedcert.domain.sans: '*.${DOMAIN}'
+      traefik.http.routers.dashboard.rule: Host(`traefik.${DOMAIN}`)
+      traefik.http.routers.dashboard.service: api@internal
+      traefik.http.routers.dashboard.middlewares: middlewares-authentik@file
+      traefik.http.middlewares.crowdsec.plugin.crowdsec-bouncer.enabled: 'true'
+      traefik.http.middlewares.crowdsec.plugin.crowdsec-bouncer.crowdsecLapiKey: ${CROWDSEC_LAPI_KEY}
+      traefik.http.middlewares.crowdsec.plugin.crowdsec-bouncer.crowdsecMode: stream
 
 networks:
   servers:
@@ -236,5 +236,5 @@ networks:
       config:
         - subnet: 192.168.5.0/24
           gateway: 192.168.5.1
-        - subnet: "2a02:169:4bce:2::/64"
-          gateway: "2a02:169:4bce:2::1"
+        - subnet: '2a02:169:4bce:2::/64'
+          gateway: '2a02:169:4bce:2::1'

@@ -3,7 +3,7 @@ version: 2
 backends:
   rsyncnet:
     type: sftp
-    path: 'rsyncnet:datengrab-backup'
+    path: "rsyncnet:datengrab-backup"
 
 locations:
   datengrab-backup:
@@ -19,7 +19,7 @@ locations:
       failure:
         - sh -c 'curl -fsS -m 10 --retry 3 "${HC_PING_URL}/fail"'
     forget: prune
-    cron: '0 5 * * *'
+    cron: "0 5 * * *"
     options:
       forget:
         keep-daily: 7
@@ -30,42 +30,42 @@ locations:
           - datengrab
         exclude:
           # Standard SQLite extensions
-          - '*.db'
-          - '*.db-wal'
-          - '*.db-shm'
+          - "*.db"
+          - "*.db-wal"
+          - "*.db-shm"
 
           # Django/Python specific SQLite names
-          - 'db.sqlite3'
-          - 'db.sqlite3-wal'
-          - 'db.sqlite3-shm'
+          - "db.sqlite3"
+          - "db.sqlite3-wal"
+          - "db.sqlite3-shm"
 
           # Ignore logs
-          - '/backup_source/traefik-logs/**'
-          - '*.log'
-          - '**/logs'
-          - '**/Logs'
+          - "/backup_source/traefik-logs/**"
+          - "*.log"
+          - "**/logs"
+          - "**/Logs"
 
           # Ignore caches
-          - '/**/__pycache__/**'
-          - '*.pyc'
-          - '.git'
-          - '**/cache/**'
-          - '**/@eaDir'
-          - '**/#recycle'
-          - '**/#snapshot'
-          - '**/.SynologyWorkingDirectory'
-          - '**/Thumbs.db'
-          - '**/.DS_Store'
+          - "/**/__pycache__/**"
+          - "*.pyc"
+          - ".git"
+          - "**/cache/**"
+          - "**/@eaDir"
+          - "**/#recycle"
+          - "**/#snapshot"
+          - "**/.SynologyWorkingDirectory"
+          - "**/Thumbs.db"
+          - "**/.DS_Store"
 
           # SABnzbd Exclusions
-          - '**/sabnzbd/logs'
-          - '**/sabnzbd/admin'
+          - "**/sabnzbd/logs"
+          - "**/sabnzbd/admin"
 
           # *aars
-          - '*.pid'
-          - '**/radarr/MediaCover'
-          - '**/sonarr/MediaCover'
-          - '**/lidarr/MediaCover'
+          - "*.pid"
+          - "**/radarr/MediaCover"
+          - "**/sonarr/MediaCover"
+          - "**/lidarr/MediaCover"
 
           # Databases
-          - '**/paperless-db/**'
+          - "**/paperless-db/**"

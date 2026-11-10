@@ -14,13 +14,13 @@ services:
     networks:
       macvlan_5:
         ipv4_address: 192.168.5.202
-        ipv6_address: "2a02:169:4bce:2::202"
-        mac_address: "46:d0:e8:df:59:1d"
+        ipv6_address: '2a02:169:4bce:2::202'
+        mac_address: '46:d0:e8:df:59:1d'
       public:
     hostname: ns1
 
   traefik-kop:
-    container_name: "traefik-kop"
+    container_name: 'traefik-kop'
     image: ghcr.io/jittering/traefik-kop:0.21.0@sha256:ba7595e054e1d1831f17a3cd4e016e802ce9923a7f9843eb8f66dc5010469740
     restart: unless-stopped
     volumes:
@@ -37,7 +37,7 @@ services:
       public:
 
   bambulab-relay:
-    container_name: "bambulab-relay"
+    container_name: 'bambulab-relay'
     image: fingerhutascode/udp-broadcast-relay:latest@sha256:588ed7b74cc59681160cc2bc2d173c65521143b3bd8b4b0b943031eabf0e0210
     restart: unless-stopped
     # h/t to https://nuxx.net/blog/2024/12/19/bambu-lab-p1s-on-iot-vlan/ for
@@ -45,9 +45,9 @@ services:
     environment:
       RELAY_ID: 1
       BROADCAST_PORT: 2021
-      INTERFACES: "eth0,eth0.6"
-      SPOOF_SOURCE: "1.1.1.2"
-      MULTICAST_GROUP: "239.255.255.250"
+      INTERFACES: 'eth0,eth0.6'
+      SPOOF_SOURCE: '1.1.1.2'
+      MULTICAST_GROUP: '239.255.255.250'
     cap_add:
       - NET_ADMIN
       - NET_RAW
@@ -64,8 +64,8 @@ networks:
       config:
         - subnet: 192.168.5.0/24
           gateway: 192.168.5.1
-        - subnet: "2a02:169:4bce:2::/64"
-          gateway: "2a02:169:4bce:2::1"
+        - subnet: '2a02:169:4bce:2::/64'
+          gateway: '2a02:169:4bce:2::1'
 
   public:
     name: public

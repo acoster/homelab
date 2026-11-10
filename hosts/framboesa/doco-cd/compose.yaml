@@ -6,7 +6,7 @@ services:
     image: ghcr.io/kimdre/doco-cd:0.133.2@sha256:8ca3cf6701f70ac3af4c5d726e542fe3a854a038149375f87222ec2719b3c975
     restart: unless-stopped
     ports:
-      - "9000:80"
+      - '9000:80'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${DOCKER_DATA_DIR}/doco-cd:/data
@@ -14,7 +14,7 @@ services:
       TZ: ${TZ}
       LOG_LEVEL: info
       SOPS_AGE_KEY: ${SOPS_AGE_KEY}
-      SELF_UPDATE_ENABLED: "true"
+      SELF_UPDATE_ENABLED: 'true'
       MAX_CONCURRENT_DEPLOYMENTS: 1
       GIT_AUTH_TOKEN: ${GIT_AUTH_TOKEN}
       WEBHOOK_SECRET: ${WEBHOOK_TOKEN}
@@ -24,7 +24,7 @@ services:
           interval: 1800
           target: framboesa
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.wh-framboesa.rule=Host(`${WEBHOOK_HOST}.${DOMAIN}`)"
-      - "traefik.http.routers.wh-framboesa.entrypoints=https"
-      - "traefik.http.services.wh-framboesa.loadbalancer.server.port=9000"
+      traefik.enable: 'true'
+      traefik.http.routers.wh-framboesa.rule: Host(`${WEBHOOK_HOST}.${DOMAIN}`)
+      traefik.http.routers.wh-framboesa.entrypoints: https
+      traefik.http.services.wh-framboesa.loadbalancer.server.port: '9000'

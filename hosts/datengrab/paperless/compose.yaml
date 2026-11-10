@@ -33,20 +33,20 @@ services:
     image: icereed/paperless-gpt:v0.31.0@sha256:d668941a829552cc0eddbc7c22506b3480dfbf61bd0d6eae881ad9fcfe2de70c
     restart: unless-stopped
     ports:
-      - "8080:8080"
+      - '8080:8080'
     volumes:
       - /volume1/docker/paperless-gpt/prompts:/app/prompts
       - /volume1/docker/paperless-gpt/config:/app/config
       - /volume1/docker/paperless-gpt/db:/app/db
     environment:
-      PAPERLESS_BASE_URL: "https://paperless.${DOMAIN}"
+      PAPERLESS_BASE_URL: 'https://paperless.${DOMAIN}'
       PAPERLESS_API_TOKEN: ${PAPERLESS_API_TOKEN}
 
       LLM_PROVIDER: googleai
       GOOGLEAI_API_KEY: ${GOOGLEAI_API_TOKEN}
       LLM_MODEL: gemini-3.5-flash
 
-      OCR_PROVIDER: "llm"
+      OCR_PROVIDER: 'llm'
       VISION_LLM_PROVIDER: googleai
       VISION_LLM_MODEL: gemini-3.5-flash
       OCR_PROCESSING_MODE: image
@@ -68,11 +68,11 @@ services:
     networks:
       public:
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.paperless-gpt.rule=Host(`paperless-gpt.${DOMAIN}`)"
-      - "traefik.http.routers.paperless-gpt.entrypoints=https"
-      - "traefik.http.services.paperless-gpt.loadbalancer.server.port=8080"
-      - "traefik.http.routers.paperless-gpt.middlewares=middlewares-authentik@file"
+      traefik.enable: 'true'
+      traefik.http.routers.paperless-gpt.rule: Host(`paperless-gpt.${DOMAIN}`)
+      traefik.http.routers.paperless-gpt.entrypoints: https
+      traefik.http.services.paperless-gpt.loadbalancer.server.port: '8080'
+      traefik.http.routers.paperless-gpt.middlewares: middlewares-authentik@file
 
   server:
     container_name: paperless-server
@@ -82,7 +82,7 @@ services:
       - broker
       - db
     ports:
-      - "8000:8000"
+      - '8000:8000'
     volumes:
       - /volume1/paperless/consume:/usr/src/paperless/consume
       - /volume1/paperless/data:/usr/src/paperless/data
@@ -110,10 +110,10 @@ services:
       internal:
       public:
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.paperless.rule=Host(`paperless.${DOMAIN}`)"
-      - "traefik.http.routers.paperless.entrypoints=https"
-      - "traefik.http.services.paperless.loadbalancer.server.port=8000"
+      traefik.enable: 'true'
+      traefik.http.routers.paperless.rule: Host(`paperless.${DOMAIN}`)
+      traefik.http.routers.paperless.entrypoints: https
+      traefik.http.services.paperless.loadbalancer.server.port: '8000'
 
 volumes:
   redisdata:

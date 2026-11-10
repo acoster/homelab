@@ -12,7 +12,7 @@ services:
       TZ: ${TZ}
       LOG_LEVEL: info
       SOPS_AGE_KEY: ${SOPS_AGE_KEY}
-      SELF_UPDATE_ENABLED: "true"
+      SELF_UPDATE_ENABLED: 'true'
       MAX_CONCURRENT_DEPLOYMENTS: 1
       GIT_AUTH_TOKEN: ${GIT_AUTH_TOKEN}
       WEBHOOK_SECRET: ${WEBHOOK_TOKEN}
@@ -24,10 +24,10 @@ services:
     networks:
       servers:
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.hook-raspberry.rule=Host(`${WEBHOOK_HOST}.${DOMAIN}`)"
-      - "traefik.http.routers.hook-raspberry.entrypoints=https"
-      - "traefik.http.services.hook-raspberry.loadbalancer.server.port=80"
+      traefik.enable: 'true'
+      traefik.http.routers.hook-raspberry.rule: Host(`${WEBHOOK_HOST}.${DOMAIN}`)
+      traefik.http.routers.hook-raspberry.entrypoints: https
+      traefik.http.services.hook-raspberry.loadbalancer.server.port: '80'
 
 networks:
   servers:

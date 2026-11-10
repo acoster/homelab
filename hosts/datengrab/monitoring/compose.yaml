@@ -6,7 +6,7 @@ services:
     image: ghcr.io/google/cadvisor:v0.60.6@sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a
     restart: unless-stopped
     ports:
-      - "8787:8080/tcp"
+      - '8787:8080/tcp'
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
@@ -16,9 +16,9 @@ services:
     networks:
       public:
     command:
-      - "-disable_metrics=percpu,sched,tcp,udp,diskIO,process,referenced_memory"
-      - "-store_container_labels=false"
-      - "-whitelisted_container_labels=com.docker.compose.project,com.docker.compose.service"
+      - '-disable_metrics=percpu,sched,tcp,udp,diskIO,process,referenced_memory'
+      - '-store_container_labels=false'
+      - '-whitelisted_container_labels=com.docker.compose.project,com.docker.compose.service'
       - '-docker_only=true'
     devices:
       - /dev/kmsg:/dev/kmsg
@@ -29,7 +29,7 @@ services:
     image: grafana/alloy:v1.21.3@sha256:8ab871206bd2d8f89277f53abffee5f452a293980788d52f85fa183a87a505a4
     restart: unless-stopped
     ports:
-      - "12345:12345/tcp"
+      - '12345:12345/tcp'
     volumes:
       - /run/log/journal:/run/log/journal:ro
       - /etc/machine-id:/etc/machine-id:ro
@@ -41,9 +41,9 @@ services:
       public:
     labels:
       traefik.enable: true
-      traefik.http.routers.alloy-datengrab.rule: "Host(`alloy-datengrab.${DOMAIN}`)"
+      traefik.http.routers.alloy-datengrab.rule: 'Host(`alloy-datengrab.${DOMAIN}`)'
       traefik.http.routers.alloy-datengrab.entrypoints: https
-      traefik.http.routers.alloy-datengrab.middlewares: "middlewares-authentik@file"
+      traefik.http.routers.alloy-datengrab.middlewares: 'middlewares-authentik@file'
       traefik.http.routers.alloy-datengrab.service: alloy-datengrab-svc
       traefik.http.services.alloy-datengrab-svc.loadbalancer.server.port: 12345
     command:

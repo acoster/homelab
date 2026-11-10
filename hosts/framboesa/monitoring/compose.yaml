@@ -5,6 +5,8 @@ services:
     container_name: gatus
     image: twinproduction/gatus:v5.38.0@sha256:085ed63da963728965d00a3c78aa6167e3bf135218485b893201758e079e8415
     restart: unless-stopped
+    ports:
+      - '8080:8080/tcp'
     volumes:
       - ${DOCKER_DATA_DIR}/gatus:/data
       - ./gatus.yaml:/gatus.yaml:ro
@@ -12,8 +14,6 @@ services:
       GATUS_CONFIG_PATH: /gatus.yaml
     env_file:
       - .env
-    ports:
-      - '8080:8080/tcp'
     networks:
       public:
 
@@ -21,6 +21,8 @@ services:
     container_name: cadvisor
     image: ghcr.io/google/cadvisor:v0.60.6@sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a
     restart: unless-stopped
+    ports:
+      - '8081:8080/tcp'
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
@@ -32,12 +34,10 @@ services:
       - .env
     networks:
       public:
-    ports:
-      - '8081:8080/tcp'
     command:
-      - "-disable_metrics=percpu,sched,tcp,udp,diskIO,process,referenced_memory"
-      - "-store_container_labels=false"
-      - "-whitelisted_container_labels=com.docker.compose.project,com.docker.compose.service"
+      - '-disable_metrics=percpu,sched,tcp,udp,diskIO,process,referenced_memory'
+      - '-store_container_labels=false'
+      - '-whitelisted_container_labels=com.docker.compose.project,com.docker.compose.service'
       - '-docker_only=true'
     devices:
       - /dev/kmsg:/dev/kmsg
@@ -47,6 +47,8 @@ services:
     container_name: alloy
     image: grafana/alloy:v1.21.3@sha256:8ab871206bd2d8f89277f53abffee5f452a293980788d52f85fa183a87a505a4
     restart: unless-stopped
+    ports:
+      - '12345:12345/tcp'
     volumes:
       - /run/log/journal:/run/log/journal:ro
       - /etc/machine-id:/etc/machine-id:ro
@@ -56,21 +58,19 @@ services:
       - .env
     networks:
       public:
-    ports:
-      -  "12345:12345/tcp"
+    labels:
+      traefik.enable: true
+      traefik.http.routers.alloy-framboesa.rule: 'Host(`alloy-framboesa.${DOMAIN}`)'
+      traefik.http.routers.alloy-framboesa.entrypoints: https
+      traefik.http.routers.alloy-framboesa.middlewares: 'middlewares-authentik@file'
+      traefik.http.routers.alloy-framboesa.service: alloy-framboesa-svc
+      traefik.http.services.alloy-framboesa-svc.loadbalancer.server.port: 12345
     command:
       - run
       - --server.http.listen-addr=0.0.0.0:12345
       - --storage.path=/var/lib/alloy/data
       - /etc/alloy/config.river
     user: root
-    labels:
-      traefik.enable: true
-      traefik.http.routers.alloy-framboesa.rule: "Host(`alloy-framboesa.${DOMAIN}`)"
-      traefik.http.routers.alloy-framboesa.entrypoints: https
-      traefik.http.routers.alloy-framboesa.middlewares: "middlewares-authentik@file"
-      traefik.http.routers.alloy-framboesa.service: alloy-framboesa-svc
-      traefik.http.services.alloy-framboesa-svc.loadbalancer.server.port: 12345
 
 networks:
   public:
