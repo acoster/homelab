@@ -3,7 +3,7 @@ name: framboesa
 services:
   bytestash:
     container_name: bytestash
-    image: ghcr.io/jordan-dalby/bytestash:1.6.1@sha256:2c79156850340eeff4e76bbb81e3aab78b42e40509cf2af0acdb18682e579cf1
+    image: ghcr.io/jordan-dalby/bytestash:1.6.2@sha256:86d5726ef9a417775cc05120eed04c36915cbc41aea83c5799fc6b8d3ad77db5
     restart: unless-stopped
     ports:
       - "5000:5000"
@@ -33,7 +33,7 @@ services:
 
   homebridge:
     container_name: homebridge
-    image: homebridge/homebridge:2026-11-02@sha256:169416416bf303bb64bfd6c666f64d93a4f52f54db9a64e8ad553b5dc89fcea4
+    image: homebridge/homebridge:2026-11-10@sha256:49e10e19bce69de56b0b77c724f317858dcd32e17cd9f379833660b1af26dbd5
     restart: unless-stopped
     volumes:
       - ${DOCKER_DATA_DIR}/homebridge/:/homebridge/
