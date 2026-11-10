@@ -107,7 +107,7 @@ services:
       traefik.http.routers.spoolman-local.rule: Host(`spoolman.${DOMAIN}`) && ClientIP(`192.168.1.0/24`) && !ClientIP(`192.168.1.1`)
       traefik.http.routers.spoolman-local.entrypoints: https
       traefik.http.routers.spoolman-local.service: spoolman-svc
-      traefik.http.routers.spoolman-api.rule: Host(`spoolman.${DOMAIN}`) && PathPrefix(`/api/`) && ClientIP(`192.168.0.0/16`)
+      traefik.http.routers.spoolman-api.rule: Host(`spoolman.${DOMAIN}`) && PathPrefix(`/api/`) && ClientIP(`192.168.1.0/24`) && !ClientIP(`192.168.1.1`)
       traefik.http.routers.spoolman-api.entrypoints: https
       traefik.http.routers.spoolman-api.service: spoolman-svc
       traefik.http.services.spoolman-svc.loadbalancer.server.port: '8000'
