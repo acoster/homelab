@@ -29,8 +29,10 @@ services:
     image: ghcr.io/goauthentik/ldap:2026.8.5@sha256:4c75bd27918418d2d6fbbfe4581bbd5a199fe38942d24559c4483edd64a1ea87
     restart: unless-stopped
     ports:
-      - '389:3389'
-      - '636:6636'
+      - '${HOST_IP:?}:389:3389'
+      - '${HOST_IP:?}:636:6636'
+    env_file:
+      - ./.env
     environment:
       AUTHENTIK_HOST: https://auth.h.coster.ch
       AUTHENTIK_INSECURE: 'false'
@@ -101,7 +103,7 @@ services:
     image: crowdsecurity/crowdsec:v1.8.2-debian@sha256:a5642c72127ee93aaac830e9f66891573fa7851b2c721987d9fef13d7d05fdfe
     restart: unless-stopped
     ports:
-      - '6060:6060'
+      - '${HOST_IP:?}:6060:6060'
       - '127.0.0.1:8989:8080'
     volumes:
       - /opt/crowdsec-db:/var/lib/crowdsec/data
@@ -123,7 +125,7 @@ services:
     image: redis:8.10.3@sha256:1f88291b4c57bdf249f02eb085a8669889b2d2954e91d4de5118a5da6b78dd53
     restart: unless-stopped
     ports:
-      - '6379:6379'
+      - '${HOST_IP:?}:6379:6379'
     volumes:
       - ${DOCKER_DATA_DIR}/redis_cache:/data
     environment:
@@ -175,22 +177,9 @@ services:
     depends_on:
       - redis
     ports:
-      - target: 80
-        published: 80
-        protocol: tcp
-        mode: host
-      - target: 80
-        published: 80
-        protocol: udp
-        mode: host
-      - target: 443
-        published: 443
-        protocol: tcp
-        mode: host
-      - target: 443
-        published: 443
-        protocol: udp
-        mode: host
+      - '${HOST_IP:?}:80:80/tcp'
+      - '${HOST_IP:?}:443:443/tcp'
+      - '${HOST_IP:?}:443:443/udp'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik-rules:/rules

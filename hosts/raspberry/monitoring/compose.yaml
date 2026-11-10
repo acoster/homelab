@@ -82,8 +82,9 @@ services:
     image: victoriametrics/victoria-logs:v1.53.0@sha256:251121fa882af99b95ba0c230a4a2f412ea602d2698c64a96c58dc9842bb755d
     restart: unless-stopped
     ports:
-      - '514:514/tcp'
-      - '9428:9428/tcp'
+      - '${HOST_IP:?}:514:514/tcp'
+      - '${HOST_IP:?}:514:514/udp'
+      - '${HOST_IP:?}:9428:9428/tcp'
     volumes:
       - ${DOCKER_DATA_DIR}/vlogs-data:/victoria-logs-data
     networks:
