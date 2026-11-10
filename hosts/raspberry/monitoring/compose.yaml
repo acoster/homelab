@@ -144,35 +144,21 @@ services:
       traefik.docker.network: servers
 
   cadvisor:
-    container_name: cadvisor
-    image: ghcr.io/google/cadvisor:v0.60.6@sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a
-    restart: unless-stopped
+    extends:
+      file: ../../../common/compose.monitoring.yaml
+      service: cadvisor
     volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:ro
-      - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
       - /dev/disk/:/dev/disk:ro
     networks:
       monitoring-internal:
-    command:
-      - '-disable_metrics=percpu,sched,tcp,udp,diskIO,process,referenced_memory'
-      - '-store_container_labels=false'
-      - '-whitelisted_container_labels=com.docker.compose.project,com.docker.compose.service'
-      - '-docker_only=true'
-    devices:
-      - /dev/kmsg:/dev/kmsg
-    privileged: true
 
   alloy:
-    container_name: alloy
-    image: grafana/alloy:v1.21.3@sha256:8ab871206bd2d8f89277f53abffee5f452a293980788d52f85fa183a87a505a4
-    restart: unless-stopped
-    volumes:
-      - /run/log/journal:/run/log/journal:ro
-      - /etc/machine-id:/etc/machine-id:ro
-      - ./config.river:/etc/alloy/config.river:ro
-      - ${DOCKER_DATA_DIR}/alloy-data:/var/lib/alloy/data
+    extends:
+      file: ../../../common/compose.monitoring.yaml
+      service: alloy
+    environment:
+      VLOGS_URL: http://victorialogs:9428
     env_file:
       - .env
     networks:
@@ -184,12 +170,6 @@ services:
       traefik.http.routers.alloy-raspberry.middlewares: 'middlewares-authentik@file'
       traefik.http.routers.alloy-raspberry.service: alloy-raspberry-svc
       traefik.http.services.alloy-raspberry-svc.loadbalancer.server.port: 12345
-    command:
-      - run
-      - --server.http.listen-addr=0.0.0.0:12345
-      - --storage.path=/var/lib/alloy/data
-      - /etc/alloy/config.river
-    user: root
 
 networks:
   servers:
