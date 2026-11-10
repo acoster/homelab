@@ -56,6 +56,8 @@ services:
     environment:
       BAMBUDDY_TOKEN:
       VM_HASS_TOKEN:
+      HC_TOKEN:
+      HC_PROJECT:
     networks:
       servers:
         gw_priority: 0

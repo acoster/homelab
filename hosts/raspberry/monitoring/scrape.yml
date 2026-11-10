@@ -29,7 +29,7 @@ scrape_configs:
     static_configs:
       - targets: ["bambuddy:8000"]
     bearer_token: "%{BAMBUDDY_TOKEN}"
-    scheme: "http"
+    scheme: http
     metrics_path: "/api/v1/metrics"
     metric_relabel_configs:
       - action: labeldrop
@@ -39,9 +39,15 @@ scrape_configs:
     static_configs:
       - targets: ["hass:8123"]
     bearer_token: "%{VM_HASS_TOKEN}"
-    scheme: "http"
+    scheme: http
     metrics_path: "/api/prometheus"
     metric_relabel_configs:
       - source_labels: [__name__]
         regex: "hass_(state_change_created|state_change_total|entity_available|last_updated_time_seconds|entity_info)"
         action: drop
+
+  - job_name: "healthchecks"
+    scheme: https
+    metrics_path: "/projects/%{HC_PROJECT}/metrics/%{HC_TOKEN}"
+    static_configs:
+      - targets: ['healthchecks.io']
