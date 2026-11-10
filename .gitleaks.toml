@@ -1,0 +1,9 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "sops-encrypted files (validate.py checks that every value in them is encrypted) and age public keys"
+paths = [
+  '''(^|/)[^/]*\.enc\.env$''',
+  '''^\.sops\.yaml$''',
+]
