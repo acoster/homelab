@@ -1,3 +1,4 @@
 **/acme.json
 .autorestic.lock.yml
 autorestic.lock.yml
+node_modules/
