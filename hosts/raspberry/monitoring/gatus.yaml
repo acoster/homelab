@@ -39,6 +39,26 @@ endpoints:
     url: ${TECHNITIUM_URL}
     conditions: *http-healthy
 
+  # Monitoring stack (same docker network as gatus)
+  - name: grafana
+    group: monitoring
+    url: http://grafana:3000/api/health
+    conditions:
+      - "[STATUS] == 200"
+      - "[BODY].database == ok"
+  - name: victoriametrics
+    group: monitoring
+    url: http://victoriametrics:8428/health
+    conditions:
+      - "[STATUS] == 200"
+      - "[BODY] == OK"
+  - name: victorialogs
+    group: monitoring
+    url: http://victorialogs:9428/health
+    conditions:
+      - "[STATUS] == 200"
+      - "[BODY] == OK"
+
   # 3D printing services/devices
   - name: bambuddy
     group: 3d-printing
@@ -56,6 +76,13 @@ endpoints:
     group: 3d-printing
     url: icmp://wondertainment.home.coster.ch
     conditions: *connected-healthy
+  - name: gyroidvault
+    group: 3d-printing
+    url: ${GYROIDVAULT_URL}
+    conditions:
+      - "[STATUS] == 200"
+      - "[BODY].status == ok"
+      - "[BODY].database == connected"
 
   # Media services
   - name: jellyfin
@@ -113,6 +140,10 @@ endpoints:
     group: home
     url: icmp://apple-tv.home.coster.ch
     conditions: *connected-healthy
+  - name: homebridge
+    group: home
+    url: ${HOMEBRIDGE_URL}
+    conditions: *http-healthy
 
   # Other services
   - name: bricktracker
@@ -139,6 +170,18 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
       - "[BODY] == OK"
+  - name: paperless
+    group: other
+    url: ${PAPERLESS_URL}
+    conditions: *http-healthy
+  - name: paperless-gpt
+    group: other
+    url: ${PAPERLESS_GPT_URL}
+    conditions: *http-healthy
+  - name: retroassembly
+    group: other
+    url: ${RETROASSEMBLY_URL}
+    conditions: *http-healthy
 
 remote:
   instances:
