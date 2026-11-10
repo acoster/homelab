@@ -6,7 +6,7 @@ services:
     image: ghcr.io/jordan-dalby/bytestash:1.6.2@sha256:86d5726ef9a417775cc05120eed04c36915cbc41aea83c5799fc6b8d3ad77db5
     restart: unless-stopped
     ports:
-      - '5000:5000'
+      - '${HOST_IP:?}:5000:5000'
     volumes:
       - ${DOCKER_DATA_DIR}/bytestash:/data/snippets
     environment:
@@ -75,7 +75,7 @@ services:
     image: arianrhodsandlot/retroassembly:v7.261011.1345@sha256:586c6b0d4ccd9c831bca56d747d60fbfc88f8879b3dfba085edf768cfbb9b973
     restart: unless-stopped
     ports:
-      - '3128:8000'
+      - '${HOST_IP:?}:3128:8000'
     volumes:
       - ${DOCKER_DATA_DIR}/retroassembly:/app/data
     env_file:
@@ -91,7 +91,7 @@ services:
     image: ghcr.io/donkie/spoolman:0.27.1@sha256:1ebb4f6a62c2e72a07f18b07ebfdbd96322f5bc2eb72570af3088f68d7c393b1
     restart: unless-stopped
     ports:
-      - '8000:8000/tcp'
+      - '${HOST_IP:?}:8000:8000/tcp'
     volumes:
       - ${DOCKER_DATA_DIR}/spoolman:/home/app/.local/share/spoolman:rw
     env_file:
