@@ -10,3 +10,8 @@ indent_size = 2
 
 [*.md]
 trim_trailing_whitespace = false
+
+# shfmt reads these (https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd)
+[*.sh]
+space_redirects = true
+binary_next_line = true

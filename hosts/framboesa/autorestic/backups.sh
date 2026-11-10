@@ -23,6 +23,5 @@ dpkg --get-selections > ${OUTPUT_DIR}/installed_packages.txt
 
 sqlite3 ${DOCKER_DATA_DIR}/bytestash/snippets.db ".backup ${OUTPUT_DIR}/bytestash.bak"
 
-
 cd ${REPO_DIR}/hosts/framboesa/autorestic
 sops exec-env secrets.enc.env 'docker compose run --rm -T --name autorestic-cron autorestic autorestic  -v --ci cron'

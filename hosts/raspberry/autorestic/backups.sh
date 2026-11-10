@@ -17,7 +17,7 @@ if [[ "${HOMELAB_REPO_SYNCED:-0}" != "1" ]]; then
   exec "${REPO_DIR}/hosts/raspberry/autorestic/backups.sh" "$@"
 fi
 
-docker exec linkding python manage.py full_backup /etc/linkding/data/backups/backup.zip   
+docker exec linkding python manage.py full_backup /etc/linkding/data/backups/backup.zip
 docker exec authentik_db pg_dump -U authentik authentik > ${OUTPUT_DIR}/authentik_backup.sql
 docker exec miniflux-db pg_dump -U miniflux miniflux > ${OUTPUT_DIR}/miniflux.sql
 
