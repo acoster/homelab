@@ -27,6 +27,7 @@ services:
   authentik_ldap:
     container_name: authentik_ldap
     image: ghcr.io/goauthentik/ldap:2026.8.5@sha256:4c75bd27918418d2d6fbbfe4581bbd5a199fe38942d24559c4483edd64a1ea87
+    restart: unless-stopped
     ports:
       - 389:3389
       - 636:6636
@@ -60,7 +61,9 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.authh.rule=Host(`auth.${DOMAIN}`)"
       - "traefik.http.services.authh.loadbalancer.server.port=9000"
-      - "traefik.http.routers.authentik-outpost.rule=HostRegexp(`{subdomain:[a-z0-9-]+}.${DOMAIN}`) && PathPrefix(`/outpost.goauthentik.io/`)"
+      # Traefik v3 HostRegexp takes a plain Go regex; `$$` is a literal `$` for compose.
+      - "traefik.http.routers.authentik-outpost.rule=HostRegexp(`^[a-z0-9-]+[.]${DOMAIN}$$`) && PathPrefix(`/outpost.goauthentik.io/`)"
+      - "traefik.http.routers.authentik-outpost.service=authh"
     command: server
 
   authentik_worker:
