@@ -6,7 +6,7 @@ services:
       file: ../../../common/compose.doco-cd.yaml
       service: doco-cd
     ports:
-      - '9000:80'
+      - '${HOST_IP:?}:9000:80'
     environment:
       POLL_CONFIG: |
         - url: https://github.com/acoster/homelab.git

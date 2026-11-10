@@ -33,7 +33,7 @@ services:
     image: icereed/paperless-gpt:v0.31.0@sha256:d668941a829552cc0eddbc7c22506b3480dfbf61bd0d6eae881ad9fcfe2de70c
     restart: unless-stopped
     ports:
-      - '8080:8080'
+      - '${HOST_IP:?}:8080:8080'
     volumes:
       - /volume1/docker/paperless-gpt/prompts:/app/prompts
       - /volume1/docker/paperless-gpt/config:/app/config
@@ -82,7 +82,7 @@ services:
       - broker
       - db
     ports:
-      - '8000:8000'
+      - '${HOST_IP:?}:8000:8000'
     volumes:
       - /volume1/paperless/consume:/usr/src/paperless/consume
       - /volume1/paperless/data:/usr/src/paperless/data

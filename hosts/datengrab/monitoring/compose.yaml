@@ -6,7 +6,7 @@ services:
       file: ../../../common/compose.monitoring.yaml
       service: cadvisor
     ports:
-      - '8787:8080/tcp'
+      - '${HOST_IP:?}:8787:8080/tcp'
     volumes:
       - /var/packages/ContainerManager/var/docker/:/var/lib/docker:ro
     networks:
@@ -17,7 +17,7 @@ services:
       file: ../../../common/compose.monitoring.yaml
       service: alloy
     ports:
-      - '12345:12345/tcp'
+      - '${HOST_IP:?}:12345:12345/tcp'
     environment:
       VLOGS_URL: http://192.168.1.212:9428
     env_file:

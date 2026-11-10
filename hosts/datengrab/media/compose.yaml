@@ -10,7 +10,7 @@ services:
       - sabnzbd
       - transmission
     ports:
-      - '8686:8686'
+      - '${HOST_IP:?}:8686:8686'
     volumes:
       - ${DOCKER_DATA_DIR}/lidarr:/config
       - ${MEDIA_DIR}:/Media
@@ -81,7 +81,7 @@ services:
       - sabnzbd
       - transmission
     ports:
-      - '9696:9696'
+      - '${HOST_IP:?}:9696:9696'
     volumes:
       - ${DOCKER_DATA_DIR}/prowlarr:/config
     environment:
@@ -114,7 +114,7 @@ services:
       - sabnzbd
       - transmission
     ports:
-      - '7878:7878'
+      - '${HOST_IP:?}:7878:7878'
     volumes:
       - ${DOCKER_DATA_DIR}/radarr:/config
       - ${MEDIA_DIR}:/Media
@@ -144,7 +144,7 @@ services:
     image: lscr.io/linuxserver/sabnzbd:5.1.3@sha256:693c208f697d0b411410edd92a98b52c8c754c01f5c078a975cbc892044260f5
     restart: unless-stopped
     ports:
-      - '3128:8080'
+      - '${HOST_IP:?}:3128:8080'
     volumes:
       - ${DOCKER_DATA_DIR}/sabnzbd:/config
       - ${MEDIA_DIR}:/Media
@@ -178,7 +178,7 @@ services:
       - sabnzbd
       - transmission
     ports:
-      - '8989:8989'
+      - '${HOST_IP:?}:8989:8989'
     volumes:
       - ${DOCKER_DATA_DIR}/sonarr:/config
       - ${MEDIA_DIR}:/Media
@@ -208,9 +208,9 @@ services:
     image: lscr.io/linuxserver/transmission:4.1.4@sha256:fb8fe625941cf15eb69aba4e5c0a678e035ddb11605fd85af4516a4e641f2687
     restart: unless-stopped
     ports:
-      - '9091:9091'
-      - '51413:51413/tcp'
-      - '51413:51413/udp'
+      - '${HOST_IP:?}:9091:9091'
+      - '${HOST_IP:?}:51413:51413/tcp'
+      - '${HOST_IP:?}:51413:51413/udp'
     volumes:
       - ${DOCKER_DATA_DIR}/transmission-watch:/watch
       - ${DOCKER_DATA_DIR}/transmission:/config
