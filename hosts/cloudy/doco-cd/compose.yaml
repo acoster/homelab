@@ -2,20 +2,10 @@ name: doco-cd
 
 services:
   doco-cd:
-    container_name: doco-cd
-    image: ghcr.io/kimdre/doco-cd:0.133.2@sha256:8ca3cf6701f70ac3af4c5d726e542fe3a854a038149375f87222ec2719b3c975
-    restart: unless-stopped
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ${DOCKER_DATA_DIR}/doco-cd:/data
+    extends:
+      file: ../../../common/compose.doco-cd.yaml
+      service: doco-cd
     environment:
-      TZ: ${TZ}
-      LOG_LEVEL: info
-      SOPS_AGE_KEY: ${SOPS_AGE_KEY}
-      SELF_UPDATE_ENABLED: 'true'
-      MAX_CONCURRENT_DEPLOYMENTS: 1
-      GIT_AUTH_TOKEN: ${GIT_AUTH_TOKEN}
-      WEBHOOK_SECRET: ${WEBHOOK_TOKEN}
       POLL_CONFIG: |
         - url: https://github.com/acoster/homelab.git
           reference: main
