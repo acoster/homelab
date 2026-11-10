@@ -82,5 +82,18 @@
       "automergeType": "branch",
       "ignoreTests": true
     }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Traefik plugins pinned in traefik.toml",
+      "managerFilePatterns": [
+        "/(^|/)traefik\\.toml$/"
+      ],
+      "matchStrings": [
+        "moduleName = \"github\\.com/(?<depName>[^\"]+)\"\\s+version = \"(?<currentValue>[^\"]+)\""
+      ],
+      "datasourceTemplate": "github-tags"
+    }
   ]
 }
