@@ -18,6 +18,7 @@ locations:
         - sh -c 'curl -fsS -m 10 --retry 3 "${HC_PING_URL}"'
       failure:
         - sh -c 'curl -fsS -m 10 --retry 3 "${HC_PING_URL}/fail"'
+    forget: prune
     cron: '0 5 * * *'
     options:
       forget:

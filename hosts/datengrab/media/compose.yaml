@@ -231,7 +231,7 @@ services:
       - "traefik.http.routers.transmission.entrypoints=https"
       - "traefik.http.routers.transmission.service=transmission-svc"
       - "traefik.http.routers.transmission.middlewares=middlewares-authentik@file,transmission-auth"
-      - "traefik.http.routers.transmission-local.rule=Host(`transmission.${DOMAIN}`)"
+      - "traefik.http.routers.transmission-local.rule=Host(`transmission.${DOMAIN}`) && ClientIP(`192.168.1.0/24`) && !ClientIP(`192.168.1.1`)"
       - "traefik.http.routers.transmission-local.entrypoints=https"
       - "traefik.http.routers.transmission-local.service=transmission-svc"
       - "traefik.http.routers.transmission-local.middlewares=transmission-auth"
