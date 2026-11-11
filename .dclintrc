@@ -4,6 +4,7 @@
     "services-alphabetical-order": 0,
     "service-keys-order": 0,
     "top-level-properties-order": 0,
-    "no-unbound-port-interfaces": 0
+    "no-unbound-port-interfaces": 0,
+    "service-image-require-explicit-tag": 0
   }
 }
