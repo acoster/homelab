@@ -111,7 +111,12 @@ services:
     volumes:
       - /opt/crowdsec-db:/var/lib/crowdsec/data
       - /opt/crowdsec:/etc/crowdsec
+      - ./crowdsec/acquis.yaml:/etc/crowdsec/acquis.yaml:ro
       - /var/log:/run/log:ro
+      # journalctl needs the host's volatile journal and machine id; the
+      # persistent one is already visible through the /var/log mount above.
+      - /run/log/journal:/var/log/journal:ro
+      - /etc/machine-id:/etc/machine-id:ro
       - ${DOCKER_DATA_DIR}/traefik-logs:/var/log/traefik
     environment:
       PGID: '1000'

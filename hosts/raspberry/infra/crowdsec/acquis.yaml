@@ -1,0 +1,13 @@
+# Mounted over /etc/crowdsec/acquis.yaml in compose.yaml.
+# Traefik access log (written by Traefik to /logs, mounted here at /var/log/traefik).
+filenames:
+  - /var/log/traefik/access.log
+labels:
+  type: traefik
+---
+# sshd on the host, via the host's volatile journal (mounted at /var/log/journal).
+source: journalctl
+journalctl_filter:
+  - "_SYSTEMD_UNIT=ssh.service"
+labels:
+  type: syslog
