@@ -22,6 +22,7 @@ services:
       - /etc/shadow:/backup_source/host/etc/shadow:ro
       - /etc/systemd/system/:/backup_source/host/etc/systemd/system/:ro
       - /var/spool/cron/crontabs/:/backup_source/host/var/spool/cron/crontabs/:ro
+      - /opt/crowdsec:/backup_source/host/opt/crowdsec:ro
     environment:
       AUTORESTIC_RSYNCNET_RESTIC_PASSWORD:
       AUTORESTIC_DATENGRAB_RESTIC_PASSWORD:
