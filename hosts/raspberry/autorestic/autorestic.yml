@@ -58,6 +58,9 @@ locations:
           - "**/miniflux-db/**"
           - "**/redis_cache/**"
 
+          # Ignore the crowdsec hub (re-downloaded from COLLECTIONS at startup)
+          - "/backup_source/host/opt/crowdsec/hub/**"
+
           # Ignore stats
           - "**/technitium/stats/**"
           - "/backup_source/bind_mounts/vm-data/**"
