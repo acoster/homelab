@@ -1,6 +1,23 @@
 name: infra
 
 services:
+  # The only container with the Docker socket. Traefik is internet-facing, so it
+  # talks to this filter instead: it may list/inspect containers and watch
+  # events (GET only), and nothing else. A `:ro` socket mount would not stop
+  # a process from creating containers through the API.
+  socket-proxy:
+    container_name: 'socket-proxy'
+    image: ghcr.io/tecnativa/docker-socket-proxy:v0.5.0@sha256:1f5038b54f06c3e18422902cf00ba21803d1c97805aae032e5e6673d532d3459
+    restart: unless-stopped
+    privileged: true # upstream's recommendation; needed to connect to the socket under SELinux/AppArmor
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      CONTAINERS: '1'
+      # EVENTS, PING and VERSION are on by default; POST and everything else is off.
+    networks:
+      socket-proxy:
+
   traefik:
     container_name: 'traefik'
     image: traefik:v3.7.18@sha256:9c437ac4f09ce6f4980a8544902d3475fdf70a1a7c578729581d2535dfa7d635
@@ -10,8 +27,9 @@ services:
       - '80:80/udp'
       - '443:443/tcp'
       - '443:443/udp'
+    depends_on:
+      - socket-proxy
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${DOCKER_DATA_DIR}/acme.json:/letsencrypt/acme.json
     environment:
       CF_DNS_API_TOKEN: ${CF_API_TOKEN}
@@ -19,6 +37,7 @@ services:
       - ./.env
     networks:
       servers:
+      socket-proxy:
     labels:
       traefik.enable: 'true'
       # Traefik v3 HostRegexp takes a plain Go regex; `$$` is a literal `$` for compose.
@@ -51,9 +70,13 @@ services:
 
       # Docker Provider
       - '--providers.docker=true'
+      - '--providers.docker.endpoint=tcp://socket-proxy:2375'
       - '--providers.docker.exposedbydefault=false'
 
 networks:
   servers:
     name: servers
     external: true
+  socket-proxy:
+    name: socket-proxy
+    internal: true
