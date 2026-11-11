@@ -14,7 +14,7 @@ services:
     env_file:
       - ./.env
     networks:
-      servers:
+      authentik-internal:
     healthcheck:
       interval: 30s
       retries: 5
@@ -58,8 +58,10 @@ services:
       - ./authentik.env
     networks:
       servers:
+      authentik-internal:
     labels:
       traefik.enable: 'true'
+      traefik.docker.network: servers
       traefik.http.routers.authh.rule: Host(`auth.${DOMAIN}`)
       traefik.http.services.authh.loadbalancer.server.port: '9000'
       # Traefik v3 HostRegexp takes a plain Go regex; `$$` is a literal `$` for compose.
@@ -83,6 +85,7 @@ services:
       - ./authentik.env
     networks:
       servers:
+      authentik-internal:
     command: worker
 
   cloudflare-ddns:
@@ -207,6 +210,9 @@ services:
       traefik.http.middlewares.crowdsec.plugin.crowdsec-bouncer.crowdsecMode: stream
 
 networks:
+  authentik-internal:
+    name: authentik-internal
+    internal: true
   servers:
     name: servers
     driver: bridge
