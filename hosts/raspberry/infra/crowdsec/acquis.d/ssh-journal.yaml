@@ -1,0 +1,7 @@
+# sshd on the host, via the host's volatile journal (mounted at /var/log/journal).
+# Mounted next to the other sources in /opt/crowdsec/acquis.d on the host.
+source: journalctl
+journalctl_filter:
+  - "_SYSTEMD_UNIT=ssh.service"
+labels:
+  type: syslog
