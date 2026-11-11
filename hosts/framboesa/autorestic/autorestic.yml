@@ -38,6 +38,7 @@ locations:
           - "*.db"
           - "*.db-wal"
           - "*.db-shm"
+          - "*.sqlite"
           # Django/Python specific SQLite names
           - "db.sqlite3"
           - "db.sqlite3-wal"

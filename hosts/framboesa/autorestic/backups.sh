@@ -22,6 +22,7 @@ curl -fsS -m 60 -X POST http://127.0.0.1:8000/api/v1/backup > /dev/null \
 dpkg --get-selections > ${OUTPUT_DIR}/installed_packages.txt
 
 sqlite3 ${DOCKER_DATA_DIR}/bytestash/snippets.db ".backup ${OUTPUT_DIR}/bytestash.bak"
+sqlite3 ${DOCKER_DATA_DIR}/retroassembly/retroassembly.sqlite ".backup ${OUTPUT_DIR}/retroassembly.bak"
 
 cd ${REPO_DIR}/hosts/framboesa/autorestic
 sops exec-env secrets.enc.env 'docker compose run --rm -T --name autorestic-cron autorestic autorestic  -v --ci cron'
