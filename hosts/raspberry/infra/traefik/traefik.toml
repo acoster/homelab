@@ -35,7 +35,7 @@
 
 
 [providers.docker]
-  endpoint = "unix:///var/run/docker.sock"
+  endpoint = "tcp://socket-proxy:2375" # filtered; see socket-proxy in compose.yaml
   watch = true
   exposedByDefault = false
 
