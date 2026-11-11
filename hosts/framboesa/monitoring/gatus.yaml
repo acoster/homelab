@@ -4,6 +4,29 @@ storage:
   maximum-number-of-results: 4320
   maximum-number-of-events: 50
 
+alerting:
+  pushover:
+    application-token: ${PUSHOVER_APP_TOKEN}
+    user-key: ${PUSHOVER_USER_KEY}
+    title: Homelab
+    priority: 0
+    resolved-priority: -1
+    default-alert:
+      enabled: true
+      failure-threshold: 3
+      success-threshold: 2
+      send-on-resolved: true
+
+x-templates:
+  # Alerts are opt-in per endpoint: normal priority, or high priority for
+  # things that take down the network or the household.
+  alert: &alert
+    - type: pushover
+  alert-critical: &alert-critical
+    - type: pushover
+      provider-override:
+        priority: 1
+
 endpoints:
   - name: raspberry-dns
     group: infra
@@ -13,3 +36,4 @@ endpoints:
       query-type: A
     conditions:
       - "[DNS_RCODE] == NOERROR"
+    alerts: *alert-critical

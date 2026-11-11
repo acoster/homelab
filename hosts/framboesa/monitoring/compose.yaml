@@ -12,6 +12,8 @@ services:
       - ./gatus.yaml:/gatus.yaml:ro
     environment:
       GATUS_CONFIG_PATH: /gatus.yaml
+      PUSHOVER_APP_TOKEN: ${PUSHOVER_APP_TOKEN}
+      PUSHOVER_USER_KEY: ${PUSHOVER_USER_KEY}
     env_file:
       - .env
     networks:

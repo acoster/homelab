@@ -29,3 +29,4 @@ compose_files:
   - compose.yaml
 env_files:
   - .env
+  - secrets.enc.env
