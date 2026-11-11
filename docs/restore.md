@@ -24,9 +24,12 @@ Everything else depends on these. Check that you have an offline copy of each.
 
 1. **The admin age key.** It decrypts every `*.enc.env` in the repo. It is the
    root of recovery. An offline copy is in 1Password.
-2. **Host age keys** are not in the backups. If a host is lost, make a new key,
-   put its public key in `.sops.yaml`, and run `sops updatekeys` on that host's
-   files using the admin key.
+2. **Host age keys** live at `/var/lib/docker-data/age_key` on raspberry and
+   framboesa, and at `/var/services/homes/coster/.config/sops/age/keys.txt` on
+   datengrab. The two Pi keys sit inside the data backup, which you can only open
+   with a key first, so rely on the 1Password copy. The datengrab key is not backed
+   up. If a host key is lost, make a new key, put its public key in `.sops.yaml`,
+   and run `sops updatekeys` on that host's files using the admin key.
 3. **Restic repository passwords** are in each host's `autorestic/secrets.enc.env`
    (`AUTORESTIC_<BACKEND>_RESTIC_PASSWORD`), so you need key 1 or a surviving host
    key before you can open any backup.
@@ -77,7 +80,9 @@ On a working host, use the autorestic container instead:
 1.  Install the OS and packages. **TODO(alex): how are the Pis provisioned?** The
     `installed_packages.txt` file in the backups folder lists the `dpkg` selections.
 2.  Install docker, git, sops, age and sqlite3.
-3.  Put the age key where sops finds it (**TODO(alex): path**).
+3.  Get the age key from 1Password and put it at the host's key path from section 2
+    (a host key, or the admin key if that's all you have). On the Pis point
+    `SOPS_AGE_KEY_FILE` at it, or copy it to `~/.config/sops/age/keys.txt`.
 4.  Clone the repo to `/opt/homelab`.
 5.  Restore `restic-ssh`, then restore the data you need into `$DOCKER_DATA_DIR`
     (section 4). Skip dumps for now.
