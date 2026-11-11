@@ -23,7 +23,6 @@ docker exec miniflux-db pg_dump -U miniflux miniflux > ${OUTPUT_DIR}/miniflux.sq
 
 sqlite3 ${DOCKER_DATA_DIR}/homebox/homebox.db ".backup '${OUTPUT_DIR}/homebox.bak'"
 sqlite3 ${DOCKER_DATA_DIR}/grafana-data/grafana.db ".backup '${OUTPUT_DIR}/grafana.bak'"
-sqlite3 /opt/crowdsec-db/crowdsec.db ".backup '${OUTPUT_DIR}/crowdsec.bak'"
 
 dpkg --get-selections > ${OUTPUT_DIR}/installed_packages.txt
 
