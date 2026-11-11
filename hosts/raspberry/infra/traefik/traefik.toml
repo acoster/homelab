@@ -15,7 +15,7 @@
 [entryPoints.http]
   address = ":80"
   [entryPoints.http.http]
-    middlewares = ["crowdsec@docker"]
+    middlewares = ["crowdsec@file"]
   [entryPoints.http.http.redirections.entryPoint]
     to = "https"
     scheme = "https"
@@ -25,7 +25,7 @@
   asDefault = true
   [entryPoints.https.http3]
   [entryPoints.https.http]
-    middlewares = ["crowdsec@docker"]
+    middlewares = ["crowdsec@file", "secure-headers@file"]
 
   [entryPoints.https.http.tls]
   certResolver = "gcl"

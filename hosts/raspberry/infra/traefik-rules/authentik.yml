@@ -17,11 +17,6 @@ http:
           - X-authentik-meta-provider
           - X-authentik-meta-app
           - X-authentik-meta-version
-    crowdsec:
-      plugin:
-        crowdsec-bouncer:
-          enabled: true
-          crowdsecMode: stream
     lan-only:
       ipAllowList:
         sourceRange:
@@ -30,7 +25,3 @@ http:
           - "172.16.0.0/12"
           - "127.0.0.1/32"
           - "2a02:0169:4bce::/48"
-tls:
-  options:
-    default:
-      sniStrict: true

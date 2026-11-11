@@ -1,0 +1,23 @@
+http:
+  middlewares:
+    # Applied to both entrypoints in traefik.toml. The file provider renders
+    # this file as a Go template, so the key comes from Traefik's environment
+    # (set in compose.yaml) and no longer depends on the docker provider.
+    crowdsec:
+      plugin:
+        crowdsec-bouncer:
+          enabled: true
+          crowdsecMode: stream
+          crowdsecLapiKey: '{{ env "CROWDSEC_LAPI_KEY" }}'
+    # Applied to the https entrypoint. stsIncludeSubdomains is left off on
+    # purpose: add it once every subdomain is known to be HTTPS-only.
+    secure-headers:
+      headers:
+        stsSeconds: 31536000
+        contentTypeNosniff: true
+        customFrameOptionsValue: SAMEORIGIN
+tls:
+  options:
+    default:
+      minVersion: VersionTLS12
+      sniStrict: true
