@@ -17,6 +17,32 @@ minutes and applies the stacks listed in `.doco-cd.<host>.yaml`. Secrets are
 `*.enc.env` files (sops + age). `$DOCKER_DATA_DIR` is `/var/lib/docker-data` on
 raspberry and framboesa, `/volume1/docker` on datengrab.
 
+### Macvlan addresses
+
+Containers with their own address on the LAN or on VLAN 5, taken from the
+compose files. Nothing else needs a fixed address; the rest is reached through
+Traefik or the host's `HOST_IP`.
+
+| Host      | Container  | IP                                                 |
+| --------- | ---------- | -------------------------------------------------- |
+| raspberry | hass       | 192.168.1.246, 2a02:169:4bce:1:4e81:beff:fe81:babe |
+| raspberry | hass       | 192.168.5.200, 2a02:169:4bce:2::50                 |
+| raspberry | technitium | 192.168.5.201, 2a02:169:4bce:2::201                |
+| framboesa | technitium | 192.168.5.202, 2a02:169:4bce:2::202                |
+| framboesa | homebridge | 192.168.1.241                                      |
+| datengrab | jellyfin   | 192.168.1.231                                      |
+
+The networks behind them:
+
+- raspberry: `main_macvlan` on `eth0` (192.168.1.0/24) and `servers_macvlan` on
+  `eth0.5` (VLAN 5, 192.168.5.0/24). `hass` is on both.
+- framboesa: `macvlan_1` on `eth0` and `macvlan_5` on `eth0.5`.
+- datengrab: `media-macvlan` on `bond0` (192.168.1.0/24).
+
+A Docker host cannot reach its own macvlan containers, so test these addresses
+from another machine. That is why each Pi's `technitium` is checked by the other
+Pi's Gatus, and why VictoriaMetrics on raspberry scrapes `jellyfin` directly.
+
 ## 2. Keys you need first
 
 Everything else depends on these. Check that you have an offline copy of each.
