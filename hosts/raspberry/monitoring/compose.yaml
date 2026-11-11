@@ -30,6 +30,8 @@ services:
       HBOX_URL: ${HBOX_URL}
       LINKDING_URL: ${LINKDING_URL}
       MINIFLUX_URL: ${MINIFLUX_URL}
+      PUSHOVER_APP_TOKEN: ${PUSHOVER_APP_TOKEN}
+      PUSHOVER_USER_KEY: ${PUSHOVER_USER_KEY}
       GYROIDVAULT_URL: ${GYROIDVAULT_URL}
       HOMEBRIDGE_URL: ${HOMEBRIDGE_URL}
       PAPERLESS_URL: ${PAPERLESS_URL}
@@ -49,6 +51,28 @@ services:
       traefik.http.routers.gatus-local.entrypoints: https
       traefik.http.routers.gatus-local.service: gatus-svc
       traefik.http.services.gatus-svc.loadbalancer.server.port: '8080'
+
+  # Dead man's switch: pings healthchecks.io every minute, but only while Gatus
+  # reports itself healthy. If the host, Docker or Gatus dies, the pings stop and
+  # healthchecks.io sends the Pushover alert from outside the network.
+  heartbeat:
+    container_name: heartbeat
+    image: curlimages/curl:8.11.1
+    restart: unless-stopped
+    environment:
+      HC_HEARTBEAT_URL: ${HC_HEARTBEAT_URL}
+    entrypoint: ['/bin/sh', '-c']
+    command:
+      - |
+        while true; do
+          curl -fsS -m 10 http://gatus:8080/health >/dev/null \
+            && curl -fsS -m 10 --retry 3 "$$HC_HEARTBEAT_URL" >/dev/null
+          sleep 60
+        done
+    networks:
+      servers:
+    depends_on:
+      - gatus
 
   victoriametrics:
     container_name: victoriametrics
