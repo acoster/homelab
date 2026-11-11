@@ -57,7 +57,7 @@ services:
   # healthchecks.io sends the Pushover alert from outside the network.
   heartbeat:
     container_name: heartbeat
-    image: curlimages/curl:8.11.1
+    image: curlimages/curl:8.23.0@sha256:3fb7e13e5d179a845c97d78204f3f1064d1907037f26a3ebf91710571151fd93
     restart: unless-stopped
     environment:
       HC_HEARTBEAT_URL: ${HC_HEARTBEAT_URL}
@@ -139,7 +139,7 @@ services:
 
   grafana:
     container_name: grafana
-    image: grafana/grafana:13.3.0@sha256:488984b716c0862639f91a698adbe2862677a5a07bad42da5f03f3030883b205
+    image: grafana/grafana:13.3.1@sha256:0615ec4fbd4072004b7d86b46ded63013a74b7d6eb1119273dd89e8fa25c13cf
     restart: unless-stopped
     # Same UID as the host user so the backup script can read grafana.db.
     user: '1000:1000'
