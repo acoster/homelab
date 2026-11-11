@@ -23,7 +23,7 @@ raspberry and framboesa, `/volume1/docker` on datengrab.
 Everything else depends on these. Check that you have an offline copy of each.
 
 1. **The admin age key.** It decrypts every `*.enc.env` in the repo. It is the
-   root of recovery. **TODO(alex): where is the offline copy?**
+   root of recovery. An offline copy is in 1Password.
 2. **Host age keys** are not in the backups. If a host is lost, make a new key,
    put its public key in `.sops.yaml`, and run `sops updatekeys` on that host's
    files using the admin key.
@@ -31,9 +31,10 @@ Everything else depends on these. Check that you have an offline copy of each.
    (`AUTORESTIC_<BACKEND>_RESTIC_PASSWORD`), so you need key 1 or a surviving host
    key before you can open any backup.
 4. **The rsync.net / datengrab SSH key and SSH config** (aliases `rsyncnet` and
-   `datengrab`) live in `$DOCKER_DATA_DIR/restic-ssh` on each host. That folder is
-   inside the backup it unlocks. **TODO(alex): is there an offline copy of the SSH
-   key, outside the backups?**
+   `datengrab`) live in `$DOCKER_DATA_DIR/restic-ssh` on each host, which is inside
+   the backup it unlocks. An SSH key is also kept in 1Password, so recovery doesn't
+   depend on that folder. **TODO(alex): confirm it is the key for both `rsyncnet`
+   and `datengrab`, and that the SSH config (host aliases) is stored with it.**
 5. **`GIT_AUTH_TOKEN` and `WEBHOOK_TOKEN`** for doco-cd are in
    `hosts/<host>/doco-cd/secrets.enc.env`.
 
