@@ -5,17 +5,20 @@ restore yet: see issue #50 for the first drill.
 
 ## 1. What runs where
 
-| Host      | Address       | Role                                                                                                     |
-| --------- | ------------- | -------------------------------------------------------------------------------------------------------- |
-| raspberry | 192.168.1.212 | Edge and main dev host: Traefik, Authentik, CrowdSec, Technitium (DNS), Redis, apps, monitoring, doco-cd |
-| framboesa | 192.168.5.202 | Second DNS, bytestash, homebridge, retroassembly, spoolman, bambu-connect, Gatus                         |
-| datengrab | 192.168.1.14  | Synology NAS (DSM): media stack, paperless, bricktracker, gyroidvault, kop                               |
-| cloudy    | VPS           | VPN exit node (Traefik and doco-cd only)                                                                 |
+| Host      | Role                                                                                                     |
+| --------- | -------------------------------------------------------------------------------------------------------- |
+| raspberry | Edge and main dev host: Traefik, Authentik, CrowdSec, Technitium (DNS), Redis, apps, monitoring, doco-cd |
+| framboesa | Second DNS, bytestash, homebridge, retroassembly, spoolman, bambu-connect, Gatus                         |
+| datengrab | Synology NAS (DSM): media stack, paperless, bricktracker, gyroidvault, kop                               |
+| cloudy    | VPN exit node (Traefik and doco-cd only)                                                                 |
 
 Deployment is GitOps: each host runs doco-cd, which polls `main` every 30
 minutes and applies the stacks listed in `.doco-cd.<host>.yaml`. Secrets are
 `*.enc.env` files (sops + age). `$DOCKER_DATA_DIR` is `/var/lib/docker-data` on
 raspberry and framboesa, `/volume1/docker` on datengrab.
+
+Addresses of the hosts and of the containers with their own macvlan address are
+in [network.md](network.md).
 
 ## 2. Keys you need first
 
