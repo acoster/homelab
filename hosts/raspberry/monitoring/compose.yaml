@@ -58,7 +58,7 @@ services:
   # children, and Jellyfin sits on a macvlan IP on datengrab.
   jellyfin_exporter:
     container_name: jellyfin_exporter
-    image: rebelcore/jellyfin-exporter:latest
+    image: rebelcore/jellyfin-exporter:v1.6.0@sha256:59856d3c6a029a74d31ad1abae8a1231bf47e2a72e07f274de8d9cc578bce3b0
     restart: unless-stopped
     environment:
       JELLYFIN_ADDRESS: http://192.168.1.231:8096
