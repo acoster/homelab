@@ -24,6 +24,22 @@ prometheus.exporter.unix "host" {
   ]
 }
 
+// Host network traffic. alloy has its own network namespace, so the normal
+// netdev collector would only see the container's eth0. /proc/1 belongs to the
+// host's PID 1 (pid: host), so reading /proc/1/net/dev gives the host's view.
+// A separate instance because procfs_path applies to every collector in it.
+// Scraped at /api/v0/component/prometheus.exporter.unix.hostnet/metrics
+// (job "node_net" in hosts/raspberry/monitoring/scrape.yml).
+prometheus.exporter.unix "hostnet" {
+  procfs_path    = "/proc/1"
+  set_collectors = ["netdev"]
+
+  netdev {
+    // Container plumbing; real NICs, bonds and VLANs stay.
+    device_exclude = "^(lo|docker0|br-.*|veth.*)$"
+  }
+}
+
 loki.relabel "journal" {
   forward_to = []
 

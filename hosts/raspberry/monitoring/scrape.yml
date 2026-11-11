@@ -39,6 +39,21 @@ scrape_configs:
         labels:
           instance: "datengrab"
 
+  # Host network interfaces: a second exporter in the same alloy that reads PID 1's
+  # network namespace (see common/alloy/config.river).
+  - job_name: "node_net"
+    metrics_path: "/api/v0/component/prometheus.exporter.unix.hostnet/metrics"
+    static_configs:
+      - targets: ["alloy:12345"]
+        labels:
+          instance: "raspberry"
+      - targets: ["framboesa:12345"]
+        labels:
+          instance: "framboesa"
+      - targets: ["datengrab:12345"]
+        labels:
+          instance: "datengrab"
+
   # Reached over the shared "servers" network, so none of these ports are published.
   - job_name: "traefik"
     static_configs:
