@@ -43,6 +43,11 @@ scrape_configs:
   # network namespace (see common/alloy/config.river).
   - job_name: "node_net"
     metrics_path: "/api/v0/component/prometheus.exporter.unix.hostnet/metrics"
+    # Dashboards filter every panel by one job ("node"). Rewrite the label on the
+    # samples only, so the "up" series of the two jobs stay distinct.
+    metric_relabel_configs:
+      - target_label: job
+        replacement: "node"
     static_configs:
       - targets: ["alloy:12345"]
         labels:
