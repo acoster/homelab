@@ -215,12 +215,7 @@ networks:
     internal: true
   servers:
     name: servers
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.18.0.0/16
-          ip_range: 172.18.1.0/24
-          gateway: 172.18.0.1
+    external: true
   servers_macvlan:
     name: servers_macvlan
     driver: macvlan
