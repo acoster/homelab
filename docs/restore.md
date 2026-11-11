@@ -92,22 +92,27 @@ On a working host, use the autorestic container instead:
 4.  Clone the repo to `/opt/homelab`.
 5.  Restore `restic-ssh`, then restore the data you need into `$DOCKER_DATA_DIR`
     (section 4). Skip dumps for now.
-6.  **Raspberry only:** the `servers` network is created by the `infra` stack, but
-    doco-cd and the apps mark it external. Start `infra` by hand once, using the
-    admin key:
+6.  Start doco-cd from `hosts/<host>/doco-cd`, decrypting with the admin key:
 
-         cd /opt/homelab/hosts/raspberry/infra
-         SOPS_AGE_KEY_FILE=<admin key file> sops exec-env secrets.enc.env 'docker compose up -d'
+         cd /opt/homelab/hosts/<host>/doco-cd
+         SOPS_AGE_KEY_FILE=<admin key file> sops exec-env secrets.enc.env \
+           'docker compose --all-resources up -d'
 
-    The other hosts don't need this: framboesa and datengrab's doco-cd has no
-    external network, and cloudy's creates its own.
+    On raspberry this stack also creates the shared `servers` network, so nothing
+    else has to be started first. `--all-resources` is a global Compose option, so
+    it goes before `up` (after it, Compose says `unknown flag`). It makes Compose
+    create every network the stack declares, even ones no service uses. The
+    `servers` network is used by doco-cd, so it would be created anyway; the flag
+    is a safeguard if more networks are added to this stack.
 
-7.  Load the database dumps (section 6) before starting the apps that use them.
-8.  Start doco-cd from `hosts/<host>/doco-cd` the same way. Because it carries
-    `SOPS_AGE_KEY` and `GIT_AUTH_TOKEN`, it takes over from here and deploys every
-    stack in `.doco-cd.<host>.yaml` on its next poll (every 30 minutes).
-    **TODO(alex): how do you trigger it sooner (webhook or restart)?**
-9.  Verify: Gatus is green, healthchecks.io is receiving pings, you can log in
+    Because doco-cd carries `SOPS_AGE_KEY` and `GIT_AUTH_TOKEN`, it takes over from
+    here and deploys every stack in `.doco-cd.<host>.yaml` on its next poll (every
+    30 minutes). **TODO(alex): how do you trigger it sooner (webhook or restart)?**
+
+7.  Once the stacks are up, restore the databases (section 6). The dump restores
+    need the database containers running, so for each service stop the app, load
+    the dump or copy the `.bak` into place, then start the app again.
+8.  Verify: Gatus is green, healthchecks.io is receiving pings, you can log in
     through Authentik, and DNS resolves on both DNS hosts.
 
 ## 6. Databases
