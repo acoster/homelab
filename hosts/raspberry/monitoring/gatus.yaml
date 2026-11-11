@@ -4,7 +4,28 @@ storage:
   maximum-number-of-results: 4320
   maximum-number-of-events: 50
 
+alerting:
+  pushover:
+    application-token: ${PUSHOVER_APP_TOKEN}
+    user-key: ${PUSHOVER_USER_KEY}
+    title: Homelab
+    priority: 0
+    resolved-priority: -1
+    default-alert:
+      enabled: true
+      failure-threshold: 3
+      success-threshold: 2
+      send-on-resolved: true
+
 x-templates:
+  # Alerts are opt-in per endpoint: normal priority, or high priority for
+  # things that take down the network or the household.
+  alert: &alert
+    - type: pushover
+  alert-critical: &alert-critical
+    - type: pushover
+      provider-override:
+        priority: 1
   arr-conditions: &arr-healthy
     - "[STATUS] == 200"
     - "[BODY].status == OK"
@@ -26,18 +47,29 @@ endpoints:
       query-type: A
     conditions:
       - "[DNS_RCODE] == NOERROR"
+    alerts: *alert-critical
+  - name: framboesa-gatus
+    group: infra
+    url: http://framboesa:8080/health
+    conditions:
+      - "[STATUS] == 200"
+      - "[BODY].status == UP"
+    alerts: *alert-critical
   - name: authentik
     group: infra
     url: ${AUTHENTIK_URL}
     conditions: *http-healthy
+    alerts: *alert-critical
   - name: traefik
     group: infra
     url: ${TRAEFIK_URL}
     conditions: *http-healthy
+    alerts: *alert-critical
   - name: technitium
     group: infra
     url: ${TECHNITIUM_URL}
     conditions: *http-healthy
+    alerts: *alert-critical
 
   # Monitoring stack (same docker network as gatus)
   - name: grafana
@@ -46,32 +78,38 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
       - "[BODY].database == ok"
+    alerts: *alert
   - name: victoriametrics
     group: monitoring
     url: http://victoriametrics:8428/health
     conditions:
       - "[STATUS] == 200"
       - "[BODY] == OK"
+    alerts: *alert
   - name: victorialogs
     group: monitoring
     url: http://victorialogs:9428/health
     conditions:
       - "[STATUS] == 200"
       - "[BODY] == OK"
+    alerts: *alert
 
   # 3D printing services/devices
   - name: bambuddy
     group: 3d-printing
     url: ${BAMBUDDY_URL}
     conditions: *json-healthy
+    alerts: *alert
   - name: slicer-api
     group: 3d-printing
     url: ${SLICER_API_URL}
     conditions: *json-healthy
+    alerts: *alert
   - name: spoolman
     group: 3d-printing
     url: ${SPOOLMAN_URL}
     conditions: *json-healthy
+    alerts: *alert
   - name: wondertainment
     group: 3d-printing
     url: icmp://wondertainment.home.coster.ch
@@ -83,6 +121,7 @@ endpoints:
       - "[STATUS] == 200"
       - "[BODY].status == ok"
       - "[BODY].database == connected"
+    alerts: *alert
 
   # Media services
   - name: jellyfin
@@ -91,35 +130,42 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
       - "[BODY] == Healthy"
+    alerts: *alert
 
   - name: lidarr
     group: media
     url: https://lid${ARR_SUFFIX}
     conditions: *arr-healthy
+    alerts: *alert
   - name: radarr
     group: media
     url: https://rad${ARR_SUFFIX}
     conditions: *arr-healthy
+    alerts: *alert
   - name: sonarr
     group: media
     url: https://son${ARR_SUFFIX}
     conditions: *arr-healthy
+    alerts: *alert
   - name: prowlarr
     group: media
     url: https://prowl${ARR_SUFFIX}
     conditions: *arr-healthy
+    alerts: *alert
   - name: transmission
     group: media
     url: ${TRANSMISSION_URL}
     headers:
       Authorization: "Basic ${TRANSMISSION_AUTH}"
     conditions: *http-healthy
+    alerts: *alert
   - name: sabnzbd
     group: media
     url: ${SAB_URL}
     conditions:
       - "[STATUS] == 200"
       - "has([BODY].status) == true"
+    alerts: *alert
 
   # Home automation
   - name: home-assistant
@@ -128,14 +174,17 @@ endpoints:
     headers:
       Authorization: "Bearer ${HASS_TOKEN}"
     conditions: *http-healthy
+    alerts: *alert
   - name: hue
     group: home
     url: icmp://${HUE_HOST}
     conditions: *connected-healthy
+    alerts: *alert
   - name: tado
     group: home
     url: icmp://${THERMOSTAT_HOST}
     conditions: *connected-healthy
+    alerts: *alert
   - name: apple-tv
     group: home
     url: icmp://apple-tv.home.coster.ch
@@ -144,44 +193,53 @@ endpoints:
     group: home
     url: ${HOMEBRIDGE_URL}
     conditions: *http-healthy
+    alerts: *alert
 
   # Other services
   - name: bricktracker
     group: other
     url: ${BRICKTRACKER_URL}
     conditions: *http-healthy
+    alerts: *alert
   - name: bytestash
     group: other
     url: ${BYTESTASH_URL}
     conditions: *http-healthy
+    alerts: *alert
   - name: homebox
     group: other
     url: ${HBOX_URL}
     conditions:
       - "[STATUS] == 200"
       - "[BODY].health == true"
+    alerts: *alert
   - name: linkding
     group: other
     url: ${LINKDING_URL}
     conditions: *json-healthy
+    alerts: *alert
   - name: miniflux
     group: other
     url: ${MINIFLUX_URL}
     conditions:
       - "[STATUS] == 200"
       - "[BODY] == OK"
+    alerts: *alert
   - name: paperless
     group: other
     url: ${PAPERLESS_URL}
     conditions: *http-healthy
+    alerts: *alert-critical
   - name: paperless-gpt
     group: other
     url: ${PAPERLESS_GPT_URL}
     conditions: *http-healthy
+    alerts: *alert
   - name: retroassembly
     group: other
     url: ${RETROASSEMBLY_URL}
     conditions: *http-healthy
+    alerts: *alert
 
 remote:
   instances:
