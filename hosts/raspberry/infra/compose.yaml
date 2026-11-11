@@ -183,7 +183,7 @@ services:
   # stop a process from creating containers through the API.
   socket-proxy:
     container_name: socket-proxy
-    image: ghcr.io/tecnativa/docker-socket-proxy:v0.5.0@sha256:1f5038b54f06c3e18422902cf00ba21803d1c97805aae032e5e6673d532d3459
+    image: ghcr.io/tecnativa/docker-socket-proxy:v0.5.0
     restart: unless-stopped
     privileged: true # upstream's recommendation; needed to connect to the socket under SELinux/AppArmor
     volumes:
