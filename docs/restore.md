@@ -11,7 +11,7 @@ tested in an actual restore yet.
 | raspberry | 192.168.1.212 | Edge and main dev host: Traefik, Authentik, CrowdSec, Technitium (DNS), Redis, apps, monitoring, doco-cd |
 | framboesa | 192.168.5.202 | Second DNS, bytestash, homebridge, retroassembly, spoolman, bambu-connect, Gatus                         |
 | datengrab | 192.168.1.14  | Synology NAS (DSM): media stack, paperless, bricktracker, gyroidvault, kop                               |
-| cloudy    | VPS           | Traefik and doco-cd only. **TODO(alex): what does cloudy serve?**                                        |
+| cloudy    | VPS           | VPN exit node (Traefik and doco-cd only)                                                                 |
 
 Deployment is GitOps: each host runs doco-cd, which polls `main` every 30
 minutes and applies the stacks listed in `.doco-cd.<host>.yaml`. Secrets are
@@ -40,9 +40,10 @@ Everything else depends on these. Check that you have an offline copy of each.
    key before you can open any backup.
 4. **The rsync.net / datengrab SSH key and SSH config** (aliases `rsyncnet` and
    `datengrab`) live in `$DOCKER_DATA_DIR/restic-ssh` on each host, which is inside
-   the backup it unlocks. An SSH key is also kept in 1Password, so recovery doesn't
-   depend on that folder. **TODO(alex): confirm it is the key for both `rsyncnet`
-   and `datengrab`, and that the SSH config (host aliases) is stored with it.**
+   the backup it unlocks. An emergency SSH key is also kept in 1Password, so recovery
+   doesn't depend on that folder. It is known to work with rsync.net.
+   **TODO(alex): confirm it also reaches the `datengrab` repos, and that the SSH
+   config (the host aliases) is stored with it.**
 5. **`GIT_AUTH_TOKEN` and `WEBHOOK_TOKEN`** for doco-cd are in
    `hosts/<host>/doco-cd/secrets.enc.env`.
 
@@ -82,8 +83,9 @@ On a working host, use the autorestic container instead:
 
 ## 5. Rebuilding a blank host
 
-1.  Install the OS and packages. **TODO(alex): how are the Pis provisioned?** The
-    `installed_packages.txt` file in the backups folder lists the `dpkg` selections.
+1.  Install the OS and packages. The Pis are set up by hand, so there is no
+    automation to rely on. The `installed_packages.txt` file in the backups folder
+    lists the `dpkg` selections.
 2.  Install docker, git, sops, age and sqlite3.
 3.  Get the admin age key from 1Password. You only need it to decrypt the host's
     `doco-cd/secrets.enc.env` below. Afterwards, recreate the host's key file at
@@ -106,8 +108,9 @@ On a working host, use the autorestic container instead:
     is a safeguard if more networks are added to this stack.
 
     Because doco-cd carries `SOPS_AGE_KEY` and `GIT_AUTH_TOKEN`, it takes over from
-    here and deploys every stack in `.doco-cd.<host>.yaml` on its next poll (every
-    30 minutes). **TODO(alex): how do you trigger it sooner (webhook or restart)?**
+    here. On startup it pulls the latest `main` and updates the containers of every
+    stack in `.doco-cd.<host>.yaml`, so you don't wait for the 30-minute poll.
+    Restarting doco-cd triggers the same run at any time.
 
 7.  Once the stacks are up, restore the databases (section 6). The dump restores
     need the database containers running, so for each service stop the app, load
@@ -159,6 +162,6 @@ Services with their own backups, not covered by the dumps above:
 
 ## 8. Practising
 
-Do a restore drill at least once a year: restore one small service (for example
-bytestash) from `latest` into a scratch directory and confirm it opens.
-**TODO(alex): add the date of the last drill here.**
+No restore drill has been done yet. Do the first one soon, then at least once a
+year: restore one small service (for example bytestash) from `latest` into a
+scratch directory and confirm it opens. Record the date of each drill here.
