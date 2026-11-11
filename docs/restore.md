@@ -137,9 +137,27 @@ before every backup. Stop the service, restore, then start it.
 | jellyfin                         | `jellyfin.bak` (datengrab)         | copy to `jellyfin/config/data/jellyfin.db`                                                       |
 | sonarr, radarr, prowlarr, lidarr | `<app>.bak` (datengrab)            | copy to `<app>/<app>.db`                                                                         |
 
-For every `.bak`, copy it over the live `.db` with the container stopped, make
-the owner match the folder (`ls -ln` on the parent), then start the container.
-**TODO(alex): confirm the owner for each, since only Grafana's is in the repo.**
+For every `.bak`, copy it over the live database file with the container stopped,
+set the owner from the table below, then start the container. These are the owners
+(`uid:gid`) of the live files, read with `ls -ln`:
+
+| Service                                 | Owner           |
+| --------------------------------------- | --------------- |
+| homebox                                 | `0:0`           |
+| bytestash                               | `0:0`           |
+| retroassembly                           | `0:0`           |
+| bricktracker                            | `0:0`           |
+| gyroidvault                             | `0:0`           |
+| grafana                                 | `1000:1000`     |
+| paperless-gpt                           | `10001:10001`   |
+| jellyfin                                | `297536:297536` |
+| sonarr, radarr, prowlarr, lidarr        | `1028:100`      |
+| linkding (the whole `linkding/` folder) | `33:33`         |
+
+Files copied as root already end up as `0:0`. For the others, run
+`chown <owner> <file>` after copying (for linkding, `chown -R 33:33 linkding/`
+after extracting the zip). The datengrab IDs (`1028:100`, `297536`) are Synology's,
+so check them again if you ever rebuild DSM.
 
 Services with their own backups, not covered by the dumps above:
 
