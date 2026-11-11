@@ -156,7 +156,7 @@ Services with their own backups, not covered by the dumps above:
   Those docs are written for Home Assistant OS and don't cover a plain Container
   install, so if the UI restore doesn't work, fall back to restoring the `hass/config`
   folder from restic. Only the recorder history (`home-assistant_v2.db`) is lost.
-  **TODO(alex): where is the emergency-kit encryption key stored?**
+  The encryption key is kept in 1Password.
 - **Bambuddy:** a scheduled backup writes a ZIP (database, print archives and
   library files) into one of Bambuddy's bind mounts (`bambuddy/backups` is mounted
   for this). To restore, open Settings > Backup & Restore > Restore Backup, pick
