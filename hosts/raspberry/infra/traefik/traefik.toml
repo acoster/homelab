@@ -4,7 +4,6 @@
 
 [api]
   dashboard = true
-  insecure = true
 
 [log]
   level = "INFO"
@@ -53,9 +52,6 @@
   [certificatesResolvers.gcl.acme.dnsChallenge]
     provider = "cloudflare"
     resolvers = ["1.1.1.1:53", "1.0.0.1:53"]
-
-[serversTransport]
-  insecureSkipVerify = true
 
 [experimental.plugins.crowdsec-bouncer]
   moduleName = "github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin"

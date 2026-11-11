@@ -9,5 +9,10 @@ http:
     service-dsm:
       loadBalancer:
         passHostHeader: true
+        serversTransport: dsm-transport
         servers:
           - url: "https://192.168.1.14:5001"
+  serversTransports:
+    # DSM serves a self-signed certificate; skip verification for this backend only.
+    dsm-transport:
+      insecureSkipVerify: true
