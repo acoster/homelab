@@ -52,6 +52,22 @@ services:
       traefik.http.routers.gatus-local.service: gatus-svc
       traefik.http.services.gatus-svc.loadbalancer.server.port: '8080'
 
+  # Jellyfin's own /metrics has almost nothing useful; this reads the REST API
+  # (sessions, streams, library counts, transcoding). Runs here, next to
+  # VictoriaMetrics, because a Docker host cannot reach its own macvlan
+  # children, and Jellyfin sits on a macvlan IP on datengrab.
+  jellyfin_exporter:
+    container_name: jellyfin_exporter
+    image: rebelcore/jellyfin-exporter:latest
+    restart: unless-stopped
+    environment:
+      JELLYFIN_ADDRESS: http://192.168.1.231:8096
+      JELLYFIN_TOKEN: ${JELLYFIN_TOKEN}
+    command:
+      - '--collector.transcoding'
+    networks:
+      servers:
+
   # Dead man's switch: pings healthchecks.io every minute, but only while Gatus
   # reports itself healthy. If the host, Docker or Gatus dies, the pings stop and
   # healthchecks.io sends the Pushover alert from outside the network.

@@ -100,6 +100,13 @@ scrape_configs:
         labels:
           instance: "datengrab"
 
+  # Sessions, streams, library counts and transcoding from the Jellyfin API.
+  - job_name: "jellyfin_exporter"
+    static_configs:
+      - targets: ["jellyfin_exporter:9594"]
+        labels:
+          instance: "datengrab"
+
   - job_name: "healthchecks"
     scheme: https
     metrics_path: "/projects/%{HC_PROJECT}/metrics/%{HC_TOKEN}"
