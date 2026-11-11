@@ -1,0 +1,8 @@
+# Authentik server logs (failed logins). Docker logs go to the journal, so read
+# them from there instead of giving CrowdSec the Docker socket. The parser comes
+# from the firix/authentik collection (COLLECTIONS in compose.yaml).
+source: journalctl
+journalctl_filter:
+  - "CONTAINER_NAME=authentik_server"
+labels:
+  type: authentik

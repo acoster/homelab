@@ -119,7 +119,7 @@ services:
       - ${DOCKER_DATA_DIR}/traefik-logs:/var/log/traefik
     environment:
       PGID: '1000'
-      COLLECTIONS: 'crowdsecurity/traefik crowdsecurity/http-cve crowdsecurity/unifi crowdsecurity/sshd'
+      COLLECTIONS: 'crowdsecurity/traefik crowdsecurity/http-cve crowdsecurity/unifi crowdsecurity/sshd firix/authentik'
     env_file:
       - ./.env
     networks:
