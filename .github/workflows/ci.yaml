@@ -51,7 +51,7 @@ jobs:
         run: npx dclint -r .
       - name: shfmt
         if: ${{ !cancelled() }}
-        uses: docker://mvdan/shfmt:v3.14.1
+        uses: docker://mvdan/shfmt:v3.14.1@sha256:8c06884a35683d8763fba6c0d9484d11a61a96da65f8d497d6f625825a6043f2
         with:
           args: -d hosts
 
@@ -60,6 +60,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: docker://ghcr.io/gitleaks/gitleaks:v8.30.1
+      - uses: docker://ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
         with:
           args: dir --no-banner --redact --verbose .
