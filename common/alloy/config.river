@@ -1,6 +1,29 @@
 // Shared by every host's alloy (common/compose.monitoring.yaml).
 // Per-host: VLOGS_URL, the VictoriaLogs base URL, set in the host's compose file.
 
+// Host metrics (CPU, memory, load, filesystems, temperatures, uptime).
+// Not pushed: VictoriaMetrics scrapes them from this alloy's own HTTP server at
+// /api/v0/component/prometheus.exporter.unix.host/metrics (job "node" in
+// hosts/raspberry/monitoring/scrape.yml). The host root is mounted at /host and
+// the container shares the host PID namespace (see common/compose.monitoring.yaml).
+prometheus.exporter.unix "host" {
+  rootfs_path = "/host"
+  // Only what is useful on these boxes; the default set is much larger.
+  set_collectors = [
+    "cpu",
+    "diskstats",
+    "filesystem",
+    "hwmon",
+    "loadavg",
+    "meminfo",
+    "os",
+    "stat",
+    "thermal_zone",
+    "time",
+    "uname",
+  ]
+}
+
 loki.relabel "journal" {
   forward_to = []
 

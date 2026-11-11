@@ -29,8 +29,12 @@ services:
     volumes:
       - /run/log/journal:/run/log/journal:ro
       - /etc/machine-id:/etc/machine-id:ro
+      # Host root for the unix exporter's filesystem metrics (cadvisor already
+      # has the same read-only view).
+      - /:/host:ro,rslave
       - ./alloy/config.river:/etc/alloy/config.river:ro
       - ${DOCKER_DATA_DIR}/alloy-data:/var/lib/alloy/data
+    pid: host
     command:
       - run
       - --server.http.listen-addr=0.0.0.0:12345

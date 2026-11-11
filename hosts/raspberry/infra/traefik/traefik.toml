@@ -57,4 +57,11 @@
   moduleName = "github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin"
   version = "v1.8.1"
 
+# Served on the internal "traefik" entrypoint (:8080), which is not published
+# or routed; VictoriaMetrics scrapes traefik:8080 over the servers network.
+[metrics.prometheus]
+  entryPoint = "traefik"
+  addEntryPointsLabels = true
+  addServicesLabels = true
+
 [ping]
