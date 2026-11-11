@@ -1,8 +1,10 @@
 # Authentik server logs (failed logins). Docker logs go to the journal, so read
 # them from there instead of giving CrowdSec the Docker socket. The parser comes
-# from the firix/authentik collection (COLLECTIONS in compose.yaml).
+# from the firix/authentik collection (COLLECTIONS in compose.yaml). It expects
+# the syslog parser to have set program ("authentik-server", see the logging tag
+# in compose.yaml) and message, so the type is syslog, not authentik.
 source: journalctl
 journalctl_filter:
   - "CONTAINER_NAME=authentik_server"
 labels:
-  type: authentik
+  type: syslog

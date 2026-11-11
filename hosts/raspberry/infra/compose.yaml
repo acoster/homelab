@@ -59,6 +59,13 @@ services:
     networks:
       servers:
       authentik-internal:
+    # The CrowdSec parser (firix/authentik-logs) only accepts the syslog program
+    # names "authentik" or "authentik-server"; the journald driver's default is
+    # the container ID.
+    logging:
+      driver: journald
+      options:
+        tag: authentik-server
     labels:
       traefik.enable: 'true'
       traefik.docker.network: servers
