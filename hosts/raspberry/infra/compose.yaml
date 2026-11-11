@@ -192,6 +192,7 @@ services:
     environment:
       CF_API_EMAIL: ${CF_API_EMAIL}
       CF_DNS_API_TOKEN: ${CF_API_TOKEN}
+      CROWDSEC_LAPI_KEY: ${CROWDSEC_LAPI_KEY} # read by traefik-rules/security.yml
     env_file:
       - ./.env
     networks:
@@ -205,9 +206,6 @@ services:
       traefik.http.routers.dashboard.rule: Host(`traefik.${DOMAIN}`)
       traefik.http.routers.dashboard.service: api@internal
       traefik.http.routers.dashboard.middlewares: middlewares-authentik@file
-      traefik.http.middlewares.crowdsec.plugin.crowdsec-bouncer.enabled: 'true'
-      traefik.http.middlewares.crowdsec.plugin.crowdsec-bouncer.crowdsecLapiKey: ${CROWDSEC_LAPI_KEY}
-      traefik.http.middlewares.crowdsec.plugin.crowdsec-bouncer.crowdsecMode: stream
 
 networks:
   authentik-internal:
