@@ -24,12 +24,17 @@ Everything else depends on these. Check that you have an offline copy of each.
 
 1. **The admin age key.** It decrypts every `*.enc.env` in the repo. It is the
    root of recovery. An offline copy is in 1Password.
-2. **Host age keys** live at `/var/lib/docker-data/age_key` on raspberry and
-   framboesa, and at `/var/services/homes/coster/.config/sops/age/keys.txt` on
-   datengrab. The two Pi keys sit inside the data backup, which you can only open
-   with a key first, so rely on the 1Password copy. The datengrab key is not backed
-   up. If a host key is lost, make a new key, put its public key in `.sops.yaml`,
-   and run `sops updatekeys` on that host's files using the admin key.
+2. **Host age keys.** Each host's `hosts/<host>/doco-cd/secrets.enc.env` contains
+   `SOPS_AGE_KEY`, that host's own key. doco-cd uses it to decrypt every other
+   secret and deploy the stacks, so a rebuild only needs the admin key once, to
+   start doco-cd. The same key is also kept as a file for host scripts that call
+   `sops exec-env` (backups, checks, manual compose commands):
+   `/var/lib/docker-data/age_key` on raspberry and framboesa, and
+   `/var/services/homes/coster/.config/sops/age/keys.txt` on datengrab. The Pi key
+   files are inside the data backup, which you can only open with a key first. The
+   datengrab file is not backed up. If a host key is lost, make a new key, put its
+   public key in `.sops.yaml`, and run `sops updatekeys` on that host's files using
+   the admin key.
 3. **Restic repository passwords** are in each host's `autorestic/secrets.enc.env`
    (`AUTORESTIC_<BACKEND>_RESTIC_PASSWORD`), so you need key 1 or a surviving host
    key before you can open any backup.
@@ -80,22 +85,28 @@ On a working host, use the autorestic container instead:
 1.  Install the OS and packages. **TODO(alex): how are the Pis provisioned?** The
     `installed_packages.txt` file in the backups folder lists the `dpkg` selections.
 2.  Install docker, git, sops, age and sqlite3.
-3.  Get the age key from 1Password and put it at the host's key path from section 2
-    (a host key, or the admin key if that's all you have). On the Pis point
-    `SOPS_AGE_KEY_FILE` at it, or copy it to `~/.config/sops/age/keys.txt`.
+3.  Get the admin age key from 1Password. You only need it to decrypt the host's
+    `doco-cd/secrets.enc.env` below. Afterwards, recreate the host's key file at
+    its path from section 2 (the value of `SOPS_AGE_KEY` in those secrets), and on
+    the Pis point `SOPS_AGE_KEY_FILE` at it or copy it to `~/.config/sops/age/keys.txt`.
 4.  Clone the repo to `/opt/homelab`.
 5.  Restore `restic-ssh`, then restore the data you need into `$DOCKER_DATA_DIR`
     (section 4). Skip dumps for now.
-6.  On raspberry, start `infra` first. It creates the `servers` network that the
-    other stacks mark as external:
+6.  **Raspberry only:** the `servers` network is created by the `infra` stack, but
+    doco-cd and the apps mark it external. Start `infra` by hand once, using the
+    admin key:
 
          cd /opt/homelab/hosts/raspberry/infra
-         sops exec-env secrets.enc.env 'docker compose up -d'
+         SOPS_AGE_KEY_FILE=<admin key file> sops exec-env secrets.enc.env 'docker compose up -d'
+
+    The other hosts don't need this: framboesa and datengrab's doco-cd has no
+    external network, and cloudy's creates its own.
 
 7.  Load the database dumps (section 6) before starting the apps that use them.
-8.  Start doco-cd the same way from `hosts/<host>/doco-cd`. It then deploys the
-    remaining stacks on its next poll. **TODO(alex): is there a webhook or command
-    to trigger it sooner?**
+8.  Start doco-cd from `hosts/<host>/doco-cd` the same way. Because it carries
+    `SOPS_AGE_KEY` and `GIT_AUTH_TOKEN`, it takes over from here and deploys every
+    stack in `.doco-cd.<host>.yaml` on its next poll (every 30 minutes).
+    **TODO(alex): how do you trigger it sooner (webhook or restart)?**
 9.  Verify: Gatus is green, healthchecks.io is receiving pings, you can log in
     through Authentik, and DNS resolves on both DNS hosts.
 
