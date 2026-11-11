@@ -40,10 +40,9 @@ Everything else depends on these. Check that you have an offline copy of each.
    key before you can open any backup.
 4. **The rsync.net / datengrab SSH key and SSH config** (aliases `rsyncnet` and
    `datengrab`) live in `$DOCKER_DATA_DIR/restic-ssh` on each host, which is inside
-   the backup it unlocks. An emergency SSH key is also kept in 1Password, so recovery
-   doesn't depend on that folder. It is known to work with rsync.net.
-   **TODO(alex): confirm it also reaches the `datengrab` repos, and that the SSH
-   config (the host aliases) is stored with it.**
+   the backup it unlocks. An emergency SSH key is also kept in 1Password and is known
+   to work with both rsync.net and datengrab. The SSH config is stored separately in
+   a safe place too, and is short enough to rewrite by hand if needed.
 5. **`GIT_AUTH_TOKEN` and `WEBHOOK_TOKEN`** for doco-cd are in
    `hosts/<host>/doco-cd/secrets.enc.env`.
 
@@ -144,9 +143,27 @@ the owner match the folder (`ls -ln` on the parent), then start the container.
 
 Services with their own backups, not covered by the dumps above:
 
-- **linkding:** `linkding/backups/backup.zip`, made by `full_backup`. **TODO(alex): confirm the restore steps.**
+- **linkding:** `linkding/backups/backup.zip`, made by `full_backup` (database,
+  assets, favicons and previews). To restore, stop linkding, move the existing
+  `linkding/` folder aside, extract the zip into a new `linkding/` folder, and start
+  it again. The folder is mounted at `/etc/linkding/data`, which is what linkding's
+  [backup docs](https://linkding.link/backups/) describe.
+- **Home Assistant:** backups are in the `backups` folder of the config directory,
+  so `hass/config/backups`, which is inside the file backup. In the UI, go to
+  Settings > System > Backups and restore the file, or choose "Upload backup" on a
+  fresh install's welcome screen. You need the backup's encryption key from its
+  emergency kit. See the [HA docs](https://www.home-assistant.io/common-tasks/general/backups/#restoring-a-backup).
+  Those docs are written for Home Assistant OS and don't cover a plain Container
+  install, so if the UI restore doesn't work, fall back to restoring the `hass/config`
+  folder from restic. Only the recorder history (`home-assistant_v2.db`) is lost.
+  **TODO(alex): where is the emergency-kit encryption key stored?**
+- **Bambuddy:** a scheduled backup writes a ZIP (database, print archives and
+  library files) into one of Bambuddy's bind mounts (`bambuddy/backups` is mounted
+  for this). To restore, open Settings > Backup & Restore > Restore Backup, pick
+  the ZIP, wait for it to finish and restart Bambuddy when asked. Restore into the
+  same Bambuddy version or a newer one, never an older one. See the
+  [Bambuddy docs](https://wiki.bambuddy.cool/features/backup/#full-restore).
 - **spoolman:** its own backups folder under `spoolman/`. Restore by replacing `spoolman.db` per its docs.
-- **Home Assistant, bambuddy:** their own backups. **TODO(alex): where do they land and how do you restore them?**
 - **Synology settings:** `datengrab.dss`, created by `synoconfbkp`. Restore through DSM's configuration restore.
 
 ## 7. Not backed up (and what to do instead)
