@@ -1,8 +1,7 @@
-# Restore runbook (DRAFT)
+# Restore runbook
 
-Status: first draft written from the repo. Anything marked **TODO(alex)** is
-something the repo can't tell me; fill it in or correct it. Nothing here has been
-tested in an actual restore yet.
+Written from the repo and the current setup. It has not been tested in a real
+restore yet: see issue #50 for the first drill.
 
 ## 1. What runs where
 
@@ -197,6 +196,7 @@ Services with their own backups, not covered by the dumps above:
 
 ## 8. Practising
 
-No restore drill has been done yet. Do the first one soon, then at least once a
-year: restore one small service (for example bytestash) from `latest` into a
-scratch directory and confirm it opens. Record the date of each drill here.
+No restore drill has been done yet (issue #50 tracks the first one). After that,
+repeat it at least once a year: restore one small service (for example bytestash)
+from `latest` into a scratch directory and confirm it opens. Record the date of
+each drill here.
