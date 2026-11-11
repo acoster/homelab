@@ -21,7 +21,8 @@ services:
       servers:
     labels:
       traefik.enable: 'true'
-      traefik.http.routers.wildcard-certs.rule: HostRegexp(`{host:.+}`)
+      # Traefik v3 HostRegexp takes a plain Go regex; `$$` is a literal `$` for compose.
+      traefik.http.routers.wildcard-certs.rule: HostRegexp(`^.+$$`)
       traefik.http.routers.wildcard-certs.entrypoints: https
       traefik.http.routers.wildcard-certs.service: noop@internal
     command:
@@ -36,9 +37,9 @@ services:
       - '--entrypoints.web.http.redirections.entrypoint.scheme=https'
       - '--entrypoints.https.address=:443'
 
-      - '--entrypoints.websecure.http.tls.certresolver=cloudflare'
-      - '--entrypoints.websecure.http.tls.domains[0].main=${DOMAIN}'
-      - '--entrypoints.websecure.http.tls.domains[0].sans=*.${DOMAIN}'
+      - '--entrypoints.https.http.tls.certresolver=cloudflare'
+      - '--entrypoints.https.http.tls.domains[0].main=${DOMAIN}'
+      - '--entrypoints.https.http.tls.domains[0].sans=*.${DOMAIN}'
 
       # Cloudflare DNS-01 ACME Resolver
       - '--certificatesresolvers.cloudflare.acme.email=${CF_API_EMAIL}'
