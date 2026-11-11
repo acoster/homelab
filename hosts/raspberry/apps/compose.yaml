@@ -130,8 +130,10 @@ services:
       - .env
     networks:
       servers:
+      miniflux-internal:
     labels:
       traefik.enable: 'true'
+      traefik.docker.network: servers
       traefik.http.routers.miniflux.rule: Host(`miniflux.${DOMAIN}`)
       traefik.http.services.miniflux.loadbalancer.server.port: '8080'
 
@@ -148,13 +150,16 @@ services:
     env_file:
       - .env
     networks:
-      servers:
+      miniflux-internal:
     healthcheck:
       test: ['CMD', 'pg_isready', '-U', 'miniflux']
       interval: 10s
       start_period: 30s
 
 networks:
+  miniflux-internal:
+    name: miniflux-internal
+    internal: true
   servers:
     name: servers
     external: true
