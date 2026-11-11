@@ -37,6 +37,8 @@ services:
       - ./alloy/config.river:/etc/alloy/config.river:ro
       - ${DOCKER_DATA_DIR}/alloy-data:/var/lib/alloy/data
     pid: host
+    # Report the real hostname (node_uname_info nodename) instead of the container ID.
+    uts: host
     command:
       - run
       - --server.http.listen-addr=0.0.0.0:12345
