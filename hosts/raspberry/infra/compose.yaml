@@ -106,7 +106,6 @@ services:
     image: crowdsecurity/crowdsec:v1.8.2-debian@sha256:a5642c72127ee93aaac830e9f66891573fa7851b2c721987d9fef13d7d05fdfe
     restart: unless-stopped
     ports:
-      - '${HOST_IP:?}:6060:6060'
       - '127.0.0.1:8989:8080'
     volumes:
       - /opt/crowdsec-db:/var/lib/crowdsec/data
