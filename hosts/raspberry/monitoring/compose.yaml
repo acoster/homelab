@@ -100,6 +100,7 @@ services:
     environment:
       BAMBUDDY_TOKEN:
       VM_HASS_TOKEN:
+      TECHNITIUM_METRICS_TOKEN:
       HC_TOKEN:
       HC_PROJECT:
     networks:
