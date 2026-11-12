@@ -88,6 +88,22 @@ scrape_configs:
     metric_relabel_configs:
       - *drop_go_metrics
 
+  # Technitium's native Prometheus endpoint (v15+): server-wide lifetime counters.
+  # The token belongs to a user in a group limited to Dashboard "View"; the same
+  # token is created on both servers. ns0 is reached over the shared "servers"
+  # network, ns1 on its macvlan address.
+  - job_name: "technitium"
+    metrics_path: "/api/dashboard/metrics/text"
+    scheme: http
+    bearer_token: "%{TECHNITIUM_METRICS_TOKEN}"
+    static_configs:
+      - targets: ["technitium:5380"]
+        labels:
+          instance: "raspberry"
+      - targets: ["192.168.5.202:5380"]
+        labels:
+          instance: "framboesa"
+
   - job_name: "authentik"
     static_configs:
       - targets: ["authentik_server:9300"]
