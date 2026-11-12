@@ -16,6 +16,10 @@ scrape_configs:
         labels:
           instance: "datengrab"
     metric_relabel_configs:
+      - &drop_go_metrics
+        source_labels: [__name__]
+        regex: '^go_.*'
+        action: drop
       - source_labels: [__name__]
         regex: "^container_network_advance_tcp_stats_total$"
         action: drop
@@ -77,6 +81,8 @@ scrape_configs:
   - job_name: "traefik"
     static_configs:
       - targets: ["traefik:8080"]
+    metric_relabel_configs:
+      - *drop_go_metrics
 
   - job_name: "authentik"
     static_configs:
@@ -85,6 +91,8 @@ scrape_configs:
   - job_name: "crowdsec"
     static_configs:
       - targets: ["crowdsec:6060"]
+    metric_relabel_configs:
+      - *drop_go_metrics
 
   - job_name: "bambuddy"
     static_configs:
@@ -113,6 +121,8 @@ scrape_configs:
       - targets: ["jellyfin_exporter:9594"]
         labels:
           instance: "datengrab"
+    metric_relabel_configs:
+      - *drop_go_metrics
 
   - job_name: "healthchecks"
     scheme: https
