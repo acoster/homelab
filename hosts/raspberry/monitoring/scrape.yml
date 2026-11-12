@@ -41,10 +41,17 @@ scrape_configs:
 
   - job_name: "doco-cd"
     metrics_path: "/metrics"
+    scheme: http
     static_configs:
       - targets: ["doco-cd:9120"]
         labels:
           instance: "raspberry"
+      - targets: ["framboesa:9120"]
+        labels:
+          instance: "framboesa"
+      - targets: ["datengrab:9120"]
+        labels:
+          instance: "datengrab"
 
   # Host network interfaces: a second exporter in the same alloy that reads PID 1's
   # network namespace (see common/alloy/config.river).
