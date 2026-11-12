@@ -3,9 +3,9 @@ scrape_configs:
     metric_relabel_configs:
       - &drop_go_metrics
         source_labels: [__name__]
-        regex: '^go_.*'
+        regex: "^go_.*"
         action: drop
- 
+
     static_configs:
       - targets: ["localhost:8428"]
 
