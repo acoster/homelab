@@ -1,5 +1,6 @@
 scrape_configs:
   - job_name: "victoriametrics"
+    metric_relabel_configs: [*drop_go_metrics]
     static_configs:
       - targets: ["localhost:8428"]
 
@@ -46,6 +47,7 @@ scrape_configs:
   - job_name: "doco-cd"
     metrics_path: "/metrics"
     scheme: http
+    metric_relabel_configs: [*drop_go_metrics]
     static_configs:
       - targets: ["doco-cd:9120"]
         labels:

@@ -121,6 +121,7 @@ services:
       - '-storageDataPath=/storage'
       - '-retentionPeriod=3M'
       - '-promscrape.config=/etc/victoriametrics/scrape.yml'
+      - '-promscrape.configCheckInterval=30s'
 
   victorialogs:
     container_name: victorialogs
