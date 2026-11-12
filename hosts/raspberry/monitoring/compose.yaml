@@ -74,7 +74,7 @@ services:
   # publishes no ports. VictoriaMetrics scrapes it (job "smartctl").
   smartctl-exporter:
     container_name: smartctl-exporter
-    image: prometheuscommunity/smartctl-exporter:v0.14.0
+    image: prometheuscommunity/smartctl-exporter:v0.15.0
     restart: unless-stopped
     user: root
     privileged: true
