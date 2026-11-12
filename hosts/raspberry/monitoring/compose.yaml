@@ -68,6 +68,19 @@ services:
     networks:
       servers:
 
+  # NVMe SMART data (wear, spare capacity, media errors, temperature). smartctl
+  # needs raw device access, which is why this is privileged. It is only on the
+  # internal monitoring network, so no other container can reach it, and it
+  # publishes no ports. VictoriaMetrics scrapes it (job "smartctl").
+  smartctl-exporter:
+    container_name: smartctl-exporter
+    image: prometheuscommunity/smartctl-exporter:v0.14.0
+    restart: unless-stopped
+    user: root
+    privileged: true
+    networks:
+      monitoring-internal:
+
   # Dead man's switch: pings healthchecks.io every minute, but only while Gatus
   # reports itself healthy. If the host, Docker or Gatus dies, the pings stop and
   # healthchecks.io sends the Pushover alert from outside the network.

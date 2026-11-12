@@ -46,6 +46,16 @@ scrape_configs:
         labels:
           instance: "datengrab"
 
+  # SMART data for raspberry's NVMe drive (smartctl-exporter in the monitoring
+  # stack). framboesa boots from an SD card, which has no SMART data; its wear
+  # proxy is node_disk_written_bytes_total{device="mmcblk0"} from the node job.
+  - job_name: "smartctl"
+    metric_relabel_configs: [*drop_go_metrics]
+    static_configs:
+      - targets: ["smartctl-exporter:9633"]
+        labels:
+          instance: "raspberry"
+
   - job_name: "doco-cd"
     metrics_path: "/metrics"
     scheme: http
