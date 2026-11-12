@@ -1,0 +1,420 @@
+# Provisioned Grafana alerting: Pushover contact points, routing, and metric rules.
+# Thresholds live in each rule's PromQL expression; the rule fires when the
+# expression returns a series. Edit here, not in the UI (provisioned rules are read-only).
+apiVersion: 1
+contactPoints:
+  - orgId: 1
+    name: pushover
+    receivers:
+      - uid: pushover-default
+        type: pushover
+        settings:
+          userKey: ${PUSHOVER_USER_KEY}
+          apiToken: ${PUSHOVER_APP_TOKEN}
+          priority: "0"
+          okPriority: "-1"
+  - orgId: 1
+    name: pushover-critical
+    receivers:
+      - uid: pushover-critical
+        type: pushover
+        settings:
+          userKey: ${PUSHOVER_USER_KEY}
+          apiToken: ${PUSHOVER_APP_TOKEN}
+          priority: "1"
+          okPriority: "0"
+policies:
+  - orgId: 1
+    receiver: pushover
+    group_by:
+      - alertname
+      - instance
+    group_wait: 30s
+    group_interval: 5m
+    repeat_interval: 12h
+    routes:
+      - receiver: pushover-critical
+        object_matchers:
+          - - severity
+            - "="
+            - critical
+        repeat_interval: 2h
+groups:
+  - orgId: 1
+    name: disk-wear
+    folder: Homelab
+    interval: 5m
+    rules:
+      - uid: nvme-wear
+        title: NVMe wear high
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-native
+            model:
+              refId: A
+              expr: smartctl_device_percentage_used{instance="raspberry"} > 80
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              refId: B
+              type: reduce
+              expression: A
+              reducer: last
+              datasource:
+                type: __expr__
+                uid: __expr__
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params:
+                      - 0
+              datasource:
+                type: __expr__
+                uid: __expr__
+        noDataState: OK
+        execErrState: Error
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: raspberry NVMe has used more than 80% of its rated endurance
+      - uid: nvme-spare
+        title: NVMe spare capacity low
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-native
+            model:
+              refId: A
+              expr: smartctl_device_available_spare{instance="raspberry"} < smartctl_device_available_spare_threshold{instance="raspberry"} + 10
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              refId: B
+              type: reduce
+              expression: A
+              reducer: last
+              datasource:
+                type: __expr__
+                uid: __expr__
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params:
+                      - 0
+              datasource:
+                type: __expr__
+                uid: __expr__
+        noDataState: OK
+        execErrState: Error
+        for: 1h
+        labels:
+          severity: critical
+        annotations:
+          summary: raspberry NVMe available spare is within 10 points of the failure threshold
+      - uid: nvme-health
+        title: NVMe SMART health failing
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-native
+            model:
+              refId: A
+              expr: (smartctl_device_smart_status{instance="raspberry"} == bool 0) + (smartctl_device_critical_warning{instance="raspberry"} > bool 0)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              refId: B
+              type: reduce
+              expression: A
+              reducer: last
+              datasource:
+                type: __expr__
+                uid: __expr__
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params:
+                      - 0
+              datasource:
+                type: __expr__
+                uid: __expr__
+        noDataState: OK
+        execErrState: Error
+        for: 0s
+        labels:
+          severity: critical
+        annotations:
+          summary: raspberry NVMe reports a failed SMART status or a critical warning
+      - uid: nvme-media-errors
+        title: NVMe media errors increasing
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 3600
+              to: 0
+            datasourceUid: prometheus-native
+            model:
+              refId: A
+              expr: increase(smartctl_device_media_errors{instance="raspberry"}[1h]) > 0
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              refId: B
+              type: reduce
+              expression: A
+              reducer: last
+              datasource:
+                type: __expr__
+                uid: __expr__
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params:
+                      - 0
+              datasource:
+                type: __expr__
+                uid: __expr__
+        noDataState: OK
+        execErrState: Error
+        for: 0s
+        labels:
+          severity: critical
+        annotations:
+          summary: raspberry NVMe logged new media errors in the last hour
+      - uid: sd-write-rate
+        title: framboesa SD card writing heavily
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-native
+            model:
+              refId: A
+              expr: rate(node_disk_written_bytes_total{instance="framboesa",device="mmcblk0"}[6h]) > 100000
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              refId: B
+              type: reduce
+              expression: A
+              reducer: last
+              datasource:
+                type: __expr__
+                uid: __expr__
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params:
+                      - 0
+              datasource:
+                type: __expr__
+                uid: __expr__
+        noDataState: OK
+        execErrState: Error
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: framboesa SD card averaged more than 100 kB/s of writes over 6h (about 8 GB/day)
+  - orgId: 1
+    name: hosts
+    folder: Homelab
+    interval: 1m
+    rules:
+      - uid: target-down
+        title: Scrape target down
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-native
+            model:
+              refId: A
+              expr: count by (job, instance) (up == 0)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              refId: B
+              type: reduce
+              expression: A
+              reducer: last
+              datasource:
+                type: __expr__
+                uid: __expr__
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params:
+                      - 0
+              datasource:
+                type: __expr__
+                uid: __expr__
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: VictoriaMetrics cannot scrape the target; its alerts and graphs are blind
+      - uid: fs-nearly-full
+        title: Filesystem nearly full
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-native
+            model:
+              refId: A
+              expr: (node_filesystem_avail_bytes{fstype!~"tmpfs|overlay|squashfs|devtmpfs|vfat|ramfs"} / node_filesystem_size_bytes{fstype!~"tmpfs|overlay|squashfs|devtmpfs|vfat|ramfs"}) < 0.10
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              refId: B
+              type: reduce
+              expression: A
+              reducer: last
+              datasource:
+                type: __expr__
+                uid: __expr__
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params:
+                      - 0
+              datasource:
+                type: __expr__
+                uid: __expr__
+        noDataState: OK
+        execErrState: Error
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: a filesystem has less than 10% free
+      - uid: host-hot
+        title: Host running hot
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-native
+            model:
+              refId: A
+              expr: node_thermal_zone_temp > 80
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              refId: B
+              type: reduce
+              expression: A
+              reducer: last
+              datasource:
+                type: __expr__
+                uid: __expr__
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params:
+                      - 0
+              datasource:
+                type: __expr__
+                uid: __expr__
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: SoC temperature above 80C (Pis start throttling around there)
