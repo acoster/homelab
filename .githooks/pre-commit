@@ -2,6 +2,7 @@
 # Regenerates docs/generated/ when the commit touches anything that feeds it,
 # and adds the result to the same commit. Enable once per clone with:
 #   git config core.hooksPath .githooks
+# It also runs the conflict lint, as a warning only (CI fails on conflicts).
 # Skip for one commit with `git commit --no-verify`; CI checks the docs anyway.
 set -eu
 
@@ -19,3 +20,7 @@ fi
 
 go -C tools/docgen run .
 git add docs/generated
+
+if ! go -C tools/docgen run . -lint; then
+	echo "pre-commit: warning: the conflicts above will fail CI; committing anyway" >&2
+fi
