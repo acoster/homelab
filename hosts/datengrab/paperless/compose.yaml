@@ -41,6 +41,8 @@ services:
     environment:
       PAPERLESS_BASE_URL: 'https://paperless.${DOMAIN}'
       PAPERLESS_API_TOKEN: ${PAPERLESS_API_TOKEN}
+      PAPERLESS_DISABLE_REGULAR_LOGIN: 'true'
+      PAPERLESS_REDIRECT_LOGIN_TO_SSO: 'true'
 
       LLM_PROVIDER: googleai
       GOOGLEAI_API_KEY: ${GOOGLEAI_API_TOKEN}
