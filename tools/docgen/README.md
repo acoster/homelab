@@ -19,6 +19,18 @@ go -C tools/docgen run . -lint    # exit 1 on conflicting ports, addresses or na
 go -C tools/docgen test ./...
 ```
 
+To regenerate `docs/generated/` automatically, enable the repo's pre-commit
+hook once per clone:
+
+```sh
+git config core.hooksPath .githooks
+```
+
+It runs the generator when a commit touches compose files, `.env` or secrets
+key files, `common/`, templates or the tool itself, and adds the result to the
+same commit. Skip it for one commit with `git commit --no-verify`; CI still
+checks the docs.
+
 Every `docs/templates/NAME.tmpl` becomes `docs/generated/NAME`. Markdown output
 gets a "generated, do not edit" comment on top. `docs/generated/` is in
 `.prettierignore` because the tables are not column-aligned.
