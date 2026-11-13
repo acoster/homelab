@@ -1,4 +1,4 @@
-<!-- Generated from /home/claude/homelab/docs/templates/ports.md.tmpl by tools/docgen. Do not edit. -->
+<!-- Generated from docs/ports.md.tmpl by tools/docgen. Do not edit. -->
 
 # Published ports
 

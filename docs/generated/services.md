@@ -1,4 +1,4 @@
-<!-- Generated from /home/claude/homelab/docs/templates/services.md.tmpl by tools/docgen. Do not edit. -->
+<!-- Generated from docs/services.md.tmpl by tools/docgen. Do not edit. -->
 
 # Services
 

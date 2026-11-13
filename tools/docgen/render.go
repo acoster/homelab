@@ -37,6 +37,9 @@ func RenderAll(data *Data, dir string) (map[string][]byte, error) {
 	if len(files) == 0 {
 		return nil, fmt.Errorf("no *.tmpl files in %s", dir)
 	}
+
+	lastDir := filepath.Base(filepath.Dir(dir))
+
 	out := map[string][]byte{}
 	for _, file := range files {
 		base := filepath.Base(file)
@@ -47,7 +50,7 @@ func RenderAll(data *Data, dir string) (map[string][]byte, error) {
 		var buf bytes.Buffer
 		name := strings.TrimSuffix(base, ".tmpl")
 		if strings.HasSuffix(name, ".md") {
-			fmt.Fprintf(&buf, "<!-- Generated from %s by tools/docgen. Do not edit. -->\n\n", filepath.ToSlash(filepath.Join(dir, base)))
+			fmt.Fprintf(&buf, "<!-- Generated from %s by tools/docgen. Do not edit. -->\n\n", filepath.ToSlash(filepath.Join(lastDir, base)))
 		}
 		if err := tmpl.Execute(&buf, data); err != nil {
 			return nil, fmt.Errorf("%s: %w", base, err)

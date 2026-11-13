@@ -11,14 +11,6 @@ like ``Host(`${WEBHOOK_HOST}.example.org`)`` shows up as written.
 
 ## Use
 
-First time only, to create `go.sum`:
-
-```sh
-cd tools/docgen && go mod tidy
-```
-
-Then, from anywhere in the repo:
-
 ```sh
 go -C tools/docgen run .          # render docs/templates/*.tmpl into docs/generated/
 go -C tools/docgen run . -check   # exit 1 if docs/generated/ is out of date
