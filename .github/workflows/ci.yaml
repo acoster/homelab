@@ -74,6 +74,8 @@ jobs:
       # leaves it stale (fix: `go -C tools/docgen run .`).
       - name: Generated docs are up to date
         run: go run . -check
+      - name: No conflicting ports, addresses or names
+        run: go run . -lint
 
   gitleaks:
     name: Secret scan

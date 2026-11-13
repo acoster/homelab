@@ -3,6 +3,7 @@
 //	go -C tools/docgen run .          write docs/generated/* from docs/templates/*.tmpl
 //	go -C tools/docgen run . -check   fail if docs/generated/* is out of date
 //	go -C tools/docgen run . -json    print the data the templates receive
+//	go -C tools/docgen run . -lint    fail on conflicting ports, addresses, names
 //
 // The repo root is found by walking up from the current directory to the
 // first one that has a hosts/ directory; -root overrides that.
@@ -25,15 +26,16 @@ func main() {
 	outDir := flag.String("out", "docs/generated", "output directory, relative to -root")
 	check := flag.Bool("check", false, "write nothing; exit 1 if the output files differ from what would be generated")
 	dump := flag.Bool("json", false, "print the template data as JSON and exit")
+	lint := flag.Bool("lint", false, "check for conflicting ports, addresses, MACs and names; exit 1 if any (renders nothing)")
 	flag.Parse()
 
-	if err := run(*root, *templates, *outDir, *check, *dump); err != nil {
+	if err := run(*root, *templates, *outDir, *check, *dump, *lint); err != nil {
 		fmt.Fprintln(os.Stderr, "docgen:", err)
 		os.Exit(1)
 	}
 }
 
-func run(root, templates, outDir string, check, dump bool) error {
+func run(root, templates, outDir string, check, dump, lint bool) error {
 	if root == "" {
 		var err error
 		if root, err = findRoot(); err != nil {
@@ -43,6 +45,16 @@ func run(root, templates, outDir string, check, dump bool) error {
 	data, err := Load(context.Background(), root)
 	if err != nil {
 		return err
+	}
+	if lint {
+		problems := Lint(data)
+		for _, p := range problems {
+			fmt.Fprintln(os.Stderr, p)
+		}
+		if len(problems) > 0 {
+			return fmt.Errorf("%d conflict(s) found", len(problems))
+		}
+		return nil
 	}
 	if dump {
 		enc := json.NewEncoder(os.Stdout)
