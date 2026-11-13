@@ -1,0 +1,10 @@
+# Published ports
+
+Ports that containers publish on their host, taken from the compose files in
+`hosts/`. `all` means the port is bound on every address of the host.
+
+| Host | Address | Port | Container port | Container | Stack |
+| ---- | ------- | ---- | -------------- | --------- | ----- |
+{{ range .PortRows -}}
+| {{ .Host }} | {{ if .HostIP }}{{ code .HostIP }}{{ else }}all{{ end }} | {{ .Published }}/{{ .Protocol }} | {{ .Target }} | {{ .Container }} | {{ .Stack }} |
+{{ end }}

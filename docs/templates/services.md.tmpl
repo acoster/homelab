@@ -1,0 +1,17 @@
+# Services
+
+Every service in the compose files, by host. Hostnames are the names in the
+service's Traefik `Host()` rules; a `${NAME}` is a value that lives in the
+stack's encrypted secrets.
+
+{{ range $host := .Hosts -}}
+## {{ $host }}
+
+| Stack | Service | Image | Tag | Hostnames |
+| ----- | ------- | ----- | --- | --------- |
+{{ range $.Services -}}
+{{ if eq .Host $host -}}
+| {{ .Stack }} | {{ .Name }} | {{ code .ImageRepo }} | {{ .ImageTag }} | {{ range $i, $h := .Hostnames }}{{ if $i }}, {{ end }}{{ code $h }}{{ end }} |
+{{ end -}}
+{{ end }}
+{{ end -}}
