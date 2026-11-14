@@ -12,7 +12,11 @@ services:
       TZ: ${TZ}
       APPRISE_WORKER_COUNT: 1
     healthcheck:
-      test: [ "CMD-SHELL", "curl -fsS http://localhost:8000/status >/dev/null || exit 1" ]
+      test:
+        [
+          'CMD-SHELL',
+          'curl -fsS http://localhost:8000/status >/dev/null || exit 1'
+        ]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -39,5 +43,3 @@ services:
       APPRISE_API_URL: http://apprise:8000/notify
       APPRISE_NOTIFY_LEVEL: failure
       APPRISE_NOTIFY_URLS: ${APPRISE_NOTIFY_URLS}
-
-
