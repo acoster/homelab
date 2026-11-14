@@ -1,0 +1,26 @@
+#!/bin/sh
+# Regenerates docs/generated/ when the commit touches anything that feeds it,
+# and adds the result to the same commit. Enable once per clone with:
+#   git config core.hooksPath .githooks
+# It also runs the conflict lint, as a warning only (CI fails on conflicts).
+# Skip for one commit with `git commit --no-verify`; CI checks the docs anyway.
+set -eu
+
+cd "$(git rev-parse --show-toplevel)"
+
+inputs='^(hosts/.*(compose[^/]*\.ya?ml|\.env|shared\.env|secrets\.enc\.env)|common/|docs/templates/|tools/docgen/.*\.go)$'
+if ! git diff --cached --name-only | grep -Eq "$inputs"; then
+	exit 0
+fi
+
+if ! command -v go >/dev/null 2>&1; then
+	echo "pre-commit: go not found, skipping docs generation (CI will check it)" >&2
+	exit 0
+fi
+
+go -C tools/docgen run .
+git add docs/generated
+
+if ! go -C tools/docgen run . -lint; then
+	echo "pre-commit: warning: the conflicts above will fail CI; committing anyway" >&2
+fi

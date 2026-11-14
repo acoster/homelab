@@ -39,6 +39,10 @@ type Service struct {
 	Hostnames []string
 	// File is the compose file, relative to the repo root.
 	File string
+
+	// explicitName is container_name exactly as written (Container falls back
+	// to the service name); only the linter needs the difference.
+	explicitName string
 }
 
 // Port is a published port (one with a host side).

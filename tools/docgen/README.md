@@ -15,12 +15,47 @@ like ``Host(`${WEBHOOK_HOST}.example.org`)`` shows up as written.
 go -C tools/docgen run .          # render docs/templates/*.tmpl into docs/generated/
 go -C tools/docgen run . -check   # exit 1 if docs/generated/ is out of date
 go -C tools/docgen run . -json    # print the data templates receive
+go -C tools/docgen run . -lint    # exit 1 on conflicting ports, addresses or names
 go -C tools/docgen test ./...
 ```
+
+To regenerate `docs/generated/` automatically, enable the repo's pre-commit
+hook once per clone:
+
+```sh
+git config core.hooksPath .githooks
+```
+
+It runs the generator when a commit touches compose files, `.env` or secrets
+key files, `common/`, templates or the tool itself, and adds the result to the
+same commit. It then runs `-lint` and prints any conflicts as a warning; the
+commit still goes through, and CI fails on them. Skip the hook for one commit
+with `git commit --no-verify`; CI still checks the docs.
 
 Every `docs/templates/NAME.tmpl` becomes `docs/generated/NAME`. Markdown output
 gets a "generated, do not edit" comment on top. `docs/generated/` is in
 `.prettierignore` because the tables are not column-aligned.
+
+## Lint
+
+`-lint` checks things no single compose file can show, because each stack is
+validated on its own:
+
+- The same port published twice on one host. A bind to all addresses overlaps
+  every specific address.
+- The same static IP or MAC on two services. IPs are LAN-wide, except in
+  Docker's default bridge range (172.16.0.0/12), where they only need to be
+  unique per host and network.
+- The same `container_name` twice on one host.
+- The same Traefik router, service or middleware name defined by two services.
+  This is stricter than Traefik, which keeps a namespace per provider, but it
+  keeps names safe to move between hosts.
+- The same Traefik hostname served by two services. Several routers for one
+  host inside one service are fine. Hostnames with a `${PLACEHOLDER}` are
+  skipped, because the real value is secret and differs per host.
+
+It cannot see anything outside the compose files: ports used by the OS or by
+`network_mode: host` containers, or addresses handed out by DHCP.
 
 ## Writing a template
 

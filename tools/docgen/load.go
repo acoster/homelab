@@ -99,12 +99,13 @@ func loadStack(ctx context.Context, file string) ([]Service, error) {
 
 func convert(name string, svc types.ServiceConfig) Service {
 	s := Service{
-		Name:        name,
-		Container:   svc.ContainerName,
-		Image:       svc.Image,
-		Restart:     svc.Restart,
-		NetworkMode: svc.NetworkMode,
-		Labels:      map[string]string(svc.Labels),
+		Name:         name,
+		Container:    svc.ContainerName,
+		explicitName: svc.ContainerName,
+		Image:        svc.Image,
+		Restart:      svc.Restart,
+		NetworkMode:  svc.NetworkMode,
+		Labels:       map[string]string(svc.Labels),
 	}
 	if s.Container == "" {
 		s.Container = name

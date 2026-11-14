@@ -7,11 +7,11 @@ stack's encrypted secrets.
 {{ range $host := .Hosts -}}
 ## {{ $host }}
 
-| Stack | Service | Image | Tag | Hostnames |
-| ----- | ------- | ----- | --- | --------- |
+| Stack | Service | Image | Hostnames |
+| ----- | ------- | ----- | --------- |
 {{ range $.Services -}}
 {{ if eq .Host $host -}}
-| {{ .Stack }} | {{ .Name }} | {{ code .ImageRepo }} | {{ .ImageTag }} | {{ range $i, $h := .Hostnames }}{{ if $i }}, {{ end }}{{ code $h }}{{ end }} |
+| {{ .Stack }} | {{ .Name }} | {{ code .ImageRepo }} | {{ range $i, $h := .Hostnames }}{{ if $i }}, {{ end }}{{ code $h }}{{ end }} |
 {{ end -}}
 {{ end }}
 {{ end -}}

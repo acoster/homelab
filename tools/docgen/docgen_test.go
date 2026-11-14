@@ -141,13 +141,13 @@ func TestRender(t *testing.T) {
 func TestRunCheck(t *testing.T) {
 	root := fixture(t)
 	write(t, root, "docs/templates/x.txt.tmpl", "{{ len .Services }}\n")
-	if err := run(root, "docs/templates", "docs/generated", true, false); err == nil {
+	if err := run(root, "docs/templates", "docs/generated", true, false, false); err == nil {
 		t.Fatal("-check should fail before anything is generated")
 	}
-	if err := run(root, "docs/templates", "docs/generated", false, false); err != nil {
+	if err := run(root, "docs/templates", "docs/generated", false, false, false); err != nil {
 		t.Fatal(err)
 	}
-	if err := run(root, "docs/templates", "docs/generated", true, false); err != nil {
+	if err := run(root, "docs/templates", "docs/generated", true, false, false); err != nil {
 		t.Fatalf("-check should pass right after generating: %v", err)
 	}
 }
