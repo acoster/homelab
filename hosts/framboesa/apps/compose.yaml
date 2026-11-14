@@ -72,6 +72,7 @@ services:
       public:
 
   retroassembly:
+    x-auth: app
     container_name: retroassembly
     image: arianrhodsandlot/retroassembly:v7.261011.1345@sha256:586c6b0d4ccd9c831bca56d747d60fbfc88f8879b3dfba085edf768cfbb9b973
     restart: unless-stopped
