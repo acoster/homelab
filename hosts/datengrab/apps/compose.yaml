@@ -47,7 +47,7 @@ services:
 
   gyroidvault:
     container_name: gyroidvault
-    image: ghcr.io/teecodedev/gyroidvault:2.3.1@sha256:c734258fb871c4941a9417f621dd5ce25530bbe3142f54673fdc74b39841f6a0
+    image: ghcr.io/teecodedev/gyroidvault:v2.4.0@sha256:d6ceb4b9527eeeb79f3c89acf598403bca3a51ed3e35a0d7ecac7cb2d6672d33
     restart: unless-stopped
     ports:
       - '${HOST_IP:?}:4000:3000/tcp'
