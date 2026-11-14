@@ -3,7 +3,7 @@
 //	go -C tools/docgen run .          write docs/generated/* from docs/templates/*.tmpl
 //	go -C tools/docgen run . -check   fail if docs/generated/* is out of date
 //	go -C tools/docgen run . -json    print the data the templates receive
-//	go -C tools/docgen run . -lint    fail on conflicting ports, addresses, names
+//	go -C tools/docgen run . -lint    fail on conflicting ports, addresses, names; warn on unprotected routers
 //
 // The repo root is found by walking up from the current directory to the
 // first one that has a hosts/ directory; -root overrides that.
@@ -47,12 +47,15 @@ func run(root, templates, outDir string, check, dump, lint bool) error {
 		return err
 	}
 	if lint {
-		problems := Lint(data)
-		for _, p := range problems {
-			fmt.Fprintln(os.Stderr, p)
+		errs, warns := Lint(data)
+		for _, e := range errs {
+			fmt.Fprintln(os.Stderr, e)
 		}
-		if len(problems) > 0 {
-			return fmt.Errorf("%d conflict(s) found", len(problems))
+		for _, w := range warns {
+			fmt.Fprintln(os.Stderr, "warning:", w)
+		}
+		if len(errs) > 0 {
+			return fmt.Errorf("%d conflict(s) found", len(errs))
 		}
 		return nil
 	}

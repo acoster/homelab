@@ -49,6 +49,7 @@ services:
   debug:
     image: localhost:5000/tool
     profiles: [debug]
+    x-auth: public
     ports:
       - '9090:90/udp'
     environment:
@@ -108,6 +109,12 @@ func TestLoad(t *testing.T) {
 	}
 	if dbg := data.Services[2]; dbg.ImageRepo != "localhost:5000/tool" || dbg.ImageTag != "" {
 		t.Errorf("registry with a port mis-split: %+v", dbg)
+	}
+	if got := data.Services[2].Auth; got != "public" {
+		t.Errorf("x-auth = %q, want public", got)
+	}
+	if got := data.Services[1].Auth; got != "" {
+		t.Errorf("x-auth on an unannotated service = %q", got)
 	}
 
 	if len(data.PortRows) != 2 || data.PortRows[0].Published != "8080" || data.PortRows[1].Protocol != "udp" {
