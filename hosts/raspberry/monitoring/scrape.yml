@@ -15,7 +15,7 @@ scrape_configs:
       - targets: ["cadvisor:8080"]
         labels:
           instance: "raspberry"
-      - targets: ["framboesa:8081"]
+      - targets: ["192.168.1.39:8081"]
         labels:
           instance: "framboesa"
       - targets: ["datengrab:8787"]
@@ -39,7 +39,7 @@ scrape_configs:
       - targets: ["alloy:12345"]
         labels:
           instance: "raspberry"
-      - targets: ["framboesa:12345"]
+      - targets: ["192.168.1.39:12345"]
         labels:
           instance: "framboesa"
       - targets: ["datengrab:12345"]
@@ -64,7 +64,7 @@ scrape_configs:
       - targets: ["doco-cd:9120"]
         labels:
           instance: "raspberry"
-      - targets: ["framboesa:9120"]
+      - targets: ["192.168.1.39:9120"]
         labels:
           instance: "framboesa"
       - targets: ["datengrab:9120"]
@@ -84,7 +84,7 @@ scrape_configs:
       - targets: ["alloy:12345"]
         labels:
           instance: "raspberry"
-      - targets: ["framboesa:12345"]
+      - targets: ["192.168.1.39:12345"]
         labels:
           instance: "framboesa"
       - targets: ["datengrab:12345"]
