@@ -6,6 +6,7 @@ compose_files:
 env_files:
   - .env
   - secrets.enc.env
+webhook_filter: ^refs/heads/main$
 ---
 name: apps
 working_dir: hosts/framboesa/apps
@@ -14,6 +15,7 @@ compose_files:
 env_files:
   - .env
   - secrets.enc.env
+webhook_filter: ^refs/heads/main$
 ---
 name: doco-cd
 working_dir: hosts/framboesa/doco-cd
@@ -22,6 +24,7 @@ compose_files:
 env_files:
   - .env
   - secrets.enc.env
+webhook_filter: ^refs/heads/main$
 ---
 name: monitoring
 working_dir: hosts/framboesa/monitoring
@@ -30,3 +33,4 @@ compose_files:
 env_files:
   - .env
   - secrets.enc.env
+webhook_filter: ^refs/heads/main$

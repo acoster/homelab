@@ -6,6 +6,7 @@ compose_files:
 env_files:
   - .env
   - secrets.enc.env
+webhook_filter: ^refs/heads/main$
 ---
 name: doco-cd
 working_dir: hosts/cloudy/doco-cd
@@ -14,3 +15,4 @@ compose_files:
 env_files:
   - .env
   - secrets.enc.env
+webhook_filter: ^refs/heads/main$
