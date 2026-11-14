@@ -10,6 +10,7 @@ stack's encrypted secrets.
 
 | Stack | Service | Image | Hostnames |
 | ----- | ------- | ----- | --------- |
+| doco-cd | apprise | `caronc/apprise` |  |
 | doco-cd | doco-cd | `ghcr.io/kimdre/doco-cd` | `${WEBHOOK_HOST}` |
 | infra | socket-proxy | `ghcr.io/tecnativa/docker-socket-proxy` |  |
 | infra | traefik | `traefik` |  |
@@ -22,6 +23,7 @@ stack's encrypted secrets.
 | apps | bricktracker | `gitea.baerentsen.space/frederikbaerentsen/bricktracker` | `bricktracker.h.coster.ch` |
 | apps | gyroidvault | `ghcr.io/teecodedev/gyroidvault` | `gyroidvault.h.coster.ch` |
 | autorestic | autorestic | `cupcakearmy/autorestic` |  |
+| doco-cd | apprise | `caronc/apprise` |  |
 | doco-cd | doco-cd | `ghcr.io/kimdre/doco-cd` | `${WEBHOOK_HOST}.h.coster.ch` |
 | infra | traefik-kop | `ghcr.io/jittering/traefik-kop` |  |
 | media | jellyfin | `jellyfin/jellyfin` | `jellyfin.h.coster.ch` |
@@ -48,6 +50,7 @@ stack's encrypted secrets.
 | apps | retroassembly | `arianrhodsandlot/retroassembly` | `retroassembly.h.coster.ch` |
 | apps | spoolman | `ghcr.io/donkie/spoolman` | `spoolman.h.coster.ch` |
 | autorestic | autorestic | `cupcakearmy/autorestic` |  |
+| doco-cd | apprise | `caronc/apprise` |  |
 | doco-cd | doco-cd | `ghcr.io/kimdre/doco-cd` | `${WEBHOOK_HOST}.h.coster.ch` |
 | infra | bambulab-relay | `fingerhutascode/udp-broadcast-relay` |  |
 | infra | technitium | `technitium/dns-server` |  |
@@ -68,6 +71,7 @@ stack's encrypted secrets.
 | apps | miniflux | `miniflux/miniflux` | `miniflux.h.coster.ch` |
 | apps | miniflux-db | `postgres` |  |
 | autorestic | autorestic | `cupcakearmy/autorestic` |  |
+| doco-cd | apprise | `caronc/apprise` |  |
 | doco-cd | doco-cd | `ghcr.io/kimdre/doco-cd` | `${WEBHOOK_HOST}.h.coster.ch` |
 | infra | authentik_db | `postgres` |  |
 | infra | authentik_ldap | `ghcr.io/goauthentik/ldap` |  |

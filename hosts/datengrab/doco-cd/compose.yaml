@@ -1,6 +1,11 @@
 name: doco-cd
 
 services:
+  apprise:
+    extends:
+      file: ../../../common/compose.doco-cd.yaml
+      service: apprise
+
   doco-cd:
     x-auth: api-key # webhook secret
     extends:
