@@ -4,6 +4,20 @@
 # docker-compose manager keeps updating the image below.
 
 services:
+  apprise:
+    container_name: apprise
+    image: caronc/apprise:2.1.0@sha256:bd7dc73b75882326b97d2963b7c3dd2a5e033df27d84c51f0090465d583fb316
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ}
+      APPRISE_WORKER_COUNT: 1
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -fsS http://localhost:8000/status >/dev/null || exit 1" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
   doco-cd:
     container_name: doco-cd
     image: ghcr.io/kimdre/doco-cd:0.134.0@sha256:1d40f570403689c762c63009ade3d5d0dc24595bf40f9629a8ab3865e4ddb768
@@ -26,16 +40,4 @@ services:
       APPRISE_NOTIFY_LEVEL: failure
       APPRISE_NOTIFY_URLS: ${APPRISE_NOTIFY_URLS}
 
-  apprise:
-    container_name: apprise
-    image: caronc/apprise:2.1.0@sha256:bd7dc73b75882326b97d2963b7c3dd2a5e033df27d84c51f0090465d583fb316
-    restart: unless-stopped
-    environment:
-      TZ: ${TZ}
-      APPRISE_WORKER_COUNT: 1
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -fsS http://localhost:8000/status >/dev/null || exit 1" ]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 20s
+
