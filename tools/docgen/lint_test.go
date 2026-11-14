@@ -107,7 +107,7 @@ func TestLint(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			got := Lint(&Data{Services: tc.services})
+			got, _ := Lint(&Data{Services: tc.services})
 			if len(got) != len(tc.want) {
 				t.Fatalf("got %d finding(s), want %d:\n%s", len(got), len(tc.want), strings.Join(got, "\n"))
 			}
@@ -129,7 +129,7 @@ func TestLintFixtureIsClean(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got := Lint(data); len(got) != 0 {
+	if got, _ := Lint(data); len(got) != 0 {
 		t.Fatalf("unexpected findings:\n%s", strings.Join(got, "\n"))
 	}
 }
@@ -144,5 +144,76 @@ func TestRunLint(t *testing.T) {
 	write(t, root, "hosts/h1/other/.env", "")
 	if err := run(root, "docs/templates", "docs/generated", false, false, true); err == nil {
 		t.Fatal("conflicting ports should fail -lint")
+	}
+}
+
+func TestLintAuth(t *testing.T) {
+	router := func(name, rule, middlewares string, extra ...string) func(*Service) {
+		return func(s *Service) {
+			if s.Labels == nil {
+				s.Labels = map[string]string{}
+			}
+			if rule != "" {
+				s.Labels["traefik.http.routers."+name+".rule"] = rule
+			}
+			if middlewares != "" {
+				s.Labels["traefik.http.routers."+name+".middlewares"] = middlewares
+			}
+			for i := 0; i+1 < len(extra); i += 2 {
+				s.Labels[extra[i]] = extra[i+1]
+			}
+		}
+	}
+	both := func(fs ...func(*Service)) func(*Service) {
+		return func(s *Service) {
+			for _, f := range fs {
+				f(s)
+			}
+		}
+	}
+	auth := func(v string) func(*Service) { return func(s *Service) { s.Auth = v } }
+	host := "Host(`a.example.org`)"
+
+	tests := []struct {
+		name string
+		edit func(*Service)
+		want string // substring of the one expected warning; empty means none
+	}{
+		{"no router", nil, ""},
+		{"authentik middleware", router("a", host, "middlewares-authentik@file"), ""},
+		{"authentik among other middlewares", router("a", host, "headers@file,middlewares-authentik@file"), ""},
+		{"LAN only by ClientIP", router("a", host+" && ClientIP(`192.168.1.0/24`)", ""), ""},
+		{"negated ClientIP does not restrict", router("a", host+" && !ClientIP(`192.168.1.1`)", ""), "router(s) a"},
+		{"no protection and no annotation", router("a", host, "headers@file"), "router(s) a have neither"},
+		{"annotated", both(router("a", host, ""), auth("oidc")), ""},
+		{"invalid annotation", both(router("a", host, "middlewares-authentik@file"), auth("sso")), `x-auth "sso"`},
+		{"a gated UI with an open api router warns about the api one",
+			both(router("ui", host, "middlewares-authentik@file"), router("ui-api", host+" && PathPrefix(`/api`)", "")), "router(s) ui-api"},
+		{"the same service, annotated", both(router("ui", host, "middlewares-authentik@file"), router("ui-api", host, ""), auth("api-key")), ""},
+		{"a router without a rule is ignored", router("a", "", "headers@file"), ""},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			errs, warns := Lint(&Data{Services: []Service{svc("h", "s", "x", tc.edit)}})
+			if len(errs) != 0 {
+				t.Fatalf("auth findings must be warnings, got errors: %v", errs)
+			}
+			switch {
+			case tc.want == "" && len(warns) != 0:
+				t.Errorf("unexpected warning(s): %v", warns)
+			case tc.want != "" && (len(warns) != 1 || !strings.Contains(warns[0], tc.want)):
+				t.Errorf("want one warning containing %q, got %v", tc.want, warns)
+			}
+		})
+	}
+}
+
+func TestRunLintWarningsDoNotFail(t *testing.T) {
+	root := fixture(t)
+	// A published router with no protection and no annotation: a warning only.
+	write(t, root, "hosts/h1/open/compose.yaml", "services:\n  site:\n    image: x\n    labels:\n      traefik.http.routers.site.rule: Host(`s.example.org`)\n")
+	write(t, root, "hosts/h1/open/.env", "")
+	if err := run(root, "docs/templates", "docs/generated", false, false, true); err != nil {
+		t.Fatalf("a warning must not fail -lint: %v", err)
 	}
 }

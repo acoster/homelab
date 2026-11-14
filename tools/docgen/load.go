@@ -111,6 +111,9 @@ func convert(name string, svc types.ServiceConfig) Service {
 		s.Container = name
 	}
 	s.ImageRepo, s.ImageTag, s.ImageDigest = splitImage(svc.Image)
+	if v, ok := svc.Extensions["x-auth"]; ok {
+		s.Auth = fmt.Sprint(v)
+	}
 
 	for _, p := range svc.Ports {
 		if p.Published == "" { // "expose"-style entry, nothing on the host

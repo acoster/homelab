@@ -41,6 +41,7 @@ services:
       servers:
 
   authentik_server:
+    x-auth: app # the login itself
     container_name: authentik_server
     image: ghcr.io/goauthentik/server:2026.8.5@sha256:602227a86455d6772e3d16b7d852713c4f864f40df5df894abd1285bb53979a5
     restart: unless-stopped
@@ -158,6 +159,7 @@ services:
       "
 
   technitium:
+    x-auth: oidc
     container_name: technitium
     image: technitium/dns-server:15.6.2@sha256:eb48ac5c135f4ab936b536f74f853d53e15ab39ef37fdbc9598a089b90d9f245
     restart: unless-stopped

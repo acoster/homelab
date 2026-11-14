@@ -39,6 +39,9 @@ type Service struct {
 	Hostnames []string
 	// File is the compose file, relative to the repo root.
 	File string
+	// Auth is the service's x-auth annotation: how an app that Traefik serves
+	// without the authentik middleware protects itself (see lintAuth).
+	Auth string
 
 	// explicitName is container_name exactly as written (Container falls back
 	// to the service name); only the linter needs the difference.

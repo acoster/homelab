@@ -8,8 +8,9 @@ import (
 	"strings"
 )
 
-// Lint finds conflicts that no single compose file shows, because each stack
-// is validated on its own. It returns one sorted message per conflict:
+// Lint finds problems that no single compose file shows, because each stack
+// is validated on its own. It returns errors (conflicts) and warnings, each a
+// sorted list of messages. Errors:
 //
 //   - the same port published twice on one host (an unspecified bind address
 //     overlaps every specific one)
@@ -25,9 +26,15 @@ import (
 //     Hostnames with a ${PLACEHOLDER} are skipped: their real value is
 //     secret and differs per host.
 //
+// The one warning: a service with a Traefik router that is neither behind the
+// authentik middleware nor limited to the LAN by a ClientIP rule, and has no
+// x-auth annotation. Setting `x-auth: oidc | app | api-key | public` on the
+// service records that someone checked how the app protects itself. It is a
+// claim, not a test, and Compose ignores it.
+//
 // It cannot see anything outside the compose files: ports used by the OS or
 // by network_mode: host containers, or addresses handed out by DHCP.
-func Lint(d *Data) []string {
+func Lint(d *Data) (errors, warnings []string) {
 	var out []string
 	out = append(out, lintPorts(d)...)
 	out = append(out, lintAddresses(d)...)
@@ -36,7 +43,9 @@ func Lint(d *Data) []string {
 	out = append(out, lintTraefikNames(d)...)
 	out = append(out, lintHostnames(d)...)
 	sort.Strings(out)
-	return out
+	warnings = lintAuth(d)
+	sort.Strings(warnings)
+	return out, warnings
 }
 
 func (s Service) id() string { return s.Host + "/" + s.Stack + "/" + s.Name }
@@ -195,5 +204,53 @@ func unique(in []string) []string {
 		}
 	}
 	sort.Strings(out)
+	return out
+}
+
+var (
+	validAuth = map[string]bool{"oidc": true, "app": true, "api-key": true, "public": true}
+	// A ClientIP rule that is not negated, so it limits who can connect.
+	clientIPRule = regexp.MustCompile(`(^|[^!])ClientIP\(`)
+	routerLabel  = regexp.MustCompile(`^traefik\.http\.routers\.([^.]+)\.(rule|middlewares)$`)
+)
+
+const authentikMiddleware = "middlewares-authentik"
+
+func lintAuth(d *Data) []string {
+	var out []string
+	for _, s := range d.Services {
+		if s.Auth != "" && !validAuth[s.Auth] {
+			out = append(out, fmt.Sprintf("auth: %s has x-auth %q; use one of api-key, app, oidc, public", s.id(), s.Auth))
+		}
+
+		routers := map[string]*[2]string{} // name -> rule, middlewares
+		for label, value := range s.Labels {
+			if m := routerLabel.FindStringSubmatch(label); m != nil {
+				if routers[m[1]] == nil {
+					routers[m[1]] = &[2]string{}
+				}
+				if m[2] == "rule" {
+					routers[m[1]][0] = value
+				} else {
+					routers[m[1]][1] = value
+				}
+			}
+		}
+		var open []string
+		for name, r := range routers {
+			rule, middlewares := r[0], r[1]
+			if rule == "" {
+				continue
+			}
+			if !strings.Contains(middlewares, authentikMiddleware) && !clientIPRule.MatchString(rule) {
+				open = append(open, name)
+			}
+		}
+		if len(open) > 0 && s.Auth == "" {
+			sort.Strings(open)
+			out = append(out, fmt.Sprintf("auth: %s: router(s) %s have neither the authentik middleware nor a ClientIP rule; add x-auth (oidc, app, api-key, public) if the app protects itself",
+				s.id(), strings.Join(open, ", ")))
+		}
+	}
 	return out
 }

@@ -2,6 +2,7 @@ name: doco-cd
 
 services:
   doco-cd:
+    x-auth: api-key # webhook secret
     extends:
       file: ../../../common/compose.doco-cd.yaml
       service: doco-cd

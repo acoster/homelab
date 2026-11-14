@@ -54,6 +54,21 @@ validated on its own:
   host inside one service are fine. Hostnames with a `${PLACEHOLDER}` are
   skipped, because the real value is secret and differs per host.
 
+One check only warns, and never fails `-lint`: a service with a Traefik router
+that has neither the `middlewares-authentik` middleware nor a (non-negated)
+`ClientIP` rule, and no `x-auth` annotation. For an app that protects itself,
+record that you checked, on the service:
+
+```yaml
+bambuddy:
+  x-auth: oidc # or: app | api-key | public
+```
+
+`oidc` is SSO configured in the app, `app` its own login, `api-key` a secret
+in the request (arr `-api` routers, webhooks) and `public` intentionally open.
+Compose ignores `x-` fields, so this does not recreate containers. It is a
+claim you maintain, not something the tool verifies.
+
 It cannot see anything outside the compose files: ports used by the OS or by
 `network_mode: host` containers, or addresses handed out by DHCP.
 
