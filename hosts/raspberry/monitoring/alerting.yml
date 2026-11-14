@@ -418,3 +418,54 @@ groups:
           severity: warning
         annotations:
           summary: SoC temperature above 80C (Pis start throttling around there)
+  - orgId: 1
+    name: home-sensors
+    folder: Home
+    interval: 1m
+    rules:
+      - uid: high-radon-concentration
+        title: Alex Office radon concentration high
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 1200
+              to: 0
+            datasourceUid: prometheus-native
+            model:
+              refId: A
+              expr: min_over_time(hass_sensor_radon_bq_per_mu0xb3{entity="sensor.aranetrn_38c5f_radon_concentration"}[20m])
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              refId: B
+              type: reduce
+              expression: A
+              reducer: last
+              datasource:
+                type: __expr__
+                uid: __expr__
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params:
+                      - 200
+              datasource:
+                type: __expr__
+                uid: __expr__
+        noDataState: OK
+        execErrState: Error
+        for: 0s
+        labels:
+          severity: warning
+        annotations:
+          summary: Radon concentration in Alex Office is above 200 Bq/m³.
