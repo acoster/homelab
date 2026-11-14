@@ -45,7 +45,7 @@ services:
     volumes:
       - ${DOCKER_DATA_DIR}/jellyfin/cache:/cache
       - ${DOCKER_DATA_DIR}/jellyfin/config:/config
-      - ${MEDIA_DIR}:/media
+      - ${MEDIA_DIR}:/Media
     env_file:
       - ./.env
     networks:
