@@ -47,6 +47,13 @@
       "schedule": ["at any time"],
       "automerge": true,
       "automergeType": "branch"
+    },
+    {
+      "description": "GitHub Actions digests stay weekly and are not automerged",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["digest"],
+      "schedule": ["before 8am on saturday"],
+      "automerge": false
     }
   ],
   "customManagers": [
