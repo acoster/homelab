@@ -192,6 +192,19 @@ Services with their own backups, not covered by the dumps above:
   `cscli bouncers add <name> -k "$CROWDSEC_LAPI_KEY"`. The config in `/opt/crowdsec`
   is backed up; the `hub/` folder is re-downloaded at startup.
 - **VictoriaMetrics, VictoriaLogs, Redis cache, Traefik logs:** history only.
+- **Redis users and routes:** Redis (raspberry) starts empty after a rebuild;
+  traefik-kop on datengrab and framboesa and Traefik's own file routes repopulate
+  it, so there is nothing to restore. The users are generated at start-up from
+  `hosts/raspberry/infra/secrets.enc.env`: `REDIS_ADMIN_USERNAME` and
+  `REDIS_ADMIN_PASSWORD` (full access), `REDIS_TRAEFIK_PASSWORD` (Traefik, read-only
+  on `traefik*` keys) and `REDIS_KOP_PASSWORD` (traefik-kop; the same value is in
+  the datengrab and framboesa `hosts/<host>/infra/secrets.enc.env`). The `default`
+  user is off. For manual access, run this on raspberry:
+
+         docker exec -it redis sh -c \
+           'REDISCLI_AUTH="$REDIS_ADMIN_PASSWORD" redis-cli --user "$REDIS_ADMIN_USERNAME"'
+
+  `ACL LOG` shows any command a client was denied.
 - **Gatus history** on both Pis: history only. The config is in git.
 - **Raw Postgres and MariaDB data folders:** the dumps replace them.
 - **Certificates:** `traefik/acme.json` is gitignored but is inside the data
