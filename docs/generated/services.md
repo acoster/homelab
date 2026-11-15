@@ -25,6 +25,7 @@ stack's encrypted secrets.
 | autorestic | autorestic | `cupcakearmy/autorestic` |  |
 | doco-cd | apprise | `caronc/apprise` |  |
 | doco-cd | doco-cd | `ghcr.io/kimdre/doco-cd` | `${WEBHOOK_HOST}.h.coster.ch` |
+| infra | socket-proxy | `ghcr.io/tecnativa/docker-socket-proxy` |  |
 | infra | traefik-kop | `ghcr.io/jittering/traefik-kop` |  |
 | media | jellyfin | `jellyfin/jellyfin` | `jellyfin.h.coster.ch` |
 | media | lidarr | `lscr.io/linuxserver/lidarr` | `lidarr.h.coster.ch` |
@@ -53,6 +54,7 @@ stack's encrypted secrets.
 | doco-cd | apprise | `caronc/apprise` |  |
 | doco-cd | doco-cd | `ghcr.io/kimdre/doco-cd` | `${WEBHOOK_HOST}.h.coster.ch` |
 | infra | bambulab-relay | `fingerhutascode/udp-broadcast-relay` |  |
+| infra | socket-proxy | `ghcr.io/tecnativa/docker-socket-proxy` |  |
 | infra | technitium | `technitium/dns-server` |  |
 | infra | traefik-kop | `ghcr.io/jittering/traefik-kop` |  |
 | monitoring | alloy | `grafana/alloy` | `alloy-framboesa.h.coster.ch` |
