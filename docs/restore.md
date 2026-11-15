@@ -205,6 +205,7 @@ Services with their own backups, not covered by the dumps above:
            'REDISCLI_AUTH="$REDIS_ADMIN_PASSWORD" redis-cli --user "$REDIS_ADMIN_USERNAME"'
 
   `ACL LOG` shows any command a client was denied.
+
 - **Gatus history** on both Pis: history only. The config is in git.
 - **Raw Postgres and MariaDB data folders:** the dumps replace them.
 - **Certificates:** `traefik/acme.json` is gitignored but is inside the data
