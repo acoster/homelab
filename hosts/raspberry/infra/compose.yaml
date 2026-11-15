@@ -169,7 +169,7 @@ services:
         user default off
         user $$REDIS_ADMIN_USERNAME on >$$REDIS_ADMIN_PASSWORD ~* &* +@all
         user traefik on >$$REDIS_TRAEFIK_PASSWORD resetkeys ~traefik* resetchannels &* -@all +@read +@connection -@dangerous +psubscribe +subscribe +punsubscribe +unsubscribe +config|set
-        user kop on >$$REDIS_KOP_PASSWORD resetkeys ~traefik/* ~traefik_* resetchannels -@all +@read +@write +@connection -@dangerous +keys
+        user kop on >$$REDIS_KOP_PASSWORD resetkeys ~traefik/* ~traefik_* resetchannels -@all +@read +@write +@connection -@dangerous -@scripting +keys
         EOF
         exec redis-server \
           --aclfile /tmp/users.acl \
