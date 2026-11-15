@@ -136,14 +136,14 @@ services:
       traefik.enable: 'false'
 
   # Users come from an ACL file generated at start-up (a heredoc avoids shell
-  # quoting problems with the `>`, `~` and `&` ACL tokens).
-  # `default` is deliberately open (nopass, full access): `redis-cli ping`
-  # without credentials answers PONG on the live instance, so --requirepass
-  # was never in effect, and Traefik connects without a password. Keeping it
-  # open preserves that until Traefik gets its own user. `kop` is what
-  # traefik-kop on the other hosts will use: only the traefik* keys it
-  # publishes, and nothing in @dangerous apart from KEYS (it uses KEYS,
-  # SADD/SDIFF/SMEMBERS, RENAME, UNLINK, SET, PEXPIRE).
+  # quoting problems with the `>`, `~` and `&` ACL tokens). The `default` user
+  # is off: every client has to use its own user.
+  #   admin:   everything, for `redis-cli` by hand.
+  #   traefik: read the traefik* keys and watch keyspace events; CONFIG SET is
+  #            needed because Traefik sets notify-keyspace-events itself.
+  #   kop:     what traefik-kop on the other hosts publishes: only the traefik*
+  #            keys, and nothing in @dangerous apart from KEYS (it uses KEYS,
+  #            SADD/SDIFF/SMEMBERS, RENAME, UNLINK, SET, PEXPIRE).
   redis:
     container_name: redis
     image: redis:8.10.3@sha256:1f88291b4c57bdf249f02eb085a8669889b2d2954e91d4de5118a5da6b78dd53
@@ -153,6 +153,9 @@ services:
     volumes:
       - ${DOCKER_DATA_DIR}/redis_cache:/data
     environment:
+      REDIS_ADMIN_USERNAME: ${REDIS_ADMIN_USERNAME}
+      REDIS_ADMIN_PASSWORD: ${REDIS_ADMIN_PASSWORD}
+      REDIS_TRAEFIK_PASSWORD: ${REDIS_TRAEFIK_PASSWORD}
       REDIS_KOP_PASSWORD: ${REDIS_KOP_PASSWORD}
     env_file:
       - ./.env
@@ -163,8 +166,10 @@ services:
       - -c
       - |
         cat > /tmp/users.acl <<EOF
-        user default on nopass ~* &* +@all
-        user kop on >$$REDIS_KOP_PASSWORD resetkeys ~traefik/* ~traefik_* resetchannels -@all +@read +@write +@connection -@dangerous +keys
+        user default off
+        user $$REDIS_ADMIN_USERNAME on >$$REDIS_ADMIN_PASSWORD ~* &* +@all
+        user traefik on >$$REDIS_TRAEFIK_PASSWORD resetkeys ~traefik* resetchannels &* -@all +@read +@connection -@dangerous +psubscribe +subscribe +punsubscribe +unsubscribe +config|set
+        user kop on >$$REDIS_KOP_PASSWORD resetkeys ~traefik/* ~traefik_* resetchannels -@all +@read +@write +@connection -@dangerous -@scripting +keys
         EOF
         exec redis-server \
           --aclfile /tmp/users.acl \
@@ -238,10 +243,8 @@ services:
       CF_API_EMAIL: ${CF_API_EMAIL}
       CF_DNS_API_TOKEN: ${CF_API_TOKEN}
       CROWDSEC_LAPI_KEY: ${CROWDSEC_LAPI_KEY} # read by traefik-rules/security.yml
-      # Empty means "connect to Redis without credentials", which is what Redis
-      # currently allows. Set both once Redis requires a traefik user.
-      REDIS_TRAEFIK_USERNAME: ${REDIS_TRAEFIK_USERNAME:-}
-      REDIS_TRAEFIK_PASSWORD: ${REDIS_TRAEFIK_PASSWORD:-}
+      REDIS_TRAEFIK_USERNAME: traefik
+      REDIS_TRAEFIK_PASSWORD: ${REDIS_TRAEFIK_PASSWORD}
     # Render traefik.toml with the Redis credentials, then start Traefik from the
     # rendered copy. Credentials must not contain `|` or `&` (use hex).
     command:
