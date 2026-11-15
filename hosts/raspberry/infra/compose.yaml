@@ -135,6 +135,12 @@ services:
     labels:
       traefik.enable: 'false'
 
+  # Users come from an ACL file generated at start-up from env vars (a heredoc
+  # avoids shell quoting problems with the `>`, `~` and `&` ACL tokens).
+  # `default` keeps the old behaviour (same password, full access) for Traefik
+  # and for admin use. `kop` is what traefik-kop on the other hosts uses: it can
+  # only touch the traefik* keys it publishes, and nothing in @dangerous apart
+  # from KEYS (it uses KEYS, SADD/SDIFF/SMEMBERS, RENAME, UNLINK, SET, PEXPIRE).
   redis:
     container_name: redis
     image: redis:8.10.3@sha256:1f88291b4c57bdf249f02eb085a8669889b2d2954e91d4de5118a5da6b78dd53
@@ -145,18 +151,24 @@ services:
       - ${DOCKER_DATA_DIR}/redis_cache:/data
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_KOP_PASSWORD: ${REDIS_KOP_PASSWORD}
     env_file:
       - ./.env
     networks:
       servers:
-    command: >
-      sh -cx "
-        redis-server
-        --save 60 1
-        --loglevel warning
-        --requirepass \"$$REDIS_PASSWORD\"
-        --notify-keyspace-events KEA
-      "
+    command:
+      - sh
+      - -c
+      - |
+        cat > /tmp/users.acl <<EOF
+        user default on >$$REDIS_PASSWORD ~* &* +@all
+        user kop on >$$REDIS_KOP_PASSWORD resetkeys ~traefik/* ~traefik_* resetchannels -@all +@read +@write +@connection -@dangerous +keys
+        EOF
+        exec redis-server \
+          --aclfile /tmp/users.acl \
+          --save 60 1 \
+          --loglevel warning \
+          --notify-keyspace-events KEA
 
   technitium:
     x-auth: oidc
