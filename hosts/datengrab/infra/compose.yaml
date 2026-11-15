@@ -27,9 +27,10 @@ services:
       - socket-proxy
     environment:
       DOCKER_HOST: tcp://socket-proxy:2375
+      REDIS_USER: kop
       REDIS_ADDR: '192.168.1.212:6379'
       BIND_IP: ${HOST_IP:?}
-      REDIS_PASS: ${REDIS_PASS}
+      REDIS_PASS: ${REDIS_KOP_PASSWORD}
       REDIS_TTL: 1800
       KOP_HOSTNAME: datengrab
     networks:
