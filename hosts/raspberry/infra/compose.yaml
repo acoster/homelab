@@ -224,6 +224,21 @@ services:
       CF_API_EMAIL: ${CF_API_EMAIL}
       CF_DNS_API_TOKEN: ${CF_API_TOKEN}
       CROWDSEC_LAPI_KEY: ${CROWDSEC_LAPI_KEY} # read by traefik-rules/security.yml
+      # Empty means "connect to Redis without credentials", which is what Redis
+      # currently allows. Set both once Redis requires a traefik user.
+      REDIS_TRAEFIK_USERNAME: ${REDIS_TRAEFIK_USERNAME:-}
+      REDIS_TRAEFIK_PASSWORD: ${REDIS_TRAEFIK_PASSWORD:-}
+    # Render traefik.toml with the Redis credentials, then start Traefik from the
+    # rendered copy. Credentials must not contain `|` or `&` (use hex).
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        sed -e "s|@REDIS_TRAEFIK_USERNAME@|$$REDIS_TRAEFIK_USERNAME|" \
+            -e "s|@REDIS_TRAEFIK_PASSWORD@|$$REDIS_TRAEFIK_PASSWORD|" \
+            /etc/traefik/traefik.toml > /tmp/traefik.toml
+        exec traefik --configFile=/tmp/traefik.toml
     env_file:
       - ./.env
     networks:

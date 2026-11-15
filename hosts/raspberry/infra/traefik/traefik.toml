@@ -41,6 +41,10 @@
 
 [providers.redis]
   endpoints = "redis:6379"
+  # Filled in at container start (see the traefik service in compose.yaml):
+  # static config has a single source and TOML has no env interpolation.
+  username = "@REDIS_TRAEFIK_USERNAME@"
+  password = "@REDIS_TRAEFIK_PASSWORD@"
 
 [providers.file]
   directory = "/rules"
