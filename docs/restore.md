@@ -193,8 +193,8 @@ Services with their own backups, not covered by the dumps above:
   is backed up; the `hub/` folder is re-downloaded at startup.
 - **VictoriaMetrics, VictoriaLogs, Redis cache, Traefik logs:** history only.
 - **Redis users and routes:** Redis (raspberry) starts empty after a rebuild;
-  traefik-kop on datengrab and framboesa and Traefik's own file routes repopulate
-  it, so there is nothing to restore. The users are generated at start-up from
+  traefik-kop on datengrab and framboesa republishes their routes into it (the
+  other routes come from Docker labels and files), so there is nothing to restore. The users are generated at start-up from
   `hosts/raspberry/infra/secrets.enc.env`: `REDIS_ADMIN_USERNAME` and
   `REDIS_ADMIN_PASSWORD` (full access), `REDIS_TRAEFIK_PASSWORD` (Traefik, read-only
   on `traefik*` keys) and `REDIS_KOP_PASSWORD` (traefik-kop; the same value is in
