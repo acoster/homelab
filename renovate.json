@@ -44,6 +44,7 @@
     {
       "description": "Automerge digest updates once CI passes",
       "matchUpdateTypes": ["digest"],
+      "schedule": ["at any time"],
       "automerge": true,
       "automergeType": "branch"
     }
