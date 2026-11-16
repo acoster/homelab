@@ -5,6 +5,8 @@ services:
     extends:
       file: ../../../common/compose.doco-cd.yaml
       service: apprise
+    networks:
+      servers:
 
   doco-cd:
     x-auth: api-key # webhook secret
