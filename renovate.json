@@ -3,7 +3,7 @@
   "extends": ["config:best-practices"],
   "timezone": "Europe/Zurich",
   "schedule": ["before 8am on saturday"],
-  "automergeSchedule": ["after 8pm", "before 8am"],
+  "automergeSchedule": ["* 0-6 * * *"],
   "packageRules": [
     {
       "description": "Group minor and patch Docker updates together into a single weekly PR",
