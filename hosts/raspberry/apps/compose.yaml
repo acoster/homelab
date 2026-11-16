@@ -38,11 +38,11 @@ services:
       servers:
       main_macvlan:
         ipv4_address: 192.168.1.246
-        ipv6_address: '2a02:169:4bce:1:4e81:beff:fe81:babe'
+        ipv6_address: '2a02:169:4bce::4e81:beff:fe81:babe'
         mac_address: '4C:81:BE:81:BA:BE'
       servers_macvlan:
         ipv4_address: 192.168.5.200
-        ipv6_address: '2a02:169:4bce:2::50'
+        ipv6_address: '2a02:169:4bce:2:4e81:beff:fe81:babe'
         mac_address: '4C:81:BE:81:BA:BE'
     labels:
       traefik.enable: 'true'
@@ -178,8 +178,8 @@ networks:
       config:
         - subnet: 192.168.1.0/24
           gateway: 192.168.1.1
-        - subnet: '2a02:169:4bce:1::/64'
-          gateway: '2a02:169:4bce:1::1'
+        - subnet: '2a02:169:4bce::/64'
+          gateway: '2a02:169:4bce::1'
   servers_macvlan:
     name: servers_macvlan
     external: true
