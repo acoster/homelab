@@ -151,7 +151,7 @@ services:
       traefik.http.routers.sabnzbd-local.rule: Host(`sabnzbd.${DOMAIN}`) && ClientIP(`192.168.1.0/24`) && !ClientIP(`192.168.1.1`)
       traefik.http.routers.sabnzbd-local.entrypoints: https
       traefik.http.routers.sabnzbd-local.service: sabnzbd-svc
-      traefik.http.routers.sabnzbd-api.rule: Host(`sabnzbd.${DOMAIN}`) && PathPrefix(`/api`)
+      traefik.http.routers.sabnzbd-api.rule: Host(`sabnzbd.${DOMAIN}`) && Path(`/api`)
       traefik.http.routers.sabnzbd-api.entrypoints: https
       traefik.http.routers.sabnzbd-api.service: sabnzbd-svc
       traefik.http.services.sabnzbd-svc.loadBalancer.server.port: '3128'
