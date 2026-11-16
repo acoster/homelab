@@ -77,6 +77,7 @@ stack's encrypted secrets.
 | doco-cd | doco-cd | `ghcr.io/kimdre/doco-cd` | `${WEBHOOK_HOST}.h.coster.ch` |
 | infra | authentik_db | `postgres` |  |
 | infra | authentik_ldap | `ghcr.io/goauthentik/ldap` |  |
+| infra | authentik_rac | `ghcr.io/goauthentik/rac` |  |
 | infra | authentik_server | `ghcr.io/goauthentik/server` | `auth.h.coster.ch` |
 | infra | authentik_worker | `ghcr.io/goauthentik/server` |  |
 | infra | cloudflare-ddns | `favonia/cloudflare-ddns` |  |

@@ -40,6 +40,19 @@ services:
     networks:
       servers:
 
+  authentik_rac:
+    container_name: authentik_rac
+    image: ghcr.io/goauthentik/rac:2026.8.5@sha256:f372973441ecf9fdac168ee0884ee525126af9d2c8eb82f96389e9196f49dad5
+    restart: unless-stopped
+    env_file:
+      - ./.env
+    environment:
+      AUTHENTIK_HOST: https://auth.h.coster.ch
+      AUTHENTIK_INSECURE: 'false'
+      AUTHENTIK_TOKEN: ${AUTHENTIK_RAC_TOKEN}
+    networks:
+      servers:
+
   authentik_server:
     x-auth: app # the login itself
     container_name: authentik_server
