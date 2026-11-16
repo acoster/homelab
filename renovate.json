@@ -3,7 +3,7 @@
   "extends": ["config:best-practices"],
   "timezone": "Europe/Zurich",
   "schedule": ["before 8am on saturday"],
-  "automergeSchedule": ["* 0-3 * * *"],
+  "automergeSchedule": ["* 0-6 * * *"],
   "packageRules": [
     {
       "description": "Group minor and patch Docker updates together into a single weekly PR",
@@ -47,6 +47,21 @@
       "schedule": ["at any time"],
       "automerge": true,
       "automergeType": "branch"
+    },
+    {
+      "description": "Infra that must not restart during the day (DNS, ingress, auth, deployer) merges only overnight",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": [
+        "technitium/dns-server",
+        "traefik",
+        "ghcr.io/jittering/traefik-kop",
+        "ghcr.io/tecnativa/docker-socket-proxy",
+        "redis",
+        "crowdsecurity/crowdsec",
+        "ghcr.io/goauthentik/*",
+        "ghcr.io/kimdre/doco-cd"
+      ],
+      "automergeSchedule": ["* 0-3 * * *"]
     },
     {
       "description": "GitHub Actions digests stay weekly and are not automerged",
