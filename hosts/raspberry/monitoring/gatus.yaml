@@ -244,7 +244,7 @@ endpoints:
   # External
   - name: downdetector
     group: external
-    url: https://www.downdetectpr.com
+    url: https://www.downdetector.com/
     conditions: *http-healthy
 
 remote:
