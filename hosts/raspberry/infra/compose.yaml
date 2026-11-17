@@ -52,6 +52,7 @@ services:
       AUTHENTIK_TOKEN: ${AUTHENTIK_RAC_TOKEN}
     networks:
       servers:
+        ipv4_address: 172.18.0.253 # Safe from sequential DHCP
 
   authentik_server:
     x-auth: app # the login itself
