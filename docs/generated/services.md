@@ -12,6 +12,7 @@ stack's encrypted secrets.
 | ----- | ------- | ----- | --------- |
 | doco-cd | apprise | `caronc/apprise` |  |
 | doco-cd | doco-cd | `ghcr.io/kimdre/doco-cd` | `${WEBHOOK_HOST}` |
+| gotosocial | gotosocial | `superseriousbusiness/gotosocial` | `m.coster.ch` |
 | infra | socket-proxy | `ghcr.io/tecnativa/docker-socket-proxy` |  |
 | infra | traefik | `traefik` |  |
 

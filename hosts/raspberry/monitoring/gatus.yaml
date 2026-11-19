@@ -94,6 +94,13 @@ endpoints:
       - "[BODY] == OK"
     alerts: *alert
 
+  # cloudy (VPS)
+  - name: gotosocial
+    group: cloudy
+    url: https://m.coster.ch/readyz
+    conditions: *http-healthy
+    alerts: *alert
+
   # 3D printing services/devices
   - name: bambuddy
     group: 3d-printing

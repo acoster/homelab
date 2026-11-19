@@ -18,7 +18,7 @@ I should know better. That is not a defence.
 | `raspberry` | A Raspberry Pi       | Edge proxy, auth, DNS, monitoring, and most of my questionable life choices |
 | `framboesa` | Another Raspberry Pi | Second DNS, so that one Pi dying is merely an annoyance                     |
 | `datengrab` | A Synology NAS       | Media, paperless, and everything that needs more disk than sense            |
-| `cloudy`    | A VPS                | A VPN exit node, so that some traffic can leave from somewhere else         |
+| `cloudy`    | A VPS                | VPN exit node, and GoToSocial so the family can post from somewhere else    |
 
 Every host runs [doco-cd](https://github.com/kimdre/doco-cd), which polls `main`
 every 30 minutes and deploys whatever it finds. That is GitOps: I push a typo

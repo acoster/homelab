@@ -16,3 +16,11 @@ env_files:
   - .env
   - secrets.enc.env
 webhook_filter: ^refs/heads/main$
+---
+name: gotosocial
+working_dir: hosts/cloudy/gotosocial
+compose_files:
+  - compose.yaml
+env_files:
+  - .env
+webhook_filter: ^refs/heads/main$

@@ -1,0 +1,64 @@
+name: gotosocial
+
+# A small fediverse server for the family, on the VPS. GoToSocial rather than
+# Mastodon: one Go process and SQLite fit in ~200 MB of RAM, where Mastodon
+# (Rails, Sidekiq, streaming, Postgres, Redis) wants most of a 2 GB box.
+# It speaks the Mastodon client API, so Ivory, Ice Cubes, Tusky, Elk etc. work.
+#
+# Handles are @user@m.coster.ch. GTS_HOST is permanent: once the instance has
+# federated, changing it means a new identity for every account.
+#
+# Before the first deploy, the data directories must exist and belong to the
+# container user (Docker would otherwise create them root-owned):
+#   sudo install -d -o 1000 -g 1000 /var/lib/docker-data/gotosocial/{storage,cache}
+#
+# Registrations are closed. Create accounts on the host:
+#   docker exec -it gotosocial /gotosocial/gotosocial admin account create \
+#     --username alex --email ... --password '...'
+#   docker exec -it gotosocial /gotosocial/gotosocial admin account promote --username alex
+#
+# Back up storage/ (sqlite.db holds every account's private keys; losing it
+# loses the identities). There is no restic on cloudy yet.
+
+services:
+  gotosocial:
+    x-auth: app # own login (password, or OIDC if configured later)
+    container_name: gotosocial
+    image: superseriousbusiness/gotosocial:0.22.3
+    restart: unless-stopped
+    user: '1000:1000'
+    volumes:
+      - ${DOCKER_DATA_DIR}/gotosocial/storage:/gotosocial/storage
+      - ${DOCKER_DATA_DIR}/gotosocial/cache:/gotosocial/.cache
+    environment:
+      GTS_HOST: m.coster.ch
+      GTS_PROTOCOL: https
+      GTS_PORT: '8080'
+      GTS_LETSENCRYPT_ENABLED: 'false' # Traefik terminates TLS
+      # Only Traefik reaches the container, over the `servers` bridge.
+      GTS_TRUSTED_PROXIES: 172.16.0.0/12
+      GTS_DB_TYPE: sqlite
+      GTS_DB_ADDRESS: /gotosocial/storage/sqlite.db
+      GTS_STORAGE_BACKEND: local
+      GTS_STORAGE_LOCAL_BASE_PATH: /gotosocial/storage
+      # Caches the compiled ffmpeg/sqlite WASM so restarts don't recompile it.
+      GTS_WAZERO_COMPILATION_CACHE: /gotosocial/.cache
+      GTS_ACCOUNTS_REGISTRATION_OPEN: 'false'
+      GTS_INSTANCE_LANGUAGES: en,de,pt
+      # Defaults kept on purpose: ~100 MiB cache target, remote media dropped
+      # after 7 days and re-fetched on demand, which bounds disk use.
+    env_file:
+      - ./.env
+    networks:
+      servers:
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.gotosocial.rule: Host(`m.coster.ch`)
+      traefik.http.routers.gotosocial.entrypoints: https
+      traefik.http.services.gotosocial.loadbalancer.server.port: '8080'
+    stop_grace_period: 30s
+
+networks:
+  servers:
+    name: servers
+    external: true

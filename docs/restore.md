@@ -10,7 +10,7 @@ restore yet: see issue #50 for the first drill.
 | raspberry | Edge and main dev host: Traefik, Authentik, CrowdSec, Technitium (DNS), Redis, apps, monitoring, doco-cd |
 | framboesa | Second DNS, bytestash, homebridge, retroassembly, spoolman, bambu-connect, Gatus                         |
 | datengrab | Synology NAS (DSM): media stack, paperless, bricktracker, gyroidvault, kop                               |
-| cloudy    | VPN exit node (Traefik and doco-cd only)                                                                 |
+| cloudy    | VPN exit node and GoToSocial (m.coster.ch; SQLite and media in `gotosocial/storage`, not backed up yet)  |
 
 Deployment is GitOps: each host runs doco-cd, which polls `main` every 30
 minutes and applies the stacks listed in `.doco-cd.<host>.yaml`. Secrets are
