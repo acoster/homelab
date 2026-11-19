@@ -14,17 +14,12 @@ if [[ "${HOMELAB_REPO_SYNCED:-0}" != "1" ]]; then
   git -C "${REPO_DIR}" reset --hard origin/main
   git -C "${REPO_DIR}" clean -fd -e "*.lock" -e "*autorestic.lock"
   export HOMELAB_REPO_SYNCED=1
-  exec "${REPO_DIR}/hosts/raspberry/autorestic/backups.sh" "$@"
+  exec "${REPO_DIR}/hosts/cloudy/autorestic/backups.sh" "$@"
 fi
 
-docker exec linkding python manage.py full_backup /etc/linkding/data/backups/backup.zip
-docker exec authentik_db pg_dump -U authentik authentik > ${OUTPUT_DIR}/authentik_backup.sql
-docker exec miniflux-db pg_dump -U miniflux miniflux > ${OUTPUT_DIR}/miniflux.sql
-
-sqlite3 ${DOCKER_DATA_DIR}/homebox/homebox.db ".backup '${OUTPUT_DIR}/homebox.bak'"
-sqlite3 ${DOCKER_DATA_DIR}/grafana-data/grafana.db ".backup '${OUTPUT_DIR}/grafana.bak'"
+sqlite3 ${DOCKER_DATA_DIR}/gotosocial/storage/sqlite.db ".backup '${OUTPUT_DIR}/gotosocial.bak'"
 
 dpkg --get-selections > ${OUTPUT_DIR}/installed_packages.txt
 
-cd ${REPO_DIR}/hosts/raspberry/autorestic
+cd ${REPO_DIR}/hosts/cloudy/autorestic
 sops exec-env secrets.enc.env 'docker compose run --rm -T --name autorestic-cron autorestic autorestic --ci cron'
