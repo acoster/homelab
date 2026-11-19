@@ -31,7 +31,10 @@ services:
     depends_on:
       - socket-proxy
     volumes:
-      - ${DOCKER_DATA_DIR}/acme.json:/letsencrypt/acme.json
+      # A directory, not a file: a missing file bind-mounts as a directory, and an
+      # existing one is usually 0644; Traefik disables the resolver in both cases.
+      # Traefik creates acme.json here itself, with mode 0600.
+      - ${DOCKER_DATA_DIR}/traefik:/letsencrypt
     environment:
       CF_DNS_API_TOKEN: ${CF_API_TOKEN}
     env_file:
