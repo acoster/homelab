@@ -1,0 +1,31 @@
+name: phanpy
+
+# Phanpy web client for GoToSocial (m.coster.ch), at phanpy.coster.ch.
+# A static page: it talks to the GoToSocial API from the browser, logins
+# happen on m.coster.ch, and tokens stay in the browser's storage.
+# Built locally from the pinned upstream release; see Dockerfile.
+
+services:
+  phanpy:
+    x-auth: public # static files; sign-in is on GoToSocial
+    container_name: phanpy
+    build:
+      context: .
+    # Local tag only: never pulled, always built from the Dockerfile.
+    image: phanpy-local:2026.10.09.febb38d
+    pull_policy: build
+    restart: unless-stopped
+    env_file:
+      - ./.env
+    networks:
+      servers:
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.phanpy.rule: Host(`phanpy.coster.ch`)
+      traefik.http.routers.phanpy.entrypoints: https
+      traefik.http.services.phanpy.loadbalancer.server.port: '80'
+
+networks:
+  servers:
+    name: servers
+    external: true

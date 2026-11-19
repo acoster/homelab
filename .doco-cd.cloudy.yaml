@@ -24,3 +24,11 @@ compose_files:
 env_files:
   - .env
 webhook_filter: ^refs/heads/main$
+---
+name: phanpy
+working_dir: hosts/cloudy/phanpy
+compose_files:
+  - compose.yaml
+env_files:
+  - .env
+webhook_filter: ^refs/heads/main$
