@@ -22,9 +22,10 @@ services:
     labels:
       traefik.enable: 'true'
       traefik.http.routers.hook-cloudy.rule: Host(`${WEBHOOK_HOST}`)
+      # No `tls` label: a router with its own TLS section does not inherit the
+      # https entrypoint's certresolver, so no certificate would be requested.
       traefik.http.routers.hook-cloudy.entrypoints: https
       traefik.http.services.hook-cloudy.loadbalancer.server.port: '80'
-      traefik.http.routers.hook-cloudy.tls: 'true'
 
 networks:
   servers:
