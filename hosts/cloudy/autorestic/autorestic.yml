@@ -1,0 +1,47 @@
+version: 2
+
+backends:
+  rsyncnet:
+    type: sftp
+    path: "rsyncnet:cloudy-backup"
+
+locations:
+  cloudy-backup:
+    from:
+      - /backup_source
+    to:
+      - rsyncnet
+    hooks:
+      before:
+        - sh -c 'curl -fsS -m 10 --retry 3 "${HC_PING_URL}/start"'
+      success:
+        - sh -c 'curl -fsS -m 10 --retry 3 "${HC_PING_URL}"'
+      failure:
+        - sh -c 'curl -fsS -m 10 --retry 3 "${HC_PING_URL}/fail"'
+    forget: prune
+    cron: "0 3 * * *"
+    options:
+      forget:
+        keep-daily: 7
+        keep-weekly: 4
+        keep-monthly: 6
+      backup:
+        tag:
+          - cloudy
+        exclude:
+          # Standard SQLite extensions
+          - "*.db"
+          - "*.db-wal"
+          - "*.db-shm"
+          # Django/Python specific SQLite names
+          - "db.sqlite3"
+          - "db.sqlite3-wal"
+          - "db.sqlite3-shm"
+
+          # Ignore logs
+          - "*.log"
+
+          # Ignore caches
+          - "/**/__pycache__/**"
+          - "*.pyc"
+          - ".git"
