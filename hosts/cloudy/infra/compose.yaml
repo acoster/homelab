@@ -39,11 +39,21 @@ services:
     networks:
       servers:
       socket-proxy:
+    # The access log sees every scanner on the internet; keep it bounded.
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '5'
     command:
       # Global configuration
       - '--global.checknewversion=false'
       - '--global.sendanonymoususage=false'
+      # Both logs go to stdout (`docker logs traefik`); nothing reads files here.
+      - '--log.level=INFO'
       - '--log.format=common'
+      - '--accesslog=true'
+      - '--accesslog.format=common'
 
       # Entrypoints & automatic HTTP -> HTTPS redirect
       - '--entrypoints.web.address=:80'
