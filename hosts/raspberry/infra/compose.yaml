@@ -26,7 +26,7 @@ services:
 
   authentik_ldap:
     container_name: authentik_ldap
-    image: ghcr.io/goauthentik/ldap:2026.8.5@sha256:4c75bd27918418d2d6fbbfe4581bbd5a199fe38942d24559c4483edd64a1ea87
+    image: ghcr.io/goauthentik/ldap:2026.8.6
     restart: unless-stopped
     ports:
       - '${HOST_IP:?}:389:3389'
@@ -42,7 +42,7 @@ services:
 
   authentik_rac:
     container_name: authentik_rac
-    image: ghcr.io/goauthentik/rac:2026.8.5@sha256:f372973441ecf9fdac168ee0884ee525126af9d2c8eb82f96389e9196f49dad5
+    image: ghcr.io/goauthentik/rac:2026.8.6
     restart: unless-stopped
     env_file:
       - ./.env
@@ -57,7 +57,7 @@ services:
   authentik_server:
     x-auth: app # the login itself
     container_name: authentik_server
-    image: ghcr.io/goauthentik/server:2026.8.5@sha256:602227a86455d6772e3d16b7d852713c4f864f40df5df894abd1285bb53979a5
+    image: ghcr.io/goauthentik/server:2026.8.6
     restart: unless-stopped
     depends_on:
       authentik_db:
