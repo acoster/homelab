@@ -10,6 +10,7 @@ stack's encrypted secrets.
 
 | Stack | Service | Image | Hostnames |
 | ----- | ------- | ----- | --------- |
+| autorestic | autorestic | `cupcakearmy/autorestic` |  |
 | doco-cd | apprise | `caronc/apprise` |  |
 | doco-cd | doco-cd | `ghcr.io/kimdre/doco-cd` | `${WEBHOOK_HOST}` |
 | gotosocial | gotosocial | `superseriousbusiness/gotosocial` | `m.coster.ch` |
