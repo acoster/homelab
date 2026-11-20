@@ -107,6 +107,10 @@ services:
       PAPERLESS_CORS_ALLOWED_HOSTS: https://paperless.${DOMAIN}
       PAPERLESS_APPS: allauth.socialaccount.providers.openid_connect
       PAPERLESS_SOCIALACCOUNT_PROVIDERS: '{"openid_connect": {"APPS": [{"provider_id": "authentik","name": "Corp SSO","client_id": "${PAPERLESS_OAUTH_CLIENT}","secret": "${PAPERLESS_OAUTH_SECRET}","settings": { "server_url": "${PAPERLESS_OAUTH_URL}"}}]}}'
+    # Only start_period is set; the check itself comes from the image. Failures
+    # during start-up (migrations, a cold MariaDB) don't count as unhealthy.
+    healthcheck:
+      start_period: 5m
     env_file:
       - ./.env
     networks:

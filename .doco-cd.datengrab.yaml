@@ -34,6 +34,9 @@ env_files:
   - .env
   - secrets.enc.env
 webhook_filter: ^refs/heads/main$
+# paperless-server is slow to start after a Synology reboot (disks and MariaDB
+# are still busy). doco-cd waits this long (seconds) for healthy services.
+timeout: 600
 ---
 name: monitoring
 working_dir: hosts/datengrab/monitoring
