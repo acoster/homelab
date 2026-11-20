@@ -234,6 +234,9 @@ services:
       CONTAINERS: '1'
       NETWORKS: '1' # containers on several networks
       # EVENTS, PING and VERSION are on by default; POST and everything else is off.
+      # HAProxy logs every request at the default `info` level, and traefik/kop poll
+      # the API constantly, which floods the host's syslog. Keep warnings and up.
+      LOG_LEVEL: warning
     networks:
       socket-proxy:
 
