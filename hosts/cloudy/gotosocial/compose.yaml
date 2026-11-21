@@ -24,7 +24,7 @@ services:
   gotosocial:
     x-auth: app # own login (password, or OIDC if configured later)
     container_name: gotosocial
-    image: superseriousbusiness/gotosocial:0.22.3
+    image: superseriousbusiness/gotosocial:0.22.3@sha256:3f36dcf14a4f2e5562122e4783117c48a219d67988f841181b5c2ecaa65d5581
     restart: unless-stopped
     user: '1000:1000'
     volumes:
