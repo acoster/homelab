@@ -3,7 +3,7 @@ name: infra
 services:
   authentik_db:
     container_name: authentik_db
-    image: postgres:18.7@sha256:2ea8630df176ad090ec92136dee850397c5af8781e4bcf2e4162593691c61bbc
+    image: postgres:18.7@sha256:eb63372c1e05c755f55fa30cbd07aecc443676fc6c0fa90b9002d01537841e1a
     restart: unless-stopped
     volumes:
       - ${DOCKER_DATA_DIR}/authentik-psql:/var/lib/postgresql
