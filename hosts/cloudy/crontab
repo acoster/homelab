@@ -1,0 +1,1 @@
+13 4 * * * /opt/homelab/hosts/cloudy/autorestic/backups.sh > /dev/null 2>&1

@@ -1,0 +1,2 @@
+0 2 * * * /opt/homelab/hosts/framboesa/autorestic/backups.sh > /dev/null 2>&1
+7 6 * * 6 /opt/homelab/hosts/framboesa/autorestic/check.sh > /dev/null 2>&1
