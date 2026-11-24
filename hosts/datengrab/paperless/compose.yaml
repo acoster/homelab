@@ -3,7 +3,7 @@ name: paperless
 services:
   broker:
     container_name: paperless-broker
-    image: redis:8.10.3@sha256:1f88291b4c57bdf249f02eb085a8669889b2d2954e91d4de5118a5da6b78dd53
+    image: redis:8.12.0@sha256:d5dc9046df0c60dd919fb0c6a3c3af2c9c4c93fba71b5b7931ed2b076f7fe6ba
     restart: always
     volumes:
       - redisdata:/data
