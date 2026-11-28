@@ -90,6 +90,8 @@ services:
       - /volume1/paperless/export:/usr/src/paperless/export
       - /volume1/paperless/media:/usr/src/paperless/media
     environment:
+      PAPERLESS_GMAIL_OAUTH_CLIENT_ID: ${PAPERLESS_GMAIL_OAUTH_CLIENT_ID}
+      PAPERLESS_GMAIL_OAUTH_CLIENT_SECRET: ${PAPERLESS_GMAIL_OAUTH_CLIENT_SECRET}
       PAPERLESS_REDIS: redis://paperless-broker:6379
       PAPERLESS_DBENGINE: mariadb
       PAPERLESS_DBHOST: paperless-db
